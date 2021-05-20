@@ -1,0 +1,82 @@
+server:
+  port : 8080
+
+app:
+  auth:
+    signSecret: ${AUTH_JWT_SECRET}
+    webRedirect: ${AUTH_MOBILE_REDIRECT}
+    mobileRedirect: ${AUTH_MOBILE_REDIRECT}
+  oauth:
+    redirectUrl: ${OAUTH_REDIRECT_URL}
+    github:
+      clientId: ${OAUTH_GITHUB_CLIENTID}
+      clientSerect: ${OAUTH_GITHUB_SERECT}
+    google:
+      clientId: ${OAUTH_GOOGLE_CLIENTID}
+      clientSerect: ${OAUTH_GOOGLE_SERECT}
+
+spring:
+  application:
+    name: petfabula
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 30MB
+      enabled: true
+  server:
+    tomcat:
+      max-http-post-size: 10MB
+      max-swallow-size: 30MB
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/petfabula?useUnicode=true&characterEncoding=utf-8
+    username: root
+    password: rootpass
+    hikari:
+      auto-commit: true
+      minimum-idle: 2
+      idle-timeout: 60000
+      connection-timeout: 30000
+      max-lifetime: 1800000
+      pool-name: DatebookHikariCP
+      maximum-pool-size: 5
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    open-in-view: false
+
+  redis:
+    database: 0
+    host: localhost
+    port: 6379
+    timeout: 60000
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${DEV_GMAIL_ADDR}
+    password: ${DEV_GMAIL_PASS}
+    properties:
+      mail:
+        smtp:
+          quitwait: false
+          auth: true
+          starttls:
+            enable: true
+          ssl:
+            trust: smtp.gmail.com
+
+
+ftp:
+  host: 127.0.0.1
+  port: 21
+  username: ftpuser
+  password: ftpuser
+  filepath: /images
+
+image:
+  host: 192.168.0.199
+  protocol: http
