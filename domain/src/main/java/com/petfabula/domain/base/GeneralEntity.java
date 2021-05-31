@@ -13,22 +13,22 @@ import java.time.Instant;
 
 @Getter
 @MappedSuperclass
-@FilterDef(name = "activeFilter", parameters = {@ParamDef(name = "activeMark", type = "java.time.Instant")})
-@Filter(name = "activeFilter", condition = "delete_time = :activeMark")
+@FilterDef(name = "activeFilter")
+@Filter(name = "activeFilter", condition = "delete_at == null")
 public abstract class GeneralEntity extends EntityBase {
 
     @CreatedDate
     @Column(name = "created_date", nullable = false, updatable = false)
     private Instant createdDate = Instant.now();
 
-    @Column(name = "delete_time", nullable = false)
-    private Instant deleteTime = Instant.EPOCH;
+    @Column(name = "delete_at")
+    private Instant deleteAt;
 
     public void markDelete() {
-        this.deleteTime = Instant.now();
+        this.deleteAt = Instant.now();
     }
 
     public boolean isDeleted() {
-        return this.deleteTime == Instant.EPOCH;
+        return this.deleteAt != null;
     }
 }

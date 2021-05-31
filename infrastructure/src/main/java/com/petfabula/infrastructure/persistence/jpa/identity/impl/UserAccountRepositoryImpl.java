@@ -2,7 +2,7 @@ package com.petfabula.infrastructure.persistence.jpa.identity.impl;
 
 import com.petfabula.domain.aggregate.identity.entity.UserAccount;
 import com.petfabula.domain.aggregate.identity.repository.UserAccountRepository;
-import com.petfabula.infrastructure.persistence.jpa.identity.repo.UserAccountJpaRepository;
+import com.petfabula.infrastructure.persistence.jpa.identity.repository.UserAccountJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 

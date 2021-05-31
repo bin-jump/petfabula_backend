@@ -15,6 +15,6 @@ public class UserAccountDto {
 
     private String name;
 
-    private String avatarUrl;
+    private String photo;
 
 }

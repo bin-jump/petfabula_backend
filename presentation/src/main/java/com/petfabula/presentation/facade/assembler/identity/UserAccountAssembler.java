@@ -1,6 +1,7 @@
-package com.petfabula.presentation.facade.assembler;
+package com.petfabula.presentation.facade.assembler.identity;
 
 import com.petfabula.domain.aggregate.identity.entity.UserAccount;
+import com.petfabula.presentation.facade.assembler.AssemblerHelper;
 import com.petfabula.presentation.facade.dto.identity.UserAccountDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +18,8 @@ public class UserAccountAssembler {
 
     public UserAccountDto convertToDto(UserAccount userAccount) {
         UserAccountDto userDto = modelMapper.map(userAccount, UserAccountDto.class);
-        if (userAccount.getAvatarUrl() != null) {
-            userDto.setAvatarUrl(assemblerHelper.completeImageUrl(userAccount.getAvatarUrl()));
+        if (userAccount.getPhoto() != null) {
+            userDto.setPhoto(assemblerHelper.completeImageUrl(userAccount.getPhoto()));
         }
         return userDto;
     }

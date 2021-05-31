@@ -51,4 +51,6 @@ public abstract class EntityIdGenerator {
     }
 
     public abstract String getServiceTag();
+
+    public abstract IdSegment createInitialSegment();
 }

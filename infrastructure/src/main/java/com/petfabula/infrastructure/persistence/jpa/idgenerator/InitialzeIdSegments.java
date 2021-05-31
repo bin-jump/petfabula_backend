@@ -1,6 +1,7 @@
 package com.petfabula.infrastructure.persistence.jpa.idgenerator;
 
 import com.petfabula.domain.aggregate.identity.service.IdentityIdGenerator;
+import com.petfabula.domain.common.idgenerator.EntityIdGenerator;
 import com.petfabula.domain.common.idgenerator.IdSegment;
 import com.petfabula.infrastructure.persistence.jpa.idgenerator.impl.IdSegmentRepositoryImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +20,9 @@ public class InitialzeIdSegments implements ApplicationRunner {
 
     @Autowired
     private IdSegmentRepositoryImpl idSegmentRepository;
+
+    @Autowired
+    private List<EntityIdGenerator> entityIdGenerators;
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
@@ -43,8 +47,9 @@ public class InitialzeIdSegments implements ApplicationRunner {
 
     private List<IdSegment> getServiceIdSegments() {
         List<IdSegment> res = new ArrayList<>();
-        res.add(IdentityIdGenerator.createInitialSegment());
-
+        for(EntityIdGenerator generator : entityIdGenerators) {
+            res.add(generator.createInitialSegment());
+        }
         return res;
     }
 }

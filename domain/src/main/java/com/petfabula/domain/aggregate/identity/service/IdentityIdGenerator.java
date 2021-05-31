@@ -13,9 +13,9 @@ public class IdentityIdGenerator extends EntityIdGenerator {
 
     public static final Long START_ID = 1L;
 
-    public static IdSegment createInitialSegment() {
-        return new IdSegment(IdentityIdGenerator.SERVICE_TAG,
-                IdentityIdGenerator.STEP, IdentityIdGenerator.START_ID);
+    @Override
+    public IdSegment createInitialSegment() {
+        return new IdSegment(SERVICE_TAG, STEP, START_ID);
     }
 
     @Override

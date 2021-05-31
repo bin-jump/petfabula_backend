@@ -2,7 +2,7 @@ package com.petfabula.infrastructure.persistence.jpa.identity.impl;
 
 import com.petfabula.domain.aggregate.identity.entity.OauthAuthentication;
 import com.petfabula.domain.aggregate.identity.repository.OauthAuthenticationRepository;
-import com.petfabula.infrastructure.persistence.jpa.identity.repo.OauthAuthenticationJpaRepository;
+import com.petfabula.infrastructure.persistence.jpa.identity.repository.OauthAuthenticationJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 

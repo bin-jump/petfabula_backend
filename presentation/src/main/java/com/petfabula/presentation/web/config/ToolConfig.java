@@ -31,7 +31,7 @@ public class ToolConfig {
         Converter<LocalDate, Long> localDateToLong = new AbstractConverter<LocalDate, Long>() {
             @Override
             protected Long convert(LocalDate source) {
-                return AssemblerHelper.toLong(source);
+                return AssemblerHelper.dateToLong(source);
             }
         };
 

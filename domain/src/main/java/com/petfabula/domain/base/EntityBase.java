@@ -13,7 +13,7 @@ import java.time.Instant;
 
 @Getter
 @MappedSuperclass
-public abstract class EntityBase {
+public abstract class EntityBase implements DomainEntity {
 
     @Id
     @Column(name = "id")

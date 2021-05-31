@@ -13,6 +13,8 @@ public abstract class EntityValidationUtils {
 
     private static final RegexValidator passwordValidator = new RegexValidator("^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]){8,16}$");
 
+    private static final RegexValidator petNameValidator = new RegexValidator("^[\\.\\w\\-ぁ-んァ-ヶ一-龠々ー]{1,16}$");
+
 
     public static void notEmpty(String fieldName, String value) {
         if (StringUtils.isEmpty(value)) {
@@ -39,12 +41,27 @@ public abstract class EntityValidationUtils {
         }
     }
 
+    public static void validPetName(String fieldName, String value) {
+        if (StringUtils.length(value) < 1 || StringUtils.length(value) > 16) {
+            throw new InvalidValueException(fieldName, MessageKey.INVALID_PET_NAME_LENGTH);
+        }
+        if (!petNameValidator.isValid(value)) {
+            throw new InvalidValueException(fieldName, MessageKey.INVALID_PET_NAME_PATTERN);
+        }
+    }
+
     public static void validPassword(String fieldName, String value) {
         if (StringUtils.length(value) < 8 || StringUtils.length(value) > 16) {
             throw new InvalidValueException(fieldName, MessageKey.INVALID_PASSWORD);
         }
         if (!passwordValidator.isValid(value)) {
             throw new InvalidValueException(fieldName, MessageKey.INVALID_PASSWORD);
+        }
+    }
+
+    public static void validStringLendth(String fieldName, String value, int min, int max) {
+        if (StringUtils.length(value) < min || StringUtils.length(value) > max) {
+            throw new InvalidValueException(fieldName, MessageKey.INVALID_STRING_LEGNTH);
         }
     }
 }

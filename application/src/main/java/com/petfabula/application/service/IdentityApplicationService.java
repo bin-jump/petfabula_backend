@@ -1,5 +1,6 @@
 package com.petfabula.application.service;
 
+import com.petfabula.domain.aggregate.community.service.ParticipatorService;
 import com.petfabula.domain.aggregate.identity.entity.EmailCodeAuthentication;
 import com.petfabula.domain.aggregate.identity.entity.UserAccount;
 import com.petfabula.domain.aggregate.identity.repository.EmailCodeAuthenticationRepository;
@@ -19,6 +20,9 @@ import javax.transaction.Transactional;
 public class IdentityApplicationService {
 
     @Autowired
+    private SynchronizeUser synchronizeUser;
+
+    @Autowired
     private VerificationCodeService verificationCodeService;
 
     @Autowired
@@ -32,6 +36,9 @@ public class IdentityApplicationService {
 
     @Autowired
     private EmailCodeAuthenticationRepository emailCodeAuthenticationRepository;
+
+    @Autowired
+    private ParticipatorService participatorService;
 
 //    public void registerEmailVerificationCodeNotify(String email) {
 //        verificationCodeService.generateAndNotifyWithEmailRegister(email);
@@ -51,8 +58,9 @@ public class IdentityApplicationService {
 
 
     public UserAccount registerByEmailCode(String name, String email, String code) {
-        UserAccount userAccount =
-                registerService.registerByEmailCode(name, email, code);
+//        UserAccount userAccount =
+//                registerService.registerByEmailCode(name, email, code);
+        UserAccount userAccount = synchronizeUser.registerByEmailCodeAndSync(name, email, code);
 
         // only remove when register transaction is committed
         // it is ok to keep the old, as new code will overwrite the old,
@@ -91,6 +99,7 @@ public class IdentityApplicationService {
     public UserAccount registerOrAuthenticateByOauth(String serverName, String code) {
         UserAccount userAccount =
                 registerService.registerOrAuthenticateByOauth(serverName, code);
+        synchronizeUser.onCreate(userAccount.getId(), userAccount.getName(), userAccount.getPhoto());
         return userAccount;
     }
 

@@ -1,4 +1,4 @@
-package com.petfabula.infrastructure.persistence.jpa.identity.repo;
+package com.petfabula.infrastructure.persistence.jpa.identity.repository;
 
 import com.petfabula.domain.aggregate.identity.entity.EmailCodeAuthentication;
 import org.springframework.data.jpa.repository.JpaRepository;

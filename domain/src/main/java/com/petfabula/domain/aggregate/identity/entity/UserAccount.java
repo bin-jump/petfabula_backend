@@ -28,11 +28,11 @@ public class UserAccount extends ConcurrentEntity {
     @Column(name = "name", unique = true, nullable = false, length = 32)
     private String name;
 
+    @Column(name = "photo", unique = true)
+    private String photo;
+
     @Column(name = "email", unique = true, length = 128)
     private String email;
-
-    @Column(name = "avatar_url", unique = true)
-    private String avatarUrl;
 
     @Column(name = "birthday")
     private LocalDate birthday;
@@ -40,8 +40,8 @@ public class UserAccount extends ConcurrentEntity {
     @Column(name = "gender")
     private Gender gender;
 
-    @Column(name = "about", length = 255)
-    private String about;
+    @Column(name = "bio", length = 255)
+    private String bio;
 
     @Column(name = "status", nullable = false)
     private UserStatus status;

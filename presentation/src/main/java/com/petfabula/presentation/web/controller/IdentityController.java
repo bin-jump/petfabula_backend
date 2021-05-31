@@ -3,7 +3,7 @@ package com.petfabula.presentation.web.controller;
 import com.petfabula.application.service.IdentityApplicationService;
 import com.petfabula.domain.aggregate.identity.entity.UserAccount;
 import com.petfabula.domain.aggregate.identity.repository.UserAccountRepository;
-import com.petfabula.presentation.facade.assembler.UserAccountAssembler;
+import com.petfabula.presentation.facade.assembler.identity.UserAccountAssembler;
 import com.petfabula.presentation.facade.dto.identity.*;
 import com.petfabula.presentation.web.api.Response;
 import com.petfabula.presentation.web.authentication.AuthenticationHelper;

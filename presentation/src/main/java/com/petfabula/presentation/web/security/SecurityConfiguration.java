@@ -47,9 +47,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST,"/api/user/check-confirm-email",
                         "/api/user/confirm-email", "/api/user")
                 .permitAll()
-                .antMatchers(HttpMethod.POST,"/api/user/forgotpassword-confirm-email",
-                        "/api/user/forgotPassword-change-password")
-                .permitAll()
 
                 .antMatchers(HttpMethod.GET,"/api/user/info")
                 .authenticated()

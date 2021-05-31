@@ -2,7 +2,7 @@ package com.petfabula.infrastructure.persistence.jpa.identity.impl;
 
 import com.petfabula.domain.aggregate.identity.entity.EmailCodeAuthentication;
 import com.petfabula.domain.aggregate.identity.repository.EmailCodeAuthenticationRepository;
-import com.petfabula.infrastructure.persistence.jpa.identity.repo.EmailCodeAuthenticationJpaRepository;
+import com.petfabula.infrastructure.persistence.jpa.identity.repository.EmailCodeAuthenticationJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 

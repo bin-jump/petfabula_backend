@@ -40,12 +40,10 @@ public class AssemblerHelper {
 
     }
 
-    public static Long toLong(LocalDate val) {
+    public static Long dateToLong(LocalDate val) {
         if (val == null) {
             return null;
         }
-
         return val.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli();
-
     }
 }

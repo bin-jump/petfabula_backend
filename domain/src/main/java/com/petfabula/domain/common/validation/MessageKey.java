@@ -11,4 +11,10 @@ public interface MessageKey {
     String INVALID_USER_NAME_PATTERN = "validation.invalidUserNamePattern";
 
     String INVALID_PASSWORD = "validation.invalidPassword";
+
+    String INVALID_PET_NAME_LENGTH = "validation.invalidPetNameLength";
+
+    String INVALID_PET_NAME_PATTERN = "validation.invalidPetNamePattern";
+
+    String INVALID_STRING_LEGNTH = "validation.invalidStringLength";
 }
