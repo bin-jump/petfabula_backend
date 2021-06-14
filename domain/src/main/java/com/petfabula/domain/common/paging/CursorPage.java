@@ -1,6 +1,6 @@
 package com.petfabula.domain.common.paging;
 
-import com.petfabula.domain.base.EntityBase;
+import com.petfabula.domain.common.domain.EntityBase;
 import lombok.Getter;
 
 import java.util.List;

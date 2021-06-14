@@ -1,11 +1,16 @@
 package com.petfabula.presentation.web.controller;
 
-import com.petfabula.application.service.PostApplicationService;
-import com.petfabula.domain.aggregate.community.entity.*;
-import com.petfabula.domain.aggregate.community.error.PostMessageKeys;
-import com.petfabula.domain.aggregate.community.repository.*;
+import com.petfabula.application.community.PostApplicationService;
+import com.petfabula.domain.aggregate.community.participator.FollowParticipator;
+import com.petfabula.domain.aggregate.community.participator.repository.ParticipatorPetRepository;
+import com.petfabula.domain.aggregate.community.post.entity.valueobject.LikePost;
+import com.petfabula.domain.aggregate.community.post.entity.*;
+import com.petfabula.domain.aggregate.community.post.PostMessageKeys;
+import com.petfabula.domain.aggregate.community.post.entity.valueobject.PostTopicRelation;
+import com.petfabula.domain.aggregate.community.post.repository.*;
 import com.petfabula.domain.common.image.ImageFile;
 import com.petfabula.domain.common.paging.CursorPage;
+import com.petfabula.domain.exception.InvalidOperationException;
 import com.petfabula.domain.exception.NotFoundException;
 import com.petfabula.presentation.facade.assembler.community.*;
 import com.petfabula.presentation.facade.dto.community.*;
@@ -143,6 +148,9 @@ public class PostController {
         List<ImageFile> imageFiles = new ArrayList<>();
         if (images != null) {
             for (MultipartFile file : images) {
+                if (file.isEmpty()) {
+                    throw new InvalidOperationException("Empty image file");
+                }
                 imageFiles.add(new ImageFile(file.getOriginalFilename(),
                         file.getInputStream(), file.getSize()));
             }

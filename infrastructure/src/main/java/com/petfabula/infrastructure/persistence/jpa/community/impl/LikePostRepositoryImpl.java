@@ -1,7 +1,7 @@
 package com.petfabula.infrastructure.persistence.jpa.community.impl;
 
-import com.petfabula.domain.aggregate.community.entity.LikePost;
-import com.petfabula.domain.aggregate.community.repository.LikePostRepository;
+import com.petfabula.domain.aggregate.community.post.entity.valueobject.LikePost;
+import com.petfabula.domain.aggregate.community.post.repository.LikePostRepository;
 import com.petfabula.infrastructure.persistence.jpa.community.repository.LikePostJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;

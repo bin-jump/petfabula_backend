@@ -1,7 +1,7 @@
 package com.petfabula.infrastructure.persistence.jpa.community.impl;
 
-import com.petfabula.domain.aggregate.community.entity.PostCommentReply;
-import com.petfabula.domain.aggregate.community.repository.PostCommentReplyRepository;
+import com.petfabula.domain.aggregate.community.post.entity.PostCommentReply;
+import com.petfabula.domain.aggregate.community.post.repository.PostCommentReplyRepository;
 import com.petfabula.domain.common.paging.CursorPage;
 import com.petfabula.infrastructure.persistence.jpa.annotation.FilterSoftDelete;
 import com.petfabula.infrastructure.persistence.jpa.community.repository.PostCommentReplyJpaRepository;

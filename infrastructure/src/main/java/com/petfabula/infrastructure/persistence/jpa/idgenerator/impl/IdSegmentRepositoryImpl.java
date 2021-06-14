@@ -1,7 +1,7 @@
 package com.petfabula.infrastructure.persistence.jpa.idgenerator.impl;
 
-import com.petfabula.domain.common.idgenerator.IdSegment;
-import com.petfabula.domain.common.idgenerator.IdSegmentRepository;
+import com.petfabula.domain.common.domain.idgenerator.IdSegment;
+import com.petfabula.domain.common.domain.idgenerator.IdSegmentRepository;
 import com.petfabula.infrastructure.persistence.jpa.idgenerator.repository.IdSegmentJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;

@@ -1,8 +1,7 @@
 package com.petfabula.infrastructure.persistence.jpa.community;
 
-import com.petfabula.domain.aggregate.community.entity.PostTopic;
-import com.petfabula.domain.aggregate.community.repository.PostTopicRepository;
-import com.petfabula.domain.aggregate.community.service.PostIdGenerator;
+import com.petfabula.domain.aggregate.community.post.entity.PostTopic;
+import com.petfabula.domain.aggregate.community.post.repository.PostTopicRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;

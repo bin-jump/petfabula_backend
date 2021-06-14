@@ -70,13 +70,14 @@ spring:
             trust: smtp.gmail.com
 
 
-ftp:
-  host: 127.0.0.1
-  port: 21
-  username: ftpuser
-  password: ftpuser
-  filepath: /images
+#ftp:
+#  host: 127.0.0.1
+#  port: 21
+#  username: ftpuser
+#  password: ftpuser
+#  filepath: /images
+upload:
+  imageUrl: http://localhost:8091
 
 image:
-  host: 192.168.0.199
-  protocol: http
+  contentUrl: http://192.168.0.199/images

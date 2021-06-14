@@ -1,6 +1,6 @@
 package com.petfabula.infrastructure.persistence.jpa.community.repository;
 
-import com.petfabula.domain.aggregate.community.entity.PostCommentReply;
+import com.petfabula.domain.aggregate.community.post.entity.PostCommentReply;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 

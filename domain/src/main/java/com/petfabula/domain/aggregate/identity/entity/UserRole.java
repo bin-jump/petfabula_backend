@@ -1,6 +1,6 @@
 package com.petfabula.domain.aggregate.identity.entity;
 
-import com.petfabula.domain.base.EntityBase;
+import com.petfabula.domain.common.domain.EntityBase;
 import lombok.Builder;
 
 import javax.persistence.*;

@@ -1,7 +1,7 @@
 package com.petfabula.presentation.web.controller;
 
-import com.petfabula.domain.aggregate.community.entity.ParticipatorPet;
-import com.petfabula.domain.aggregate.community.repository.ParticipatorPetRepository;
+import com.petfabula.domain.aggregate.community.participator.entity.ParticipatorPet;
+import com.petfabula.domain.aggregate.community.participator.repository.ParticipatorPetRepository;
 import com.petfabula.presentation.facade.assembler.community.ParticiptorPetAssembler;
 import com.petfabula.presentation.facade.dto.community.ParticipatorPetDto;
 import com.petfabula.presentation.web.api.Response;

@@ -1,9 +1,8 @@
 package com.petfabula.infrastructure.persistence.jpa.community.impl;
 
-import com.petfabula.domain.aggregate.community.entity.Post;
-import com.petfabula.domain.aggregate.community.entity.PostComment;
-import com.petfabula.domain.aggregate.community.entity.PostTopicRelation;
-import com.petfabula.domain.aggregate.community.repository.PostTopicRelationRepository;
+import com.petfabula.domain.aggregate.community.post.entity.Post;
+import com.petfabula.domain.aggregate.community.post.entity.valueobject.PostTopicRelation;
+import com.petfabula.domain.aggregate.community.post.repository.PostTopicRelationRepository;
 import com.petfabula.domain.common.paging.CursorPage;
 import com.petfabula.infrastructure.persistence.jpa.community.repository.PostTopicRelationJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;

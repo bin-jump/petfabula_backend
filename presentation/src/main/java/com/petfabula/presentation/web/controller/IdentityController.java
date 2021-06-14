@@ -1,6 +1,6 @@
 package com.petfabula.presentation.web.controller;
 
-import com.petfabula.application.service.IdentityApplicationService;
+import com.petfabula.application.identity.IdentityApplicationService;
 import com.petfabula.domain.aggregate.identity.entity.UserAccount;
 import com.petfabula.domain.aggregate.identity.repository.UserAccountRepository;
 import com.petfabula.presentation.facade.assembler.identity.UserAccountAssembler;
@@ -60,7 +60,7 @@ public class IdentityController {
 
     @PostMapping("register-send-code")
     public Response emailCodeRegisterVerificationCode(@Validated @RequestBody ExamineEmailRegisterAndSendCodeRequest request) {
-        identityApplicationService.examineEmailCodeRegiterContentAndSendCode(request.getName(), request.getEmail());
+        identityApplicationService.examineEmailCodeRegisterContentAndSendCode(request.getName(), request.getEmail());
         return Response.ok(request.getName());
     }
 

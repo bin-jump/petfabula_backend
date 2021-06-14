@@ -10,11 +10,8 @@ import java.time.ZoneOffset;
 @Component
 public class AssemblerHelper {
 
-    @Value("${image.host}")
-    private String imageServerHost;
-
-    @Value("${image.protocol}")
-    private String imageServerProtocol;
+    @Value("${image.contentUrl}")
+    private String contentUrl;
 
     public String completeImageUrl(String url) {
         if (url == null) {
@@ -24,7 +21,7 @@ public class AssemblerHelper {
     }
 
     private String imagePrefix() {
-        return String.format("%s://%s", imageServerProtocol, imageServerHost);
+        return contentUrl;
     }
 
 

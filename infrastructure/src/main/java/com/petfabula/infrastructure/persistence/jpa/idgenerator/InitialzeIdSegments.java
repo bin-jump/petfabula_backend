@@ -1,8 +1,7 @@
 package com.petfabula.infrastructure.persistence.jpa.idgenerator;
 
-import com.petfabula.domain.aggregate.identity.service.IdentityIdGenerator;
-import com.petfabula.domain.common.idgenerator.EntityIdGenerator;
-import com.petfabula.domain.common.idgenerator.IdSegment;
+import com.petfabula.domain.common.domain.idgenerator.EntityIdGenerator;
+import com.petfabula.domain.common.domain.idgenerator.IdSegment;
 import com.petfabula.infrastructure.persistence.jpa.idgenerator.impl.IdSegmentRepositoryImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,6 +1,6 @@
 package com.petfabula.presentation.facade.assembler.community;
 
-import com.petfabula.domain.aggregate.community.entity.PostCommentReply;
+import com.petfabula.domain.aggregate.community.post.entity.PostCommentReply;
 import com.petfabula.presentation.facade.dto.community.PostCommentReplyDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;

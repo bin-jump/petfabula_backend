@@ -1,5 +1,6 @@
 package com.petfabula.domain.aggregate.identity.service;
 
+import com.petfabula.domain.aggregate.identity.IdentityCreated;
 import com.petfabula.domain.aggregate.identity.entity.EmailCodeAuthentication;
 import com.petfabula.domain.aggregate.identity.entity.EmailPasswordAuthentication;
 import com.petfabula.domain.aggregate.identity.entity.OauthAuthentication;
@@ -10,6 +11,7 @@ import com.petfabula.domain.aggregate.identity.repository.OauthAuthenticationRep
 import com.petfabula.domain.aggregate.identity.repository.UserAccountRepository;
 import com.petfabula.domain.aggregate.identity.service.oauth.OauthResponse;
 import com.petfabula.domain.aggregate.identity.service.oauth.OauthService;
+import com.petfabula.domain.common.domain.DomainEventPublisher;
 import com.petfabula.domain.exception.InvalidValueException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +44,9 @@ public class RegisterService {
     @Autowired
     private EmailCodeAuthenticationRepository emailCodeAuthenticationRepository;
 
+    @Autowired
+    private DomainEventPublisher domainEventPublisher;
+
 //    @Transactional
 //    public UserAccount registerByEmailPassword(String name, String email, String password, String verificationCode) {
 //        verificationCodeService.checkEmailPasswordRegisterCode(email, verificationCode);
@@ -61,7 +66,6 @@ public class RegisterService {
 //        return userAccount;
 //    }
 
-    @Transactional
     public UserAccount registerByEmailCode(String name, String email, String code) {
         verificationCodeService.checkEmailCodeRegisterCode(email, code);
 
@@ -81,6 +85,9 @@ public class RegisterService {
         emailCodeAuthentication =
                 new EmailCodeAuthentication(userAccount.getId(), email);
         emailCodeAuthenticationRepository.save(emailCodeAuthentication);
+
+        domainEventPublisher.publish(
+                new IdentityCreated(userAccount.getId(), userAccount.getName(), userAccount.getEmail()));
         return userAccount;
     }
 
@@ -95,9 +102,12 @@ public class RegisterService {
             oauthAuthentication =
                     new OauthAuthentication(userAccount.getId(), serverName, response.getOauthId());
             oauthAuthenticationRepository.save(oauthAuthentication);
+
+            domainEventPublisher.publish(
+                    new IdentityCreated(userAccount.getId(), userAccount.getName(), userAccount.getEmail()));
+
             return userAccount;
         }
-
         return userAccountRepository.findById(oauthAuthentication.getId());
     }
 

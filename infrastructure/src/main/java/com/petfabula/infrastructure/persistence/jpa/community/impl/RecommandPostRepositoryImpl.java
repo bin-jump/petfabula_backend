@@ -1,7 +1,7 @@
 package com.petfabula.infrastructure.persistence.jpa.community.impl;
 
-import com.petfabula.domain.aggregate.community.entity.Post;
-import com.petfabula.domain.aggregate.community.repository.RecommandPostRepository;
+import com.petfabula.domain.aggregate.community.post.entity.Post;
+import com.petfabula.domain.aggregate.community.post.repository.RecommandPostRepository;
 import com.petfabula.domain.common.paging.CursorPage;
 import com.petfabula.infrastructure.persistence.jpa.community.repository.PostJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,6 +1,6 @@
 package com.petfabula.infrastructure.persistence.jpa.idgenerator.repository;
 
-import com.petfabula.domain.common.idgenerator.IdSegment;
+import com.petfabula.domain.common.domain.idgenerator.IdSegment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

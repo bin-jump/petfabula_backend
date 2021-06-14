@@ -1,6 +1,6 @@
 package com.petfabula.presentation.facade.assembler.community;
 
-import com.petfabula.domain.aggregate.community.entity.Post;
+import com.petfabula.domain.aggregate.community.post.entity.Post;
 import com.petfabula.presentation.facade.assembler.AssemblerHelper;
 import com.petfabula.presentation.facade.dto.community.PostDto;
 import org.modelmapper.ModelMapper;

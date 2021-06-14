@@ -1,7 +1,7 @@
 package com.petfabula.domain.aggregate.identity.service;
 
-import com.petfabula.domain.common.idgenerator.EntityIdGenerator;
-import com.petfabula.domain.common.idgenerator.IdSegment;
+import com.petfabula.domain.common.domain.idgenerator.EntityIdGenerator;
+import com.petfabula.domain.common.domain.idgenerator.IdSegment;
 import org.springframework.stereotype.Component;
 
 @Component

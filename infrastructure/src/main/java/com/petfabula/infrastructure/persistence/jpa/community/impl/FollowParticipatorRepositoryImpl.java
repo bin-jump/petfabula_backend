@@ -1,8 +1,8 @@
 package com.petfabula.infrastructure.persistence.jpa.community.impl;
 
-import com.petfabula.domain.aggregate.community.entity.FollowParticipator;
-import com.petfabula.domain.aggregate.community.entity.Participator;
-import com.petfabula.domain.aggregate.community.repository.FollowParticipatorRepository;
+import com.petfabula.domain.aggregate.community.participator.FollowParticipator;
+import com.petfabula.domain.aggregate.community.participator.entity.Participator;
+import com.petfabula.domain.aggregate.community.participator.repository.FollowParticipatorRepository;
 import com.petfabula.domain.common.paging.CursorPage;
 import com.petfabula.infrastructure.persistence.jpa.community.repository.FollowParticipatorJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
