@@ -10,13 +10,12 @@ import java.util.concurrent.Executor;
 
 @Configuration
 @EnableAsync
-@SuppressWarnings(value = "Duplicates")
 public class AppConfig {
 
-    public static final String ASYNC_EXECUTOR_NAME = "asyncExecutor";
+    public static final String ASYNC_EXECUTOR_NAME = "taskExecutor";
 
-    @Bean(name=ASYNC_EXECUTOR_NAME)
-    public Executor asyncExecutor() {
+    @Bean
+    public Executor taskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         // for passing in request scope context
         executor.setTaskDecorator(new ContextCopyingDecorator());

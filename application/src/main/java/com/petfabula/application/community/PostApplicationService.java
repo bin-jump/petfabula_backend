@@ -2,6 +2,7 @@ package com.petfabula.application.community;
 
 import com.petfabula.domain.aggregate.community.participator.FollowParticipator;
 import com.petfabula.domain.aggregate.community.participator.service.FollowService;
+import com.petfabula.domain.aggregate.community.post.PostSearchService;
 import com.petfabula.domain.aggregate.community.post.entity.valueobject.LikePost;
 import com.petfabula.domain.aggregate.community.post.entity.*;
 import com.petfabula.domain.aggregate.community.post.service.*;

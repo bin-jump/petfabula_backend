@@ -14,7 +14,7 @@ import org.springframework.data.elasticsearch.repository.config.EnableElasticsea
 @Configuration
 @EnableElasticsearchRepositories(basePackages = "com.petfabula.infrastructure.persistence.elasticsearch")
 @Slf4j
-public class Config {
+public class SearchConfig {
 
     @Value("${spring.data.elasticsearch.host}")
     private String hostName;
@@ -25,7 +25,7 @@ public class Config {
     @Bean
     public RestHighLevelClient client() {
         String connectStr = hostName + ":" + portNumber;
-        log.info("elastic search: " + connectStr);
+        log.info("elastic elasticsearch: " + connectStr);
 
         ClientConfiguration clientConfiguration
                 = ClientConfiguration.builder()

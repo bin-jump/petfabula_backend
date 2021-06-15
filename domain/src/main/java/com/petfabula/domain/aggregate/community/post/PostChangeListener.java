@@ -6,16 +6,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 @Component
-public class PostCreateListener {
+public class PostChangeListener {
 
     @Autowired
     private PostSearchService searchService;
 
     @Async
     @TransactionalEventListener
-    public void handle(PostCreated postCreated) {
-        searchService.index(postCreated.getPostSearchItem());
+    public void handle(PostChanged postChanged) {
+        searchService.index(postChanged.getPostSearchItem());
     }
-
 
 }

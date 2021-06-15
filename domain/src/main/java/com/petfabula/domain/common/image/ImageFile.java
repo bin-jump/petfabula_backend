@@ -7,11 +7,14 @@ import lombok.Getter;
 import net.coobird.thumbnailator.Thumbnails;
 
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Iterator;
 
 @Getter
 public class ImageFile {
@@ -31,6 +34,8 @@ public class ImageFile {
         this.imageType = getImageTypeByExtension(Files
                 .getFileExtension(fileName).toUpperCase());
         this.data = inputStream;
+
+        getImageDimension();
     }
 
     private InputStream data;
@@ -39,6 +44,7 @@ public class ImageFile {
 
     private ImageType imageType;
 
+    private ImageDimension dimension;
 
     public String getOriginalFilename() {
         return orgFileName;
@@ -48,6 +54,54 @@ public class ImageFile {
         return data;
     }
 
+    // extract dimension and reset inputStream
+    public ImageDimension getImageDimension() {
+        if (dimension != null) {
+            return this.dimension;
+        }
+        try {
+            setDimensionThumbnails();
+            return this.dimension;
+        } catch (IOException e) {
+            throw new RuntimeException("failed to get image dimension");
+        }
+    }
+
+    private void setDimensionThumbnails() throws IOException {
+
+        BufferedImage bm = Thumbnails.of(this.data)
+                .scale(1)
+                .asBufferedImage();
+        this.dimension = new ImageDimension(bm.getWidth(), bm.getHeight());
+        // rebuild inputStream
+        NoneCopyByteArrayOutputStream os = new NoneCopyByteArrayOutputStream();
+        ImageIO.write(bm, "jpg", os);
+        this.data = new ByteArrayInputStream(os.toByteArray());
+
+    }
+
+    private void setDimension() throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        org.apache.commons.io.IOUtils.copy(this.data, baos);
+        byte[] bytes = baos.toByteArray();
+
+        try(ImageInputStream in = ImageIO.createImageInputStream(new ByteArrayInputStream(bytes))){
+            final Iterator<ImageReader> readers = ImageIO.getImageReaders(in);
+            if (readers.hasNext()) {
+                ImageReader reader = readers.next();
+                try {
+                    reader.setInput(in);
+                    this.dimension = new ImageDimension(reader.getWidth(0),
+                            reader.getHeight(0));
+
+                    this.data = new ByteArrayInputStream(bytes);
+                } finally {
+                    reader.dispose();
+                }
+            }
+        }
+        throw new RuntimeException("failed to get image dimension");
+    }
 
     private static ImageType getImageTypeByExtension(String extention) {
         if (!isValidImageFormat(extention)) {

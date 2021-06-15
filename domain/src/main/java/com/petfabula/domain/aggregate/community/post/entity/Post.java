@@ -1,6 +1,8 @@
 package com.petfabula.domain.aggregate.community.post.entity;
 
 import com.petfabula.domain.aggregate.community.participator.entity.Participator;
+import com.petfabula.domain.aggregate.community.participator.entity.ParticipatorPet;
+import com.petfabula.domain.aggregate.community.participator.entity.PetCategory;
 import com.petfabula.domain.aggregate.community.post.PostMessageKeys;
 import com.petfabula.domain.common.domain.ConcurrentEntity;
 import com.petfabula.domain.common.validation.EntityValidationUtils;
@@ -20,13 +22,19 @@ import java.util.Set;
 @Table(name = "post")
 public class Post extends ConcurrentEntity {
 
-    public Post(Long id, Participator participator, String content, Long relatePetId) {
+    public Post(Long id, Participator participator, String content, ParticipatorPet pet) {
         setId(id);
         setContent(content);
         this.participator = participator;
         this.likeCount = 0;
         this.commentCount = 0;
-        this.relatePetId = relatePetId;
+        this.collectCount = 0;
+        this.viewCount = 0;
+        if (pet != null) {
+            this.relatePetId = pet.getId();
+            this.petCategory = pet.getPetCategory();
+        }
+
     }
 
     @Column(name = "pet_id")
@@ -41,8 +49,14 @@ public class Post extends ConcurrentEntity {
     @Column(name = "comment_count", nullable = false)
     private Integer commentCount;
 
+    @Column(name = "collect_count", nullable = false)
+    private Integer collectCount;
+
     @Column(name = "view_count", nullable = false)
     private Integer viewCount;
+
+    @Column(name = "pet_category")
+    private PetCategory petCategory;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "participator_id")

@@ -64,13 +64,12 @@ public class VerificationCodeService {
         emailSender.sendEmail(sendEmailRequest);
     }
 
-//    public void checkEmailPasswordRegisterCode(String email, String code) {
-//        String saved = verificationCodeRepository.getCode(emailPasswordReigsterkey(email));
-//        if (StringUtils.compare(code, saved) != 0) {
-//            throw new InvalidValueException("code", MessageKey.INVALID_VERIFICATION_CODE);
-//        }
-//
-//    }
+    public void checkEmailLoginCode(String email, String code) {
+        String saved = verificationCodeRepository.getCode(emailCodeLoginkey(email));
+        if (StringUtils.compare(code, saved) != 0) {
+            throw new InvalidValueException("code", MessageKey.INVALID_VERIFICATION_CODE);
+        }
+    }
 
     public void checkEmailCodeRegisterCode(String email, String code) {
         String saved = verificationCodeRepository.getCode(emailCodeReigsterkey(email));
@@ -80,9 +79,9 @@ public class VerificationCodeService {
 
     }
 
-//    public void removeEmailPasswordRegisterCode(String email) {
-//        verificationCodeRepository.remove(emailPasswordReigsterkey(email));
-//    }
+    public void removeEmailLoginCode(String email) {
+        verificationCodeRepository.remove(emailCodeLoginkey(email));
+    }
 
     public void removeEmailCodeRegisterCode(String email) {
         verificationCodeRepository.remove(emailCodeReigsterkey(email));

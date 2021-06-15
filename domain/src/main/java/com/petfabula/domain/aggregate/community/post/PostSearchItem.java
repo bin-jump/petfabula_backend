@@ -1,23 +1,19 @@
 package com.petfabula.domain.aggregate.community.post;
 
 import com.petfabula.domain.aggregate.community.participator.ParticipatorSearchItem;
+import com.petfabula.domain.common.search.SearchImageItem;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class PostSearchItem {
-
-    public PostSearchItem(Long id, Long relatePetId,
-                          String content, String coverImage, ParticipatorSearchItem user) {
-        this.id = id;
-        this.relatePetId = relatePetId;
-        this.content = content;
-        this.coverImage = coverImage;
-        this.user = user;
-    }
 
     private Long id;
 
@@ -25,7 +21,7 @@ public class PostSearchItem {
 
     private String content;
 
-    private String coverImage;
+    private SearchImageItem coverImage;
 
     private Long version;
 
@@ -35,7 +31,9 @@ public class PostSearchItem {
 
     private Integer viewCount;
 
+    private String petCategory;
+
     private Instant createdDate;
 
-    private ParticipatorSearchItem user;
+    private ParticipatorSearchItem participator;
 }

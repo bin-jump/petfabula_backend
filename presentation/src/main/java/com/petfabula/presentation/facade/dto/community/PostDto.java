@@ -1,5 +1,6 @@
 package com.petfabula.presentation.facade.dto.community;
 
+import com.petfabula.presentation.facade.dto.ImageDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -39,6 +40,6 @@ public class PostDto {
     private ParticipatorPetDto participatorPet;
 
     @Builder.Default
-    private List<String> images = new ArrayList<>();
+    private List<ImageDto> images = new ArrayList<>();
 }
 

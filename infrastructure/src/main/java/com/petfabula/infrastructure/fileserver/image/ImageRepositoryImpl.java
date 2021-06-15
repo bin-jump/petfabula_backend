@@ -3,23 +3,21 @@ package com.petfabula.infrastructure.fileserver.image;
 import com.petfabula.domain.common.image.ImageFile;
 import com.petfabula.domain.common.image.ImageRepository;
 import com.petfabula.domain.exception.ExternalServerException;
-import com.petfabula.infrastructure.fileserver.ftp.FtpProps;
 import com.petfabula.infrastructure.rest.MultipartInputStreamFileResource;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.integration.ftp.session.FtpRemoteFileTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,7 +25,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ImageRepositoryImpl implements ImageRepository {
 
-    @Value("${image.uploadUrl}")
+    @Value("${upload.imageUrl}")
     private String uploadUrl;
 
     @Autowired
@@ -36,7 +34,7 @@ public class ImageRepositoryImpl implements ImageRepository {
     @Override
     public String save(ImageFile imageFile) {
         LinkedMultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
-        List<ResponseItem> response;
+        ResponseItem[] response;
 
         try {
             map.add("images", new MultipartInputStreamFileResource(imageFile.getInputStream(),
@@ -46,19 +44,19 @@ public class ImageRepositoryImpl implements ImageRepository {
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
             HttpEntity<LinkedMultiValueMap<String, Object>> requestEntity = new HttpEntity<>(map, headers);
-            response = restTemplate.postForObject(uploadUrl, requestEntity, List.class);
+            response = restTemplate.postForObject(uploadUrl, requestEntity, ResponseItem[].class);
 
         } catch (HttpStatusCodeException e) {
             throw new ExternalServerException("Failed to save image files");
         }
 
-        return response.get(0).getPath();
+        return response[0].getPath();
     }
 
     @Override
     public List<String> save(List<ImageFile> imageFiles) {
         LinkedMultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
-        List<ResponseItem> response;
+        ResponseItem[] response;
 
         try {
             for (ImageFile file : imageFiles) {
@@ -69,29 +67,20 @@ public class ImageRepositoryImpl implements ImageRepository {
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
             HttpEntity<LinkedMultiValueMap<String, Object>> requestEntity = new HttpEntity<>(map, headers);
-            response = restTemplate.postForObject(uploadUrl, requestEntity, List.class);
+            response = restTemplate.postForObject(uploadUrl, requestEntity, ResponseItem[].class);
 
         } catch (HttpStatusCodeException e) {
-            throw new ExternalServerException("Failed to save image files");
+            throw new ExternalServerException("Failed to save image files \n" + e);
         }
 
-        return response.stream().map(ResponseItem::getPath).collect(Collectors.toList());
+        return Arrays.asList(response).stream()
+                .map(ResponseItem::getPath).collect(Collectors.toList());
 
     }
 
     @Override
     public void remove(String uri) {
         throw new UnsupportedOperationException();
-    }
-
-    @Data
-    class ResponseItem {
-
-        private String name;
-
-        private String path;
-
-
     }
 
 }

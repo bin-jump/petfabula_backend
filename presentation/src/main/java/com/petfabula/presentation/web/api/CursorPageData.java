@@ -14,7 +14,7 @@ import java.util.List;
 public class CursorPageData<T> {
 
     public static <T> CursorPageData<T> of(List<T> result, boolean hasMore,
-                                           int pageSize, Long nextCursor) {
+                                           int pageSize, Object nextCursor) {
         return new CursorPageData(result, hasMore, pageSize, nextCursor);
     }
 
@@ -24,5 +24,5 @@ public class CursorPageData<T> {
 
     private int pageSize;
 
-    private Long nextCursor;
+    private Object nextCursor;
 }

@@ -17,9 +17,11 @@ import javax.persistence.Table;
         indexes = {@Index(name = "name_index",  columnList="name", unique = true)})
 public class ParticipatorPet extends ConcurrentEntity {
 
-    public ParticipatorPet(Long id, Long participatorId, String name, String photo) {
+    public ParticipatorPet(Long id, Long participatorId, String name,
+                           String photo, PetCategory petCategory) {
         setId(id);
         this.participatorId = participatorId;
+        this.petCategory = petCategory;
         setName(name);
         setPhoto(photo);
     }
@@ -32,6 +34,9 @@ public class ParticipatorPet extends ConcurrentEntity {
 
     @Column(name = "photo", nullable = false)
     private String photo;
+
+    @Column(name = "pet_category", nullable = false)
+    private PetCategory petCategory;
 
     public void setName(String name) {
         EntityValidationUtils.validPetName("name", name);

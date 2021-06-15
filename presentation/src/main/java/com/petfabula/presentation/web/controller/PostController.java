@@ -3,6 +3,8 @@ package com.petfabula.presentation.web.controller;
 import com.petfabula.application.community.PostApplicationService;
 import com.petfabula.domain.aggregate.community.participator.FollowParticipator;
 import com.petfabula.domain.aggregate.community.participator.repository.ParticipatorPetRepository;
+import com.petfabula.domain.aggregate.community.post.PostSearchItem;
+import com.petfabula.domain.aggregate.community.post.PostSearchService;
 import com.petfabula.domain.aggregate.community.post.entity.valueobject.LikePost;
 import com.petfabula.domain.aggregate.community.post.entity.*;
 import com.petfabula.domain.aggregate.community.post.PostMessageKeys;
@@ -10,6 +12,8 @@ import com.petfabula.domain.aggregate.community.post.entity.valueobject.PostTopi
 import com.petfabula.domain.aggregate.community.post.repository.*;
 import com.petfabula.domain.common.image.ImageFile;
 import com.petfabula.domain.common.paging.CursorPage;
+import com.petfabula.domain.common.search.SearchAfterResult;
+import com.petfabula.domain.common.search.SearchQueryRequest;
 import com.petfabula.domain.exception.InvalidOperationException;
 import com.petfabula.domain.exception.NotFoundException;
 import com.petfabula.presentation.facade.assembler.community.*;
@@ -77,6 +81,21 @@ public class PostController {
 
     @Autowired
     private PostTopicRepository postTopicRepository;
+
+    @Autowired
+    private PostSearchService postSearchService;
+
+    @GetMapping("search")
+    public Response<CursorPageData<PostDto>> search(@RequestParam(value = "cursor", required = false) Long after,
+                                                          @RequestParam(value = "q") String q) {
+
+        SearchQueryRequest queryRequest = new SearchQueryRequest(q, DEAULT_PAGE_SIZE, after);
+        SearchAfterResult<PostSearchItem, Long> searchRes = postSearchService.search(queryRequest);
+        CursorPageData<PostDto> res = CursorPageData
+                .of(postAssembler.convertSearchDtos(searchRes.getResult()), searchRes.isHasMore(),
+                        searchRes.getPageSize(), searchRes.getNextCursor());
+        return Response.ok(res);
+    }
 
     @GetMapping("recommends")
     public Response<CursorPageData<PostDto>> getRecommandPosts(@RequestParam(value = "cursor", required = false) Long cursor) {

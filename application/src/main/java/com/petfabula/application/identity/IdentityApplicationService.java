@@ -39,6 +39,22 @@ public class IdentityApplicationService {
     @Autowired
     private DomainEventPublisher domainEventPublisher;
 
+    public void examineEmailCodeRegisterContentAndSendCode(String name, String email) {
+        EntityValidationUtils.validUserName("name", name);
+        UserAccount userAccount = userAccountRepository.findByName(name);
+        if (userAccount != null) {
+            throw new InvalidValueException("name", MessageKey.USER_NAME_ALREADY_EXISTS);
+        }
+        EntityValidationUtils.validEmail("email", email);
+        EmailCodeAuthentication emailCodeAuthentication =
+                emailCodeAuthenticationRepository.findByEmail(email);
+        if (emailCodeAuthentication != null) {
+            throw new InvalidValueException("email", MessageKey.EMAIL_ALREADY_REGISTERED);
+        }
+
+        verificationCodeService.generateAndNotifyWithEmailCodeRegister(email);
+    }
+
     @Transactional
     public UserAccount registerByEmailCode(String name, String email, String code) {
         UserAccount userAccount =
@@ -57,27 +73,11 @@ public class IdentityApplicationService {
         return userAccount;
     }
 
-    public void examineEmailCodeRegisterContentAndSendCode(String name, String email) {
-        EntityValidationUtils.validUserName("name", name);
-        UserAccount userAccount = userAccountRepository.findByName(name);
-        if (userAccount != null) {
-            throw new InvalidValueException("name", MessageKey.USER_NAME_ALREADY_EXISTS);
-        }
-        EntityValidationUtils.validEmail("email", email);
-        EmailCodeAuthentication emailCodeAuthentication =
-                emailCodeAuthenticationRepository.findByEmail(email);
-        if (emailCodeAuthentication != null) {
-            throw new InvalidValueException("email", MessageKey.EMAIL_ALREADY_REGISTERED);
-        }
-
-        verificationCodeService.generateAndNotifyWithEmailCodeRegister(email);
-    }
-
     public void sendEmailCodeLoginCode(String email) {
         authenticateService.generateAndNotifyEmailCodeLoginCode(email);
     }
 
-    @Transactional
+//    @Transactional
     public UserAccount authenticateByEmailCode(String email, String code) {
         return authenticateService.authenticateByEmailCode(email, code);
     }

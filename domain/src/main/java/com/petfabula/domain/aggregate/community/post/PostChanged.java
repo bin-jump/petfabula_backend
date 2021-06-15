@@ -5,27 +5,22 @@ import com.petfabula.domain.aggregate.community.post.entity.Post;
 import com.petfabula.domain.aggregate.community.post.entity.PostImage;
 import com.petfabula.domain.common.domain.DomainEvent;
 import com.petfabula.domain.common.search.SearchImageItem;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 
 @Getter
-public class PostCreated extends DomainEvent {
+public class PostChanged extends DomainEvent {
 
     private PostSearchItem postSearchItem;
 
-    public PostCreated(Post post) {
+    public PostChanged(Post post) {
         SearchImageItem coverImage = null;
         if (post.getImages().size() > 0) {
             PostImage cimg = post.getImages().get(0);
             coverImage = new SearchImageItem(cimg.getUrl(),
                     cimg.getWidth(), cimg.getHeight());
         }
-
-        ParticipatorSearchItem user = ParticipatorSearchItem.builder()
-                .id(post.getParticipator().getId())
-                .name(post.getParticipator().getName())
-                .photo(post.getParticipator().getPhoto())
-                .build();
 
         String petCategory = post.getPetCategory() != null ? post.getPetCategory().toString() : null;
         postSearchItem = PostSearchItem.builder()
@@ -39,7 +34,7 @@ public class PostCreated extends DomainEvent {
                 .viewCount(post.getViewCount())
                 .petCategory(petCategory)
                 .createdDate(post.getCreatedDate())
-                .participator(user)
+                .participator(ParticipatorSearchItem.of(post.getParticipator()))
                 .build();
     }
 }

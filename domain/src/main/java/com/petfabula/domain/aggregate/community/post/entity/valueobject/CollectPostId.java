@@ -6,19 +6,17 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import java.io.Serializable;
 
 @Getter
 @Embeddable
 @NoArgsConstructor
-public class LikePostId extends ValueObject {
+public class CollectPostId extends ValueObject {
 
-    public LikePostId(Long participatorId, Long postId) {
+    public CollectPostId(Long participatorId, Long postId) {
         this.participatorId = participatorId;
         this.postId = postId;
     }
 
-    // participator should comes first for indexing
     @Column(name = "participator_id")
     private Long participatorId;
 

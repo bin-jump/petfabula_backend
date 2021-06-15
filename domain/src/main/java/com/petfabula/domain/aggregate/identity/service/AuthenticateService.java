@@ -54,15 +54,16 @@ public class AuthenticateService {
     }
 
     public UserAccount authenticateByEmailCode(String email, String code) {
-        verificationCodeService.checkEmailCodeRegisterCode(email, code);
+        verificationCodeService.checkEmailLoginCode(email, code);
 
-        EmailPasswordAuthentication emailPasswordAuthentication =
-                emailAuthenticationRepository.findByEmail(email);
-        if (emailPasswordAuthentication == null) {
-            throw new DomainAuthenticationException("email", MessageKey.WRONG_EMAIL_OR_PASSWORD);
+        EmailCodeAuthentication emailCodeAuthentication =
+                emailCodeAuthenticationRepository.findByEmail(email);
+        if (emailCodeAuthentication == null) {
+            throw new DomainAuthenticationException("email", MessageKey.EMAIL_NOT_REGISTERED);
         }
 
-        return userAccountRepository.findById(emailPasswordAuthentication.getId());
+        verificationCodeService.removeEmailLoginCode(email);
+        return userAccountRepository.findById(emailCodeAuthentication.getId());
     }
 
 }

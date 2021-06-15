@@ -54,6 +54,13 @@ spring:
     port: 6379
     timeout: 60000
 
+  data:
+    elasticsearch:
+      cluster-name: elasticsearch
+      host: localhost
+      port: 9300
+      restport: 9200
+
   mail:
     host: smtp.gmail.com
     port: 587
@@ -77,7 +84,7 @@ spring:
 #  password: ftpuser
 #  filepath: /images
 upload:
-  imageUrl: http://localhost:8091
+  imageUrl: http://localhost:80/upload
 
 image:
   contentUrl: http://192.168.0.199/images

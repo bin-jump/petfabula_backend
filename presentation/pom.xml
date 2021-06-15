@@ -58,13 +58,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.modelmapper</groupId>
-            <artifactId>modelmapper</artifactId>
-            <version>2.3.8</version>
-        </dependency>
-
-
-        <dependency>
             <groupId>com.petfabula</groupId>
             <artifactId>application</artifactId>
             <version>0.0.1-SNAPSHOT</version>

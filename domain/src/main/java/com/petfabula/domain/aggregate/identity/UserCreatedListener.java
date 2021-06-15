@@ -12,8 +12,8 @@ public class UserCreatedListener {
     @Autowired
     private VerificationCodeService verificationCodeService;
 
-    @TransactionalEventListener
     @Async
+    @TransactionalEventListener
     public void handleUserCreated(IdentityCreated identityCreated) {
         verificationCodeService.removeEmailCodeRegisterCode(identityCreated.getEmail());
     }

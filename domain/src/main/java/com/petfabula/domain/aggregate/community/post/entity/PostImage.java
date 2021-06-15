@@ -12,17 +12,26 @@ import javax.persistence.*;
 @Table(name = "post_image")
 public class PostImage extends EntityBase {
 
-    public PostImage(String uri, Post post) {
+    public PostImage(Long id, String uri, Post post, Integer w, Integer h) {
+        setId(id);
         this.url = uri;
+        this.width = w;
+        this.height = h;
         setPost(post);
     }
 
-    @Column(name = "url", unique = true)
+    @Column(name = "url", nullable = false)
     private String url;
 
     @ManyToOne
     @JoinColumn(name = "post_id")
     private Post post;
+
+    @Column(name = "width", nullable = false)
+    private Integer width;
+
+    @Column(name = "height", nullable = false)
+    private Integer height;
 
     public void setPost(Post post) {
         this.post = post;

@@ -26,6 +26,7 @@ public class Participator extends ConcurrentEntity {
         followedCount = 0;
         questionCount = 0;
         answerCount = 0;
+        collectCount = 0;
     }
 
     @Column(name = "name", unique = true, nullable = false, length = 32)
@@ -54,6 +55,9 @@ public class Participator extends ConcurrentEntity {
 
     @Column(name = "answer_count", nullable = false)
     private Integer answerCount;
+
+    @Column(name = "collect_count", nullable = false)
+    private Integer collectCount;
 
     public void setName(String name) {
         this.name = name;

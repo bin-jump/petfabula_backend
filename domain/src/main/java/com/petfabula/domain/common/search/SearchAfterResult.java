@@ -5,13 +5,15 @@ import lombok.Getter;
 import java.util.List;
 
 @Getter
-public class SearchAfterResult<K, T> {
+public class SearchAfterResult<T, CR> {
 
-    public SearchAfterResult(K cursor, List<T> result, boolean hasMore, int pageSize) {
+    public SearchAfterResult(CR cursor, List<T> result, boolean hasMore, int pageSize) {
         this.result = result;
         this.hasMore = hasMore;
         this.pageSize = pageSize;
-        this.nextCursor = cursor;
+        if (hasMore) {
+            this.nextCursor = cursor;
+        }
     }
 
     private List<T> result;
@@ -20,5 +22,5 @@ public class SearchAfterResult<K, T> {
 
     private int pageSize;
 
-    private K nextCursor;
+    private CR nextCursor;
 }
