@@ -31,11 +31,11 @@ public class PostCommentReplyRepositoryImpl implements PostCommentReplyRepositor
         Specification<PostCommentReply> spec = new Specification<PostCommentReply>() {
             @Override
             public Predicate toPredicate(Root<PostCommentReply> root, CriteriaQuery<?> cq, CriteriaBuilder cb) {
-                cq.orderBy(cb.desc(root.get("id")));
+                cq.orderBy(cb.asc(root.get("id")));
 
                 Predicate pPred = cb.equal(root.get("postCommentId"), postCommentId);
                 if (cursor != null) {
-                    Predicate cPred = cb.lessThan(root.get("id"), cursor);
+                    Predicate cPred = cb.greaterThan(root.get("id"), cursor);
                     return cb.and(pPred, cPred);
                 }
                 return pPred;

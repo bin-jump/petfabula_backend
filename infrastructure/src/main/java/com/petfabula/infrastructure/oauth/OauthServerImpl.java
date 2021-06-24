@@ -21,7 +21,7 @@ public class OauthServerImpl implements OauthServer {
         for (OauthHandler h : handlers) {
             if (h.support(oauthRequest.getServerName())) {
                 OauthResponse res = h.doAuth(oauthRequest);
-                if (isValid(res)) {
+                if (!isValid(res)) {
                     throw new InvalidOauthException("Can not get necessary information");
                 }
                 return res;

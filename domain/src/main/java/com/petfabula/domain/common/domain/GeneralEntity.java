@@ -12,7 +12,7 @@ import java.time.Instant;
 @Getter
 @MappedSuperclass
 @FilterDef(name = "activeFilter")
-@Filter(name = "activeFilter", condition = "delete_at == null")
+@Filter(name = "activeFilter", condition = "delete_at is null")
 public abstract class GeneralEntity extends EntityBase {
 
     @CreatedDate

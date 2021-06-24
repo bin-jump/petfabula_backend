@@ -7,13 +7,19 @@ import com.petfabula.presentation.facade.assembler.identity.UserAccountAssembler
 import com.petfabula.presentation.facade.dto.identity.*;
 import com.petfabula.presentation.web.api.Response;
 import com.petfabula.presentation.web.authentication.AuthenticationHelper;
+import com.petfabula.presentation.web.authentication.AuthenticationProps;
 import com.petfabula.presentation.web.security.LoginUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mobile.device.Device;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/identity")
 @Validated
@@ -31,6 +37,9 @@ public class IdentityController {
     @Autowired
     private AuthenticationHelper authenticationHelper;
 
+    @Autowired
+    private AuthenticationProps authenticationProps;
+
     @GetMapping("me")
     public Response<UserAccountDto> loginUser() {
         Long userId = LoginUtils.currentUserId();
@@ -46,6 +55,29 @@ public class IdentityController {
     public Response<UserAgreementDto> userAgreement() {
         UserAgreementDto res = new UserAgreementDto("User Agreement", "User agreement content");
         return Response.ok(res);
+    }
+
+    @PostMapping("register-signin-oauth")
+    public Response<UserAccountDto> registerAndLoginByOauth(@Validated @RequestBody OauthRequest request,
+                                                            HttpServletResponse response) {
+        UserAccount userAccount = identityApplicationService
+                .registerOrAuthenticateByOauth(request.getServerName(), request.getCode());
+        UserAccountDto userAccountDto = userAccountAssembler.convertToDto(userAccount);
+        authenticationHelper.loginUser(userAccount, response);
+        return Response.ok(userAccountDto);
+    }
+
+    // for local development
+    @GetMapping("oauth-redirect")
+    public void oauthRedirect(Device device,
+                              HttpServletRequest request,
+                              HttpServletResponse response) throws IOException {
+        String q = request.getQueryString();
+        q = q == null ? "" : "?" + q;
+        String redirectPrefix = device.isMobile() ?
+                authenticationProps.getMobileRedirect() : authenticationProps.getWebRedirect();
+        log.info(String.format("redirect to %s%s", redirectPrefix, q));
+        response.sendRedirect(String.format("%s%s", redirectPrefix, q));
     }
 
     @PostMapping("register-signin-email-code")
@@ -80,13 +112,5 @@ public class IdentityController {
         return Response.ok(userDto);
     }
 
-    @PostMapping("register-signin-oauth")
-    public Response<UserAccountDto> registerAndLoginByOauth(@Validated @RequestBody OauthRequest request,
-                                 HttpServletResponse response) {
-        UserAccount userAccount = identityApplicationService
-                .registerOrAuthenticateByOauth(request.getCode(), request.getServerName().toString());
-        UserAccountDto userAccountDto = userAccountAssembler.convertToDto(userAccount);
-        authenticationHelper.loginUser(userAccount, response);
-        return Response.ok(userAccountDto);
-    }
+
 }

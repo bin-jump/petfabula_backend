@@ -13,7 +13,9 @@ public class OauthService {
     public OauthResponse doOauth(String serverName, String code) {
         EntityValidationUtils.notEmpty("oauthServerName", serverName);
         EntityValidationUtils.notEmpty("oauthCode", code);
-        OauthServerName oauthServerName = OauthServerName.valueOf(serverName.toUpperCase());
+        serverName = serverName.toUpperCase();
+        checkServerName(serverName);
+        OauthServerName oauthServerName = OauthServerName.valueOf(serverName);
 
         OauthRequest request = new OauthRequest(oauthServerName, code);
         OauthResponse response = oauthServer.doOauth(request);
@@ -23,8 +25,20 @@ public class OauthService {
     }
 
     private String formatUserName(String name) {
-        return name.replace(" ", "-")
+        return name.trim()
+                .replace(" ", "-")
                 .replace("　", "-");
+    }
+
+    private void checkServerName(String test) {
+        for (OauthServerName c : OauthServerName.values()) {
+            if (c.name().equals(test)) {
+                return;
+
+            }
+        }
+        throw new RuntimeException("Not a valid oauth server name: " + test);
+
     }
 
 }

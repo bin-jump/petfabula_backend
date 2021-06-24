@@ -30,6 +30,7 @@ public class PostDocument {
                 .coverImage(ImageDocument.of(postSearchItem.getCoverImage()))
                 .version(postSearchItem.getVersion())
                 .likeCount(postSearchItem.getLikeCount())
+                .collectCount(postSearchItem.getCollectCount())
                 .commentCount(postSearchItem.getCommentCount())
                 .viewCount(postSearchItem.getViewCount())
                 .petCategory(postSearchItem.getPetCategory())
@@ -57,6 +58,9 @@ public class PostDocument {
 
     @Field(type = FieldType.Integer)
     private Integer likeCount;
+
+    @Field(type = FieldType.Integer)
+    private Integer collectCount;
 
     @Field(type = FieldType.Integer)
     private Integer commentCount;

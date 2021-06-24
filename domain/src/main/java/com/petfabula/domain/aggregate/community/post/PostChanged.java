@@ -30,6 +30,7 @@ public class PostChanged extends DomainEvent {
                 .coverImage(coverImage)
                 .version(post.getVersion())
                 .likeCount(post.getLikeCount())
+                .collectCount(post.getCollectCount())
                 .commentCount(post.getCommentCount())
                 .viewCount(post.getViewCount())
                 .petCategory(petCategory)

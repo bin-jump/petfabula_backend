@@ -9,9 +9,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class PostTopicDto {
+public class CollectPostResult {
 
-    private Long id;
+    private Long postId;
 
-    private String title;
+    private boolean collected;
 }

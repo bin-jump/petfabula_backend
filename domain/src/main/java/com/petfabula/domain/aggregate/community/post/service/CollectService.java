@@ -25,14 +25,17 @@ public class CollectService {
     private CollectPostRepository collectPostRepository;
 
     public CollectPost collect(Long participatorId, Long postId) {
-        Participator participator = participatorRepository.findById(participatorId);
-        if (participator == null) {
-            throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
-        }
-
         Post post = postRepository.findById(postId);
         if (post == null) {
             throw new InvalidOperationException(PostMessageKeys.POST_NOT_FOUND);
+        }
+        if (post.getParticipator().getId().equals(participatorId)) {
+            throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
+        }
+
+        Participator participator = participatorRepository.findById(participatorId);
+        if (participator == null) {
+            throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
         }
 
         CollectPost collectPost = collectPostRepository.find(participatorId, postId);
@@ -48,15 +51,18 @@ public class CollectService {
         return collectPost;
     }
 
-    public void removeCollect(Long participatorId, Long postId) {
-        Participator participator = participatorRepository.findById(participatorId);
-        if (participator == null) {
-            throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
-        }
-
+    public CollectPost removeCollect(Long participatorId, Long postId) {
         Post post = postRepository.findById(postId);
         if (post == null) {
             throw new InvalidOperationException(PostMessageKeys.POST_NOT_FOUND);
+        }
+        if (post.getParticipator().getId().equals(participatorId)) {
+            throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
+        }
+
+        Participator participator = participatorRepository.findById(participatorId);
+        if (participator == null) {
+            throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
         }
 
         CollectPost collectPost = collectPostRepository.find(participatorId, postId);
@@ -67,5 +73,7 @@ public class CollectService {
             postRepository.save(post);
             participatorRepository.save(participator);
         }
+
+        return collectPost;
     }
 }

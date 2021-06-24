@@ -18,5 +18,5 @@ public class OauthRequest {
     private String code;
 
     @NotNull
-    private OauthServerName serverName;
+    private String serverName;
 }

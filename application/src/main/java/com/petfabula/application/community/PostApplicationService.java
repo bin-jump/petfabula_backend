@@ -3,6 +3,7 @@ package com.petfabula.application.community;
 import com.petfabula.domain.aggregate.community.participator.FollowParticipator;
 import com.petfabula.domain.aggregate.community.participator.service.FollowService;
 import com.petfabula.domain.aggregate.community.post.PostSearchService;
+import com.petfabula.domain.aggregate.community.post.entity.valueobject.CollectPost;
 import com.petfabula.domain.aggregate.community.post.entity.valueobject.LikePost;
 import com.petfabula.domain.aggregate.community.post.entity.*;
 import com.petfabula.domain.aggregate.community.post.service.*;
@@ -27,6 +28,9 @@ public class PostApplicationService {
     @Autowired
     private LikeService likeService;
 
+    @Autowired
+    private CollectService collectService;
+
     @Transactional
     public Post createPost(Long participatorId, String content, Long relatePetId, Long topicId, List<ImageFile> images) {
         return postService.create(participatorId, content, relatePetId, topicId, images);
@@ -48,23 +52,13 @@ public class PostApplicationService {
     }
 
     @Transactional
-    public PostCommentReply createReplyComment(Long participatorId, Long postCommentId, String content) {
-        return postCommentService.createCommentReply(participatorId, postCommentId, content);
+    public PostCommentReply createReplyComment(Long participatorId, Long postCommentId, Long replyToId, String content) {
+        return postCommentService.createCommentReply(participatorId, postCommentId, replyToId, content);
     }
 
     @Transactional
     public PostCommentReply removeCommentReply(Long participatorId, Long commentReplyId) {
         return postCommentService.removeCommentReply(participatorId, commentReplyId);
-    }
-
-    @Transactional
-    public FollowParticipator follow(Long followerId, Long followedId) {
-        return followService.follow(followerId, followedId);
-    }
-
-    @Transactional
-    public FollowParticipator unfollow(Long followerId, Long followedId){
-        return followService.unfollow(followerId, followedId);
     }
 
     @Transactional
@@ -75,6 +69,26 @@ public class PostApplicationService {
     @Transactional
     public LikePost removelikePost(Long participatorId, Long postId) {
         return likeService.removelikePost(participatorId, postId);
+    }
+
+    @Transactional
+    public CollectPost collectPost(Long participatorId, Long postId) {
+        return collectService.collect(participatorId, postId);
+    }
+
+    @Transactional
+    public CollectPost removeCollectPost(Long participatorId, Long postId) {
+        return collectService.removeCollect(participatorId, postId);
+    }
+
+    @Transactional
+    public FollowParticipator follow(Long followerId, Long followedId) {
+        return followService.follow(followerId, followedId);
+    }
+
+    @Transactional
+    public FollowParticipator unfollow(Long followerId, Long followedId){
+        return followService.unfollow(followerId, followedId);
     }
 
 }

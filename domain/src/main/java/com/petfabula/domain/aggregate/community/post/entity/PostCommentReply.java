@@ -15,22 +15,27 @@ import javax.persistence.*;
         indexes = {@Index(name = "post_comment_id_index",  columnList="post_comment_id")})
 public class PostCommentReply extends GeneralEntity {
 
-    public PostCommentReply(Long id, Participator participator, Long postId, Long postCommentId, String content) {
+    public PostCommentReply(Long id, Participator participator, Long postId,
+                            Long postCommentId, Long replyToId, String content) {
         EntityValidationUtils.validStringLendth("content", content, 1, 240);
         setId(id);
         this.content = content;
         this.participator = participator;
         this.postId = postId;
         this.postCommentId = postCommentId;
+        this.replyToId = replyToId;
     }
 
-    @Column(name = "post_id")
+    @Column(name = "post_id", nullable = false)
     private Long postId;
 
-    @Column(name = "post_comment_id")
+    @Column(name = "post_comment_id", nullable = false)
     private Long postCommentId;
 
-    @Column(name = "content")
+    @Column(name = "reply_to_id")
+    private Long replyToId;
+
+    @Column(name = "content", nullable = false)
     private String content;
 
     @ManyToOne(fetch = FetchType.EAGER)

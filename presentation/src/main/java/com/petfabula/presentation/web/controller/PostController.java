@@ -2,12 +2,15 @@ package com.petfabula.presentation.web.controller;
 
 import com.petfabula.application.community.PostApplicationService;
 import com.petfabula.domain.aggregate.community.participator.FollowParticipator;
+import com.petfabula.domain.aggregate.community.participator.repository.FollowParticipatorRepository;
 import com.petfabula.domain.aggregate.community.participator.repository.ParticipatorPetRepository;
 import com.petfabula.domain.aggregate.community.post.PostSearchItem;
 import com.petfabula.domain.aggregate.community.post.PostSearchService;
+import com.petfabula.domain.aggregate.community.post.entity.valueobject.CollectPost;
 import com.petfabula.domain.aggregate.community.post.entity.valueobject.LikePost;
 import com.petfabula.domain.aggregate.community.post.entity.*;
 import com.petfabula.domain.aggregate.community.post.PostMessageKeys;
+import com.petfabula.domain.aggregate.community.post.entity.valueobject.PostTopicCategory;
 import com.petfabula.domain.aggregate.community.post.entity.valueobject.PostTopicRelation;
 import com.petfabula.domain.aggregate.community.post.repository.*;
 import com.petfabula.domain.common.image.ImageFile;
@@ -66,6 +69,12 @@ public class PostController {
 
     @Autowired
     private LikePostRepository likePostRepository;
+
+    @Autowired
+    private CollectPostRepository collectPostRepository;
+
+    @Autowired
+    private FollowParticipatorRepository followParticipatorRepository;
 
     @Autowired
     private PostCommentRepository postCommentRepository;
@@ -145,8 +154,15 @@ public class PostController {
         PostDto res = postAssembler.convertToDto(post);
         Long userId = LoginUtils.currentUserId();
         if (userId != null) {
-            LikePost likePost = likePostRepository.find(postId, userId);
+            LikePost likePost = likePostRepository.find(userId, postId);
             res.setLiked(likePost != null);
+            if (!userId.equals(post.getParticipator().getId())) {
+                CollectPost collectPost = collectPostRepository.find(userId, postId);
+                res.setCollected(collectPost != null);
+                FollowParticipator followParticipator = followParticipatorRepository
+                        .find(userId, post.getParticipator().getId());
+                res.getParticipator().setFollowed(followParticipator != null);
+            }
         }
         if (post.getRelatePetId() != null) {
             res.setParticipatorPet(participtorPetAssembler
@@ -218,7 +234,8 @@ public class PostController {
     public Response<PostCommentReplyDto> createCommentReply(@RequestBody @Validated PostCommentReplyDto postCommentReplyDto) {
         Long userId = LoginUtils.currentUserId();
         PostCommentReply commentReply = postApplicationService
-                .createReplyComment(userId, postCommentReplyDto.getPostCommentId(), postCommentReplyDto.getContent());
+                .createReplyComment(userId, postCommentReplyDto.getPostCommentId(),
+                        postCommentReplyDto.getReplyToId(), postCommentReplyDto.getContent());
         postCommentReplyDto = postCommentReplyAssembler.convertToDto(commentReply);
         return Response.ok(postCommentReplyDto);
     }
@@ -237,28 +254,6 @@ public class PostController {
         CursorPageData<PostCommentReplyDto> res = CursorPageData
                 .of(postCommentReplyAssembler.convertToDtos(replies.getResult()), replies.isHasMore(),
                         replies.getPageSize(), replies.getNextCursor());
-        return Response.ok(res);
-    }
-
-    @PostMapping("authors/{userId}/follow")
-    public Response<FollowResult> followAuthor(@PathVariable("userId") Long participatorId) {
-        Long userId = LoginUtils.currentUserId();
-        FollowParticipator followParticipator = postApplicationService.follow(userId, participatorId);
-        FollowResult res = FollowResult.builder()
-                .authorId(participatorId)
-                .followed(true)
-                .build();
-        return Response.ok(res);
-    }
-
-    @DeleteMapping("authors/{userId}/follow")
-    public Response<FollowResult> unfollowAuthor(@PathVariable("userId") Long participatorId) {
-        Long userId = LoginUtils.currentUserId();
-        FollowParticipator follow = postApplicationService.unfollow(userId, participatorId);
-        FollowResult res = FollowResult.builder()
-                .authorId(participatorId)
-                .followed(false)
-                .build();
         return Response.ok(res);
     }
 
@@ -284,10 +279,55 @@ public class PostController {
         return Response.ok(res);
     }
 
+    @PostMapping("posts/{postId}/collect")
+    public Response<CollectPostResult> collectPost(@PathVariable("postId") Long postId) {
+        Long userId = LoginUtils.currentUserId();
+        postApplicationService.collectPost(userId, postId);
+        CollectPostResult res = CollectPostResult.builder()
+                .postId(postId)
+                .collected(true)
+                .build();
+        return Response.ok(res);
+    }
+
+    @DeleteMapping("posts/{postId}/collect")
+    public Response<CollectPostResult> removeCollectPost(@PathVariable("postId") Long postId) {
+        Long userId = LoginUtils.currentUserId();
+        postApplicationService.removeCollectPost(userId, postId);
+        CollectPostResult res = CollectPostResult.builder()
+                .postId(postId)
+                .collected(false)
+                .build();
+        return Response.ok(res);
+    }
+
+    @PostMapping("participator/{userId}/follow")
+    public Response<FollowResult> followAuthor(@PathVariable("userId") Long participatorId) {
+        Long userId = LoginUtils.currentUserId();
+        FollowParticipator followParticipator = postApplicationService.follow(userId, participatorId);
+        FollowResult res = FollowResult.builder()
+                .participatorId(participatorId)
+                .followed(true)
+                .build();
+        return Response.ok(res);
+    }
+
+    @DeleteMapping("participator/{userId}/follow")
+    public Response<FollowResult> unfollowAuthor(@PathVariable("userId") Long participatorId) {
+        Long userId = LoginUtils.currentUserId();
+        FollowParticipator follow = postApplicationService.unfollow(userId, participatorId);
+        FollowResult res = FollowResult.builder()
+                .participatorId(participatorId)
+                .followed(false)
+                .build();
+        return Response.ok(res);
+    }
+
     @GetMapping("topics")
-    public Response<List<PostTopicDto>> getAllTopics() {
-        List<PostTopic> postTopics = postTopicRepository.findAll();
-        List<PostTopicDto> res = postTopicAssembler.convertToDtos(postTopics);
+    public Response<List<PostTopicCategoryDto>> getAllTopics() {
+        List<PostTopicCategory> postTopicCategories = postTopicRepository.findAll();
+        List<PostTopicCategoryDto> res = postTopicAssembler
+                .convertToDtos(postTopicCategories);
         return Response.ok(res);
     }
 }

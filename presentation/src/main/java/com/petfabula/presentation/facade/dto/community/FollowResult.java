@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class FollowResult {
 
-    private Long authorId;
+    private Long participatorId;
 
     private boolean followed;
 }

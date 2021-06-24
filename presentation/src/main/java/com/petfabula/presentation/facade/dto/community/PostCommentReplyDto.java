@@ -21,6 +21,8 @@ public class PostCommentReplyDto {
     @NotNull
     private Long postCommentId;
 
+    private Long replyToId;
+
     @NotBlank
     private String content;
 

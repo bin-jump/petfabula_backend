@@ -5,6 +5,7 @@ import com.petfabula.domain.aggregate.community.participator.ParticipatorMessage
 import com.petfabula.domain.aggregate.community.participator.entity.Participator;
 import com.petfabula.domain.aggregate.community.participator.repository.FollowParticipatorRepository;
 import com.petfabula.domain.aggregate.community.participator.repository.ParticipatorRepository;
+import com.petfabula.domain.common.CommonMessageKeys;
 import com.petfabula.domain.exception.InvalidOperationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,9 @@ public class FollowService {
     private FollowParticipatorRepository followParticipatorRepository;
 
     public FollowParticipator follow(Long followerId, Long followedId) {
+        if (followedId.equals(followerId)) {
+            throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
+        }
         Participator follower = participatorRepository.findById(followerId);
         if (follower == null) {
             throw new InvalidOperationException(ParticipatorMessageKeys.CANNOT_FOLLOW_PARTICIPATOR);
@@ -43,6 +47,9 @@ public class FollowService {
     }
 
     public FollowParticipator unfollow(Long followerId, Long followedId) {
+        if (followedId.equals(followerId)) {
+            throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
+        }
         Participator follower = participatorRepository.findById(followerId);
         if (follower == null) {
             throw new InvalidOperationException(ParticipatorMessageKeys.CANNOT_UNFOLLOW_PARTICIPATOR);

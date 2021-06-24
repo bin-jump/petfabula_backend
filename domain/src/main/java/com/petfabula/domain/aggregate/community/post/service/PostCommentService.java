@@ -69,7 +69,7 @@ public class PostCommentService {
         return postComment;
     }
 
-    public PostCommentReply createCommentReply(Long participatorId, Long postCommentId, String content) {
+    public PostCommentReply createCommentReply(Long participatorId, Long postCommentId, Long replyToId, String content) {
         Participator participator = participatorRepository.findById(participatorId);
         if (participator == null) {
             throw new InvalidOperationException(PostMessageKeys.CANNOT_CREATE_POST_COMMENT_REPLY);
@@ -84,12 +84,18 @@ public class PostCommentService {
         if (post == null) {
             throw new InvalidOperationException(PostMessageKeys.CANNOT_CREATE_POST_COMMENT_REPLY);
         }
+        if (replyToId != null) {
+            PostCommentReply replyTarget = postCommentReplyRepository.findById(replyToId);
+            if (replyTarget == null) {
+                throw new InvalidOperationException(PostMessageKeys.POST_COMMENT_NOT_FOUND);
+            }
+        }
 
         post.setCommentCount(post.getCommentCount() + 1);
         postComment.setReplyCount(postComment.getReplyCount() + 1);
 
-        PostCommentReply reply = new PostCommentReply(idGenerator.nextId(), participator, postCommentId,
-                postComment.getPostId(), content);
+        PostCommentReply reply = new PostCommentReply(idGenerator.nextId(), participator, postComment.getPostId(),
+                postCommentId, replyToId, content);
         postCommentRepository.save(postComment);
         postRepository.save(post);
 

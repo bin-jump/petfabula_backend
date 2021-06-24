@@ -1,16 +1,19 @@
 package com.petfabula.domain.aggregate.community.post.repository;
 
 import com.petfabula.domain.aggregate.community.post.entity.PostTopic;
+import com.petfabula.domain.aggregate.community.post.entity.valueobject.PostTopicCategory;
 
 import java.util.List;
 
 public interface PostTopicRepository {
 
+    PostTopicCategory save(PostTopicCategory postTopicCategory);
+
     PostTopic save(PostTopic postTopic);
 
-    List<PostTopic> findAll();
+    List<PostTopicCategory> findAll();
 
     PostTopic findById(Long id);
 
-    PostTopic findByTitle(String title);
+    PostTopicCategory findByTitle(String title);
 }

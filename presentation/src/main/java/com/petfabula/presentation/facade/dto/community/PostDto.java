@@ -29,9 +29,13 @@ public class PostDto {
 
     private Integer commentCount;
 
+    private Integer collectCount;
+
     private Long createdDate;
 
     private boolean liked;
+
+    private boolean collected;
 
     private ParticipatorDto participator;
 

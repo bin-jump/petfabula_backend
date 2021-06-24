@@ -5,13 +5,17 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class PostTopicDto {
+public class PostTopicCategoryDto {
 
     private Long id;
 
     private String title;
+
+    private List<PostTopicDto> topics;
 }

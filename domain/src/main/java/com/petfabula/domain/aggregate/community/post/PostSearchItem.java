@@ -27,6 +27,8 @@ public class PostSearchItem {
 
     private Integer likeCount;
 
+    private Integer collectCount;
+
     private Integer commentCount;
 
     private Integer viewCount;
