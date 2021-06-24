@@ -34,7 +34,6 @@ public class Post extends ConcurrentEntity {
             this.relatePetId = pet.getId();
             this.petCategory = pet.getPetCategory();
         }
-
     }
 
     @Column(name = "pet_id")
@@ -59,11 +58,10 @@ public class Post extends ConcurrentEntity {
     private PetCategory petCategory;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "participator_id")
+    @JoinColumn(name = "participator_id", foreignKey = @ForeignKey(name = "none"))
     private Participator participator;
 
-    @OneToMany(mappedBy = "post", cascade=CascadeType.ALL,
-            fetch = FetchType.EAGER,orphanRemoval = true)
+    @OneToMany(mappedBy = "post", fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     private List<PostImage> images = new ArrayList<>();
 
     public void setContent(String content) {
@@ -85,6 +83,10 @@ public class Post extends ConcurrentEntity {
 
     public void setViewCount(Integer viewCount) {
         this.viewCount = viewCount;
+    }
+
+    public void setCollectCount(Integer collectCount) {
+        this.collectCount = collectCount;
     }
 
     public void addImage(PostImage image) {

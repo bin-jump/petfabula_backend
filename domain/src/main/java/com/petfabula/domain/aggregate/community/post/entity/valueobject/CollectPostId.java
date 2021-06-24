@@ -1,16 +1,19 @@
 package com.petfabula.domain.aggregate.community.post.entity.valueobject;
 
 import com.petfabula.domain.common.domain.ValueObject;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import java.io.Serializable;
 
+@EqualsAndHashCode
 @Getter
 @Embeddable
 @NoArgsConstructor
-public class CollectPostId extends ValueObject {
+public class CollectPostId implements Serializable {
 
     public CollectPostId(Long participatorId, Long postId) {
         this.participatorId = participatorId;
@@ -22,9 +25,4 @@ public class CollectPostId extends ValueObject {
 
     @Column(name = "post_id")
     private Long postId;
-
-    @Override
-    protected Object[] getCompareValues() {
-        return new Object[]{this.participatorId, this.postId};
-    }
 }

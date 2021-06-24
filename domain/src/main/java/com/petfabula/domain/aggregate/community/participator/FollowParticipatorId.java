@@ -1,6 +1,7 @@
 package com.petfabula.domain.aggregate.community.participator;
 
 import com.petfabula.domain.common.domain.ValueObject;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -8,10 +9,11 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.io.Serializable;
 
+@EqualsAndHashCode
 @Getter
 @Embeddable
 @NoArgsConstructor
-public class FollowParticipatorId extends ValueObject {
+public class FollowParticipatorId implements Serializable {
 
     public FollowParticipatorId(Long followerId, Long followedId) {
         this.followerId = followerId;
@@ -24,9 +26,4 @@ public class FollowParticipatorId extends ValueObject {
 
     @Column(name = "followed_id")
     private Long followedId;
-
-    @Override
-    protected Object[] getCompareValues() {
-        return new Object[]{this.followedId, this.followerId};
-    }
 }

@@ -24,7 +24,7 @@ public class PostImage extends EntityBase {
     private String url;
 
     @ManyToOne
-    @JoinColumn(name = "post_id")
+    @JoinColumn(name = "post_id", foreignKey = @ForeignKey(name = "none"))
     private Post post;
 
     @Column(name = "width", nullable = false)

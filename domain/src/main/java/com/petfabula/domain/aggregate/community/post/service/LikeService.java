@@ -23,8 +23,8 @@ public class LikeService {
     @Autowired
     private LikePostRepository likePostRepository;
 
-    public LikePost likePost(Long participtorId, Long postId) {
-        Participator participator = participatorRepository.findById(participtorId);
+    public LikePost likePost(Long participatorId, Long postId) {
+        Participator participator = participatorRepository.findById(participatorId);
         if (participator == null) {
             throw new InvalidOperationException(PostMessageKeys.CANNOT_LIKE_POST);
         }
@@ -34,7 +34,7 @@ public class LikeService {
             throw new InvalidOperationException(PostMessageKeys.CANNOT_LIKE_POST);
         }
 
-        LikePost likePost = likePostRepository.find(participtorId, postId);
+        LikePost likePost = likePostRepository.find(participatorId, postId);
         if (likePost == null) {
             post.setLikeCount(post.getLikeCount() + 1);
             likePost = likePostRepository.save(new LikePost(participator, post));
@@ -43,8 +43,8 @@ public class LikeService {
         return likePost;
     }
 
-    public LikePost removelikePost(Long participtorId, Long postId) {
-        Participator participator = participatorRepository.findById(participtorId);
+    public LikePost removelikePost(Long participatorId, Long postId) {
+        Participator participator = participatorRepository.findById(participatorId);
         if (participator == null) {
             throw new InvalidOperationException(PostMessageKeys.CANNOT_REMOVE_LIKE_POST);
         }
@@ -54,7 +54,7 @@ public class LikeService {
             throw new InvalidOperationException(PostMessageKeys.CANNOT_REMOVE_LIKE_POST);
         }
 
-        LikePost likePost = likePostRepository.find(participtorId, postId);
+        LikePost likePost = likePostRepository.find(participatorId, postId);
         if (likePost != null) {
             post.setLikeCount(post.getLikeCount() - 1);
             likePostRepository.remove(likePost);

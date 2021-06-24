@@ -90,4 +90,8 @@ public class Participator extends ConcurrentEntity {
     public void setAnswerCount(Integer answerCount) {
         this.answerCount = answerCount;
     }
+
+    public void setCollectCount(Integer collectCount) {
+        this.collectCount = collectCount;
+    }
 }

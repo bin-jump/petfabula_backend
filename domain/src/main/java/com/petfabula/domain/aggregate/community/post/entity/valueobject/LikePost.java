@@ -5,8 +5,10 @@ import com.petfabula.domain.aggregate.community.post.entity.Post;
 import com.petfabula.domain.aggregate.community.post.entity.valueobject.LikePostId;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
+import java.time.Instant;
 
 @Getter
 @Entity
@@ -24,10 +26,16 @@ public class LikePost {
     private LikePostId likePostId;
 
     @ManyToOne()
+    @JoinColumn(foreignKey = @ForeignKey(name = "none"))
     @MapsId("participatorId")
     private Participator participator;
 
     @ManyToOne()
+    @JoinColumn(foreignKey = @ForeignKey(name = "none"))
     @MapsId("postId")
     private Post post;
+
+    @CreatedDate
+    @Column(name = "created_date", nullable = false, updatable = false)
+    private Instant createdDate = Instant.now();
 }

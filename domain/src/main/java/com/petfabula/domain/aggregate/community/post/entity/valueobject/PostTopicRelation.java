@@ -26,12 +26,12 @@ public class PostTopicRelation {
     private Long postId;
 
     @OneToOne
-    @JoinColumn(name = "post_id", nullable = false)
+    @JoinColumn(name = "post_id", nullable = false, foreignKey = @ForeignKey(name = "none"))
     private Post post;
 
     @OneToOne
     @JoinColumn(name = "post_topic_id", nullable = false,
-            foreignKey = @ForeignKey(name = "none",value = ConstraintMode.NO_CONSTRAINT))
+            foreignKey = @ForeignKey(name = "none", value = ConstraintMode.NO_CONSTRAINT))
     private PostTopic postTopic;
 
 }

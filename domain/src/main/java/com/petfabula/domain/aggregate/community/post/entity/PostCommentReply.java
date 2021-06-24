@@ -34,6 +34,6 @@ public class PostCommentReply extends GeneralEntity {
     private String content;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "participator_id")
+    @JoinColumn(name = "participator_id", foreignKey = @ForeignKey(name = "none"))
     private Participator participator;
 }
