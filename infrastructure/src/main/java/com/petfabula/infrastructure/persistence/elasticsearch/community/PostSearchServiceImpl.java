@@ -49,12 +49,12 @@ public class PostSearchServiceImpl implements PostSearchService {
             SearchRequest searchRequest = new SearchRequest("post");
             SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
             sourceBuilder
-                    .query(QueryBuilders.matchPhraseQuery("content",
+                    .query(QueryBuilders.matchQuery("content",
                             searchQueryRequest.getQuery()));
             sourceBuilder
                     .size(searchQueryRequest.getPageSize())
 //                    .sort("_score", SortOrder.DESC)
-                    .sort("_id", SortOrder.DESC);
+                    .sort("id", SortOrder.DESC);
 
             if (searchQueryRequest.hasCursor()) {
                 sourceBuilder.searchAfter(new Object[]{searchQueryRequest.getCursor()});

@@ -19,7 +19,7 @@ public class PostCommentReplyDto {
     private Long postId;
 
     @NotNull
-    private Long postCommentId;
+    private Long commentId;
 
     private Long replyToId;
 

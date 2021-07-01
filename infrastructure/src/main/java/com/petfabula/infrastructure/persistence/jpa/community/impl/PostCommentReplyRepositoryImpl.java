@@ -33,7 +33,7 @@ public class PostCommentReplyRepositoryImpl implements PostCommentReplyRepositor
             public Predicate toPredicate(Root<PostCommentReply> root, CriteriaQuery<?> cq, CriteriaBuilder cb) {
                 cq.orderBy(cb.asc(root.get("id")));
 
-                Predicate pPred = cb.equal(root.get("postCommentId"), postCommentId);
+                Predicate pPred = cb.equal(root.get("commentId"), postCommentId);
                 if (cursor != null) {
                     Predicate cPred = cb.greaterThan(root.get("id"), cursor);
                     return cb.and(pPred, cPred);

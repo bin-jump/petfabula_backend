@@ -234,7 +234,7 @@ public class PostController {
     public Response<PostCommentReplyDto> createCommentReply(@RequestBody @Validated PostCommentReplyDto postCommentReplyDto) {
         Long userId = LoginUtils.currentUserId();
         PostCommentReply commentReply = postApplicationService
-                .createReplyComment(userId, postCommentReplyDto.getPostCommentId(),
+                .createReplyComment(userId, postCommentReplyDto.getCommentId(),
                         postCommentReplyDto.getReplyToId(), postCommentReplyDto.getContent());
         postCommentReplyDto = postCommentReplyAssembler.convertToDto(commentReply);
         return Response.ok(postCommentReplyDto);

@@ -12,7 +12,7 @@ import javax.persistence.*;
 @Entity
 @NoArgsConstructor
 @Table(name = "post_comment_reply",
-        indexes = {@Index(name = "post_comment_id_index",  columnList="post_comment_id")})
+        indexes = {@Index(name = "post_comment_id_index",  columnList="comment_id")})
 public class PostCommentReply extends GeneralEntity {
 
     public PostCommentReply(Long id, Participator participator, Long postId,
@@ -22,15 +22,15 @@ public class PostCommentReply extends GeneralEntity {
         this.content = content;
         this.participator = participator;
         this.postId = postId;
-        this.postCommentId = postCommentId;
+        this.commentId = postCommentId;
         this.replyToId = replyToId;
     }
 
     @Column(name = "post_id", nullable = false)
     private Long postId;
 
-    @Column(name = "post_comment_id", nullable = false)
-    private Long postCommentId;
+    @Column(name = "comment_id", nullable = false)
+    private Long commentId;
 
     @Column(name = "reply_to_id")
     private Long replyToId;

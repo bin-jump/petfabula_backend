@@ -75,15 +75,6 @@ public class PostService {
         participator.setPostCount(participator.getPostCount() + 1);
         participatorRepository.save(participator);
 
-        if (topicId != null) {
-            PostTopic postTopic = postTopicRepository.findById(topicId);
-            if (postTopic == null) {
-                throw new InvalidOperationException(PostMessageKeys.CANNOT_CREATE_POST);
-            }
-            PostTopicRelation postTopicRelation = new PostTopicRelation(postTopic, post);
-            postTopicRelationRepository.save(postTopicRelation);
-        }
-
         List<String> imagePathes = imageRepository.save(images);
         for (int i = 0; i < imagePathes.size(); i++) {
             String path = imagePathes.get(i);
@@ -94,6 +85,15 @@ public class PostService {
 
         }
         Post savedPost = postRepository.save(post);
+
+        if (topicId != null) {
+            PostTopic postTopic = postTopicRepository.findById(topicId);
+            if (postTopic == null) {
+                throw new InvalidOperationException(PostMessageKeys.CANNOT_CREATE_POST);
+            }
+            PostTopicRelation postTopicRelation = new PostTopicRelation(postTopic, post);
+            postTopicRelationRepository.save(postTopicRelation);
+        }
 
         domainEventPublisher.publish(new PostCreated(savedPost));
         return savedPost;

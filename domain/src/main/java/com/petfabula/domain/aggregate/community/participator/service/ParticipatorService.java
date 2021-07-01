@@ -29,7 +29,7 @@ public class ParticipatorService {
     }
 
     public ParticipatorPet addParticipatorPet(Long petId, Long participatorId, String name, String photo,
-                                              PetCategory petCategory) {
+                                              String petCategory) {
         Participator participator = participatorRepository.findById(participatorId);
         if (participator == null) {
             throw new InvalidOperationException(ParticipatorMessageKeys.CANNOT_ADD_PET);

@@ -15,23 +15,26 @@ import javax.persistence.*;
 public class PostTopicRelation {
 
     public PostTopicRelation(PostTopic postTopic, Post post) {
+        this.postTopicRelationId =
+                new PostTopicRelationId(post.getId(), postTopic.getId());
         this.postTopic = postTopic;
         this.post = post;
+        this.topicCategoryId = postTopic.getTopicCategory().getId();
     }
 
-    // just use postId as primary key,
-    // performance benefit (create by post id order)
-    @Id
-    @Column(name = "post_id", insertable = false, updatable = false)
-    private Long postId;
+    @EmbeddedId
+    private PostTopicRelationId postTopicRelationId;
 
-    @OneToOne
-    @JoinColumn(name = "post_id", nullable = false, foreignKey = @ForeignKey(name = "none"))
+    @Column(name = "topic_category_id", nullable = false)
+    private Long topicCategoryId;
+
+    @ManyToOne()
+    @JoinColumn(foreignKey = @ForeignKey(name = "none"))
+    @MapsId("postId")
     private Post post;
 
-    @OneToOne
-    @JoinColumn(name = "post_topic_id", nullable = false,
-            foreignKey = @ForeignKey(name = "none", value = ConstraintMode.NO_CONSTRAINT))
+    @ManyToOne()
+    @JoinColumn(foreignKey = @ForeignKey(name = "none"))
+    @MapsId("postTopicId")
     private PostTopic postTopic;
-
 }

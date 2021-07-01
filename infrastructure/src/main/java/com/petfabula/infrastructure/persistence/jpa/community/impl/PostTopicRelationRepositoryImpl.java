@@ -32,7 +32,7 @@ public class PostTopicRelationRepositoryImpl implements PostTopicRelationReposit
 
     @Override
     public PostTopicRelation findByPostId(Long postId) {
-        return postTopicRelationJpaRepository.findById(postId).orElse(null);
+        return postTopicRelationJpaRepository.findByPostId(postId);
     }
 
     @Override
@@ -43,6 +43,30 @@ public class PostTopicRelationRepositoryImpl implements PostTopicRelationReposit
                 cq.orderBy(cb.desc(root.get("post").get("id")));
 
                 Predicate pPred = cb.equal(root.get("postTopic").get("id"), topicId);
+                if (cursor != null) {
+                    Predicate cPred = cb.lessThan(root.get("post").get("id"), cursor);
+                    return cb.and(pPred, cPred);
+                }
+                return pPred;
+            }
+        };
+
+        Pageable limit = PageRequest.of(0, size);
+        Page<PostTopicRelation> res = postTopicRelationJpaRepository.findAll(spec, limit);
+        List<Post> posts = res.getContent().stream()
+                .map(PostTopicRelation::getPost).collect(Collectors.toList());
+
+        return CursorPage.of(posts, res.hasNext(), size);
+    }
+
+    @Override
+    public CursorPage<Post> findPostsByTopicCategory(Long topicCategoryId, Long cursor, int size) {
+        Specification<PostTopicRelation> spec = new Specification<PostTopicRelation>() {
+            @Override
+            public Predicate toPredicate(Root<PostTopicRelation> root, CriteriaQuery<?> cq, CriteriaBuilder cb) {
+                cq.orderBy(cb.desc(root.get("post").get("id")));
+
+                Predicate pPred = cb.equal(root.get("topicCategoryId"), topicCategoryId);
                 if (cursor != null) {
                     Predicate cPred = cb.lessThan(root.get("post").get("id"), cursor);
                     return cb.and(pPred, cPred);

@@ -55,7 +55,7 @@ public class Post extends ConcurrentEntity {
     private Integer viewCount;
 
     @Column(name = "pet_category")
-    private PetCategory petCategory;
+    private String petCategory;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "participator_id", foreignKey = @ForeignKey(name = "none"))

@@ -118,7 +118,7 @@ public class PostCommentService {
         }
 
         PostComment postComment = postCommentRepository
-                .findById(commentReply.getPostCommentId());
+                .findById(commentReply.getCommentId());
         if (postComment == null) {
             throw new InvalidOperationException(PostMessageKeys.CANNOT_CREATE_REMOVE_COMMENT_REPLY);
         }
