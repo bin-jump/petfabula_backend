@@ -29,29 +29,35 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain chain) throws IOException, ServletException {
-        String token = request.getHeader(JwtUtils.JWT_HEADER_NAME);
-        if (token == null) {
-            Cookie[] cookies = request.getCookies();
-            if (cookies != null) {
-                for (Cookie cookie : cookies) {
-                    if (JwtUtils.JWT_COOKIE_NAME.equals(cookie.getName())) {
-                        token = cookie.getValue();
+        try{
+
+            String token = request.getHeader(JwtUtils.JWT_HEADER_NAME);
+            if (token == null) {
+                Cookie[] cookies = request.getCookies();
+                if (cookies != null) {
+                    for (Cookie cookie : cookies) {
+                        if (JwtUtils.JWT_COOKIE_NAME.equals(cookie.getName())) {
+                            token = cookie.getValue();
+                        }
                     }
                 }
             }
-        }
-        log.info("jwt token: " + token);
+            log.info("jwt token: " + token);
 
-        LoginUser loginUser = authenticationHelper.loginUserFromToken(token);
-        if (loginUser != null) {
-            // TODO: fill AuthorityList
-            List<SimpleGrantedAuthority> roles = new ArrayList<>();
-            UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(loginUser, null, roles);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            LoginUser loginUser = authenticationHelper.loginUserFromToken(token);
+            if (loginUser != null) {
+                // TODO: fill AuthorityList
+                List<SimpleGrantedAuthority> roles = new ArrayList<>();
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(loginUser, null, roles);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
+
+            chain.doFilter(request, response);
+        } finally {
+            SecurityContextHolder.clearContext();
         }
 
-        chain.doFilter(request, response);
     }
 
 }

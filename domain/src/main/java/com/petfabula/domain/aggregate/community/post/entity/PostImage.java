@@ -9,7 +9,8 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Getter
 @Entity
-@Table(name = "post_image")
+@Table(name = "post_image",
+        indexes = {@Index(name = "post_id_index",  columnList="post_id")})
 public class PostImage extends EntityBase {
 
     public PostImage(Long id, String uri, Post post, Integer w, Integer h) {

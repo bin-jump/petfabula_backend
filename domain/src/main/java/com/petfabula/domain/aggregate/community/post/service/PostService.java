@@ -9,6 +9,7 @@ import com.petfabula.domain.aggregate.community.post.entity.*;
 import com.petfabula.domain.aggregate.community.post.PostMessageKeys;
 import com.petfabula.domain.aggregate.community.post.entity.valueobject.PostTopicRelation;
 import com.petfabula.domain.aggregate.community.post.repository.*;
+import com.petfabula.domain.common.CommonMessageKeys;
 import com.petfabula.domain.common.domain.DomainEventPublisher;
 import com.petfabula.domain.common.image.ImageDimension;
 import com.petfabula.domain.common.image.ImageFile;
@@ -99,10 +100,14 @@ public class PostService {
         return savedPost;
     }
 
-    public Post update(Long postId, String content, Long relatePetId) {
+    public Post update(Long participatorId, Long postId, String content, Long relatePetId) {
         Post post = postRepository.findById(postId);
         if (post == null) {
             throw new NotFoundException(PostMessageKeys.POST_NOT_FOUND);
+        }
+
+        if (!post.getParticipator().getId().equals(participatorId)) {
+            throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
         }
 
         if (relatePetId != null) {

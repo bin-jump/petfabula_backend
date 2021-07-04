@@ -30,6 +30,7 @@ public class Post extends ConcurrentEntity {
         this.commentCount = 0;
         this.collectCount = 0;
         this.viewCount = 0;
+        this.showAll = true;
         if (pet != null) {
             this.relatePetId = pet.getId();
             this.petCategory = pet.getPetCategory();
@@ -53,6 +54,9 @@ public class Post extends ConcurrentEntity {
 
     @Column(name = "view_count", nullable = false)
     private Integer viewCount;
+
+    @Column(name = "show_all", nullable = false)
+    private Boolean showAll;
 
     @Column(name = "pet_category")
     private String petCategory;

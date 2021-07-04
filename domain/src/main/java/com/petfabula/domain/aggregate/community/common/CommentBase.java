@@ -7,20 +7,19 @@ import lombok.Setter;
 
 import javax.persistence.*;
 
-@Setter
 @Getter
 @MappedSuperclass
-public class CommentBase extends GeneralEntity {
+public abstract class CommentBase extends GeneralEntity {
 
     @Column(name = "content")
-    private String content;
+    protected String content;
 
     @Column(name = "reply_count")
-    private Integer replyCount;
+    protected Integer replyCount;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "participator_id", foreignKey = @ForeignKey(name = "none"))
-    private Participator participator;
+    protected Participator participator;
 
     public void setReplyCount(Integer replyCount) {
         this.replyCount = replyCount;

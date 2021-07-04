@@ -7,21 +7,20 @@ import lombok.Setter;
 
 import javax.persistence.*;
 
-@Setter
 @Getter
 @MappedSuperclass
-public class CommentReplyBase extends GeneralEntity {
+public abstract class CommentReplyBase extends GeneralEntity {
 
     @Column(name = "comment_id", nullable = false)
-    private Long commentId;
+    protected Long commentId;
 
     @Column(name = "reply_to_id")
-    private Long replyToId;
+    protected Long replyToId;
 
     @Column(name = "content", nullable = false)
-    private String content;
+    protected String content;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "participator_id", foreignKey = @ForeignKey(name = "none"))
-    private Participator participator;
+    protected Participator participator;
 }
