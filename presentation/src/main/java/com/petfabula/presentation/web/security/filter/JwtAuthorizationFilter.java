@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+// only for jwt
 @Slf4j
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 

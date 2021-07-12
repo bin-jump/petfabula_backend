@@ -5,11 +5,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.Singular;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Data
 @Builder
-public class LoginUser {
+public class LoginUser implements Serializable {
 
     public static LoginUser newInstance(UserAccount userAccount) {
         LoginUser loginUser = LoginUser.builder()

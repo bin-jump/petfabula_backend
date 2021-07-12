@@ -1,6 +1,8 @@
 package com.petfabula.domain.common.domain;
 
-public interface DomainEntity {
+import java.io.Serializable;
+
+public interface DomainEntity extends Serializable {
 
     Long getId();
 }

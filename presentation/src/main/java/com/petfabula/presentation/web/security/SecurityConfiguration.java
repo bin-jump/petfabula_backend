@@ -16,7 +16,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -64,25 +66,33 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .formLogin()
                 .disable()
                 .logout()
-                .logoutUrl("/api/logout")
-                .addLogoutHandler(logoutHandler())
+                .logoutUrl("/api/identity/logout")
+                .addLogoutHandler(new SecurityContextLogoutHandler())
                 .logoutSuccessHandler(logoutSuccessHandler())
                 .and()
-                .addFilterBefore(jwtAuthorizationFilter(), BasicAuthenticationFilter.class)
+//                .addFilterBefore(jwtAuthorizationFilter(), BasicAuthenticationFilter.class)
                 .exceptionHandling()
                 .authenticationEntryPoint(unauthenticatedRequestHandler())
                 .accessDeniedHandler(accessDeniedHandler())
                 .and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
+                //.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .csrf()
                 .disable();
+
+        httpSecurity.sessionManagement().maximumSessions(1);
+
     }
 
     @Bean
-    LogoutHandler logoutHandler() {
-        return new LogoutProcessHandler();
+    public HttpSessionEventPublisher httpSessionEventPublisher()
+    {
+        return new HttpSessionEventPublisher();
     }
+
+//    @Bean
+//    LogoutHandler logoutHandler() {
+//        return new LogoutProcessHandler();
+//    }
 
     @Bean
     LogoutSuccessHandler logoutSuccessHandler() {
@@ -99,10 +109,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return new UnauthorizedRequestHandler();
     }
 
-    @Bean
-    JwtAuthorizationFilter jwtAuthorizationFilter() {
-        return new JwtAuthorizationFilter();
-    }
+//    @Bean
+//    JwtAuthorizationFilter jwtAuthorizationFilter() {
+//        return new JwtAuthorizationFilter();
+//    }
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {

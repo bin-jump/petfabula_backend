@@ -57,16 +57,6 @@ public class IdentityController {
         return Response.ok(res);
     }
 
-    @PostMapping("register-signin-oauth")
-    public Response<UserAccountDto> registerAndLoginByOauth(@Validated @RequestBody OauthRequest request,
-                                                            HttpServletResponse response) {
-        UserAccount userAccount = identityApplicationService
-                .registerOrAuthenticateByOauth(request.getServerName(), request.getCode());
-        UserAccountDto userAccountDto = userAccountAssembler.convertToDto(userAccount);
-        authenticationHelper.loginUser(userAccount, response);
-        return Response.ok(userAccountDto);
-    }
-
     // for local development
     @GetMapping("oauth-redirect")
     public void oauthRedirect(Device device,
@@ -80,13 +70,35 @@ public class IdentityController {
         response.sendRedirect(String.format("%s%s", redirectPrefix, q));
     }
 
+    @PostMapping("register-signin-oauth")
+    public Response<UserAccountDto> registerAndLoginByOauth(@Validated @RequestBody OauthRequest request,
+                                                            HttpServletRequest req, HttpServletResponse response) {
+        UserAccount userAccount = identityApplicationService
+                .registerOrAuthenticateByOauth(request.getServerName(), request.getCode());
+        UserAccountDto userAccountDto = userAccountAssembler.convertToDto(userAccount);
+        authenticationHelper.signin(userAccount, req);
+
+        return Response.ok(userAccountDto);
+    }
+
+    @PostMapping("signin-email-code")
+    public Response<UserAccountDto> loginByEmailCode(@Validated @RequestBody EmailCodeLoginRequest request,
+                                                     HttpServletRequest req, HttpServletResponse response) {
+        UserAccount userAccount = identityApplicationService
+                .authenticateByEmailCode(request.getEmail(), request.getCode());
+        UserAccountDto userDto = userAccountAssembler.convertToDto(userAccount);
+        authenticationHelper.signin(userAccount, req);
+
+        return Response.ok(userDto);
+    }
+
     @PostMapping("register-signin-email-code")
     public Response<UserAccountDto> registerAndloginByEmailCode(@Validated @RequestBody EmailCodeRegisterRequest request,
-                                                        HttpServletResponse response) {
+                                                                HttpServletRequest req, HttpServletResponse response) {
         UserAccount userAccount = identityApplicationService
                 .registerByEmailCode(request.getName(), request.getEmail(), request.getCode());
         UserAccountDto userAccountDto = userAccountAssembler.convertToDto(userAccount);
-        authenticationHelper.loginUser(userAccount, response);
+        authenticationHelper.signin(userAccount, req);
         return Response.ok(userAccountDto);
     }
 
@@ -101,16 +113,4 @@ public class IdentityController {
         identityApplicationService.sendEmailCodeLoginCode(request.getEmail());
         return Response.ok(request.getEmail());
     }
-
-    @PostMapping("signin-email-code")
-    public Response<UserAccountDto> loginByEmailCode(@Validated @RequestBody EmailCodeLoginRequest request,
-                                                    HttpServletResponse response) {
-        UserAccount userAccount = identityApplicationService
-                .authenticateByEmailCode(request.getEmail(), request.getCode());
-        UserAccountDto userDto = userAccountAssembler.convertToDto(userAccount);
-        authenticationHelper.loginUser(userAccount, response);
-        return Response.ok(userDto);
-    }
-
-
 }

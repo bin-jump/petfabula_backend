@@ -80,7 +80,7 @@ public class GlobalExceptionTranslator {
     public Response handleInvalidOperationException(InvalidOperationException ex, HttpServletRequest request) {
         log.error(ex.toString());
         Response res = Response.failed(Response.ResponseCode.BAD_REQUEST);
-        res.setMessage(ex.getMessage());
+        //res.setMessage(ex.getMessage());
 
         return res;
     }
