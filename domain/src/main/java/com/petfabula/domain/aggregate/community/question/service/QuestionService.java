@@ -3,6 +3,7 @@ package com.petfabula.domain.aggregate.community.question.service;
 import com.petfabula.domain.aggregate.community.participator.entity.Participator;
 import com.petfabula.domain.aggregate.community.participator.repository.ParticipatorRepository;
 import com.petfabula.domain.aggregate.community.question.QuestionAnswerCreated;
+import com.petfabula.domain.aggregate.community.question.QuestionCreated;
 import com.petfabula.domain.aggregate.community.question.entity.Question;
 import com.petfabula.domain.aggregate.community.question.entity.QuestionImage;
 import com.petfabula.domain.aggregate.community.question.repository.QuestionRepository;
@@ -60,6 +61,7 @@ public class QuestionService {
         Question saveQuestion = questionRepository.save(question);
 
         domainEventPublisher.publish(new QuestionAnswerCreated(saveQuestion));
+        domainEventPublisher.publish(new QuestionCreated(saveQuestion));
         return saveQuestion;
     }
 

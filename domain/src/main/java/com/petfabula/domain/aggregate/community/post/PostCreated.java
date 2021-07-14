@@ -13,7 +13,10 @@ public class PostCreated extends DomainEvent {
 
     private PostSearchItem postSearchItem;
 
+    private Post post;
+
     public PostCreated(Post post) {
+        this.post = post;
         SearchImageItem coverImage = null;
         if (post.getImages().size() > 0) {
             PostImage cimg = post.getImages().get(0);

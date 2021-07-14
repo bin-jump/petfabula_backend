@@ -11,6 +11,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.*;
 
 import java.time.Instant;
+import java.util.List;
 
 @Data
 @Builder
@@ -24,11 +25,12 @@ public class QuestionAnswerDocument {
 
         QuestionAnswerDocument res = QuestionAnswerDocument.builder()
                 .id(questionAnswerSearchItem.getId())
+                .questionId(questionAnswerSearchItem.getQuestionId())
+                .answerId(questionAnswerSearchItem.getAnswerId())
                 .title(questionAnswerSearchItem.getTitle())
                 .content(questionAnswerSearchItem.getContent())
                 .answerContent(questionAnswerSearchItem.getAnswerContent())
-                .coverImage(ImageDocument.of(questionAnswerSearchItem.getCoverImage()))
-                .version(questionAnswerSearchItem.getVersion())
+                .images(ImageDocument.of(questionAnswerSearchItem.getImages()))
                 .upvoteCount(questionAnswerSearchItem.getUpvoteCount())
                 .commentCount(questionAnswerSearchItem.getCommentCount())
                 .viewCount(questionAnswerSearchItem.getViewCount())
@@ -43,6 +45,12 @@ public class QuestionAnswerDocument {
     @Id
     private Long id;
 
+    @Field(type = FieldType.Long)
+    private Long questionId;
+
+    @Field(type = FieldType.Long)
+    private Long answerId;
+
     @Field(type = FieldType.Text, analyzer = "ja_analyzer")
     private String title;
 
@@ -53,10 +61,7 @@ public class QuestionAnswerDocument {
     private String answerContent;
 
     @Field(type = FieldType.Nested, enabled = false)
-    private ImageDocument coverImage;
-
-    @Field(type = FieldType.Long)
-    private Long version;
+    private List<ImageDocument> images;
 
     @Field(type = FieldType.Integer)
     private Integer upvoteCount;

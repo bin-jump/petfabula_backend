@@ -10,7 +10,7 @@ import com.petfabula.domain.aggregate.community.post.entity.valueobject.CollectP
 import com.petfabula.domain.aggregate.community.post.entity.valueobject.LikePost;
 import com.petfabula.domain.aggregate.community.post.entity.*;
 import com.petfabula.domain.aggregate.community.post.PostMessageKeys;
-import com.petfabula.domain.aggregate.community.post.entity.valueobject.PostTopicCategory;
+import com.petfabula.domain.aggregate.community.post.entity.PostTopicCategory;
 import com.petfabula.domain.aggregate.community.post.entity.valueobject.PostTopicRelation;
 import com.petfabula.domain.aggregate.community.post.repository.*;
 import com.petfabula.domain.common.image.ImageFile;
@@ -58,8 +58,6 @@ public class PostController {
     @Autowired
     private PostApplicationService postApplicationService;
 
-    @Autowired
-    private RecommandPostRepository recommandPostRepository;
 
     @Autowired
     private TimelineRepository timeLineRepository;
@@ -90,30 +88,6 @@ public class PostController {
 
     @Autowired
     private PostTopicRepository postTopicRepository;
-
-    @Autowired
-    private PostSearchService postSearchService;
-
-    @GetMapping("search")
-    public Response<CursorPageData<PostDto>> search(@RequestParam(value = "cursor", required = false) Long after,
-                                                          @RequestParam(value = "q") String q) {
-
-        SearchQueryRequest queryRequest = new SearchQueryRequest(q, DEAULT_PAGE_SIZE, after);
-        SearchAfterResult<PostSearchItem, Long> searchRes = postSearchService.search(queryRequest);
-        CursorPageData<PostDto> res = CursorPageData
-                .of(postAssembler.convertSearchDtos(searchRes.getResult()), searchRes.isHasMore(),
-                        searchRes.getPageSize(), searchRes.getNextCursor());
-        return Response.ok(res);
-    }
-
-    @GetMapping("recommends")
-    public Response<CursorPageData<PostDto>> getRecommandPosts(@RequestParam(value = "cursor", required = false) Long cursor) {
-        CursorPage<Post> posts = recommandPostRepository.findRecentRecommand(cursor, DEAULT_PAGE_SIZE);
-        CursorPageData<PostDto> res = CursorPageData
-                .of(postAssembler.convertToDtos(posts.getResult()), posts.isHasMore(),
-                        posts.getPageSize(), posts.getNextCursor());
-        return Response.ok(res);
-    }
 
     @GetMapping("followed")
     public Response<CursorPageData<PostDto>> geTimelinePosts(@RequestParam(value = "cursor", required = false) Long cursor) {

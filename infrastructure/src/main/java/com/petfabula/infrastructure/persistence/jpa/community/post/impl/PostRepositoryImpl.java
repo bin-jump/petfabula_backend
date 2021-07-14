@@ -13,6 +13,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -23,6 +25,9 @@ public class PostRepositoryImpl implements PostRepository {
 
     @Autowired
     private PostJpaRepository postJpaRepository;
+
+    @PersistenceContext
+    private EntityManager em;
 
     @FilterSoftDelete
     @Transactional
@@ -43,6 +48,7 @@ public class PostRepositoryImpl implements PostRepository {
 
         Pageable limit = PageRequest.of(0, size);
         Page<Post> res = postJpaRepository.findAll(spec, limit);
+
         return CursorPage.of(res.getContent(), res.hasNext(), size);
     }
 

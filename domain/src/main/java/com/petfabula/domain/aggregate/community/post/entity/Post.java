@@ -16,6 +16,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+@NamedEntityGraph(name = "post.all",
+        attributeNodes = {@NamedAttributeNode("participator"), @NamedAttributeNode("images")}
+)
 @NoArgsConstructor
 @Getter
 @Entity
@@ -66,6 +69,7 @@ public class Post extends ConcurrentEntity {
     private Participator participator;
 
     @OneToMany(mappedBy = "post", fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @OrderBy
     private List<PostImage> images = new ArrayList<>();
 
     public void setContent(String content) {

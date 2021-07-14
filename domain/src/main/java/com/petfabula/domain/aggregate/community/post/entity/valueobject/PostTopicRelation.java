@@ -19,7 +19,7 @@ public class PostTopicRelation {
                 new PostTopicRelationId(post.getId(), postTopic.getId());
         this.postTopic = postTopic;
         this.post = post;
-        this.topicCategoryId = postTopic.getTopicCategory().getId();
+        this.topicCategoryId = postTopic.getCategoryId();
     }
 
     @EmbeddedId

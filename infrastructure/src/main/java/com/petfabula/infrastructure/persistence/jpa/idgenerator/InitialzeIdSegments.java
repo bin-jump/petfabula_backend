@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +16,7 @@ import java.util.List;
 
 @Component
 @Slf4j
+@Order(1)
 public class InitialzeIdSegments implements ApplicationRunner {
 
     @Autowired
@@ -24,7 +26,7 @@ public class InitialzeIdSegments implements ApplicationRunner {
     private List<EntityIdGenerator> entityIdGenerators;
 
     @Override
-    public void run(ApplicationArguments args) throws Exception {
+    public void run(ApplicationArguments args) {
 
         List<IdSegment> segments = getServiceIdSegments();
         for(IdSegment segment : segments) {

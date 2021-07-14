@@ -8,6 +8,9 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
+@NamedEntityGraph(name = "postComment.all",
+        attributeNodes = {@NamedAttributeNode("participator")}
+)
 @Getter
 @Entity
 @NoArgsConstructor

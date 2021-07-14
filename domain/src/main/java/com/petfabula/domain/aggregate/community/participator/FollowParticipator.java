@@ -8,6 +8,7 @@ import org.springframework.data.annotation.CreatedDate;
 import javax.persistence.*;
 import java.time.Instant;
 
+@NamedEntityGraph(name = "follow.bare")
 @Getter
 @Entity
 @NoArgsConstructor

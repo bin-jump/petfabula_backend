@@ -1,7 +1,7 @@
 package com.petfabula.domain.aggregate.community.post.repository;
 
 import com.petfabula.domain.aggregate.community.post.entity.PostTopic;
-import com.petfabula.domain.aggregate.community.post.entity.valueobject.PostTopicCategory;
+import com.petfabula.domain.aggregate.community.post.entity.PostTopicCategory;
 
 import java.util.List;
 

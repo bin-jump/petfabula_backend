@@ -11,16 +11,18 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.*;
 
 @Repository
 public class RecommandPostRepositoryImpl implements RecommandPostRepository {
 
     @Autowired
     private PostJpaRepository postJpaRepository;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Override
     public CursorPage<Post> findRecentRecommand(Long cursor, int size) {
@@ -37,6 +39,7 @@ public class RecommandPostRepositoryImpl implements RecommandPostRepository {
                 return null;
             }
         };
+
 
         Pageable limit = PageRequest.of(0, size);
         Page<Post> res = postJpaRepository.findAll(spec, limit);

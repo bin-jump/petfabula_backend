@@ -7,11 +7,17 @@ import com.petfabula.domain.common.validation.EntityValidationUtils;
 import com.petfabula.domain.exception.InvalidOperationException;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+
+@NamedEntityGraph(name = "question.all",
+        attributeNodes = {@NamedAttributeNode("participator"), @NamedAttributeNode("images")}
+)
 @NoArgsConstructor
 @Getter
 @Entity
@@ -45,6 +51,7 @@ public class Question extends ConcurrentEntity {
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "question_id", foreignKey = @ForeignKey(name = "none"))
+    @OrderBy
     private List<QuestionImage> images = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.EAGER)

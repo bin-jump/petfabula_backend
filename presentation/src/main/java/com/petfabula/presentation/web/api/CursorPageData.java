@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class CursorPageData<T> {
@@ -16,6 +15,16 @@ public class CursorPageData<T> {
     public static <T> CursorPageData<T> of(List<T> result, boolean hasMore,
                                            int pageSize, Object nextCursor) {
         return new CursorPageData(result, hasMore, pageSize, nextCursor);
+    }
+
+    public CursorPageData(List<T> result, boolean hasMore,
+                          int pageSize, Object nextCursor) {
+        this.result = result;
+        this.pageSize = pageSize;
+        this.hasMore = hasMore;
+        if (hasMore) {
+            this.nextCursor = nextCursor;
+        }
     }
 
     private List<T> result;

@@ -9,6 +9,10 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
 @Data
@@ -26,6 +30,13 @@ public class ImageDocument {
                 .height(item.getHeight())
                 .build();
         return res;
+    }
+
+    public static List<ImageDocument> of (List<SearchImageItem> items) {
+        return items.stream()
+                .map(ImageDocument::of)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
     @Field(type = FieldType.Keyword)

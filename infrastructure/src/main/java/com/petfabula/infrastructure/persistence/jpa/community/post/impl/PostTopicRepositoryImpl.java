@@ -1,7 +1,7 @@
 package com.petfabula.infrastructure.persistence.jpa.community.post.impl;
 
 import com.petfabula.domain.aggregate.community.post.entity.PostTopic;
-import com.petfabula.domain.aggregate.community.post.entity.valueobject.PostTopicCategory;
+import com.petfabula.domain.aggregate.community.post.entity.PostTopicCategory;
 import com.petfabula.domain.aggregate.community.post.repository.PostTopicRepository;
 import com.petfabula.infrastructure.persistence.jpa.community.post.repository.PostTopicCategoryJpaRepository;
 import com.petfabula.infrastructure.persistence.jpa.community.post.repository.PostTopicJpaRepository;

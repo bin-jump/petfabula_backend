@@ -51,8 +51,9 @@ public class QuestionAnswerSearchServiceImpl implements QuestionAnswerSearchServ
             SearchRequest searchRequest = new SearchRequest("question_answer");
             SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
             sourceBuilder
-                    .query(QueryBuilders.multiMatchQuery("title", "content", "answerContent",
-                            searchQueryRequest.getQuery()));
+                    .query(QueryBuilders.multiMatchQuery(searchQueryRequest.getQuery(),
+                            "title", "content", "answerContent"
+                            ));
             sourceBuilder
                     .size(searchQueryRequest.getPageSize())
 //                    .sort("_score", SortOrder.DESC)

@@ -1,7 +1,7 @@
 package com.petfabula.presentation.facade.assembler.community;
 
 import com.petfabula.domain.aggregate.community.post.entity.PostTopic;
-import com.petfabula.domain.aggregate.community.post.entity.valueobject.PostTopicCategory;
+import com.petfabula.domain.aggregate.community.post.entity.PostTopicCategory;
 import com.petfabula.presentation.facade.dto.community.PostTopicCategoryDto;
 import com.petfabula.presentation.facade.dto.community.PostTopicDto;
 import org.modelmapper.ModelMapper;
