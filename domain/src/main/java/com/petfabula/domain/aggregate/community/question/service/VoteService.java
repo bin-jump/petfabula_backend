@@ -35,6 +35,9 @@ public class VoteService {
     @Autowired
     private AnswerVoteRepository answerVoteRepository;
 
+    @Autowired
+    private QuestionIdGenerator idGenerator;
+
     public UpvoteQuestion upvoteQuestion(Long participatorId, Long questionId) {
         Participator participator = participatorRepository.findById(participatorId);
         if (participator == null) {
@@ -49,7 +52,7 @@ public class VoteService {
         UpvoteQuestion upvoteQuestion = questionVoteRepository
                 .find(participatorId, questionId);
         if (upvoteQuestion == null) {
-            upvoteQuestion = new UpvoteQuestion(participator, question);
+            upvoteQuestion = new UpvoteQuestion(idGenerator.nextId(), participator, question);
             question.setUpvoteCount(question.getUpvoteCount() + 1);
             questionRepository.save(question);
             questionVoteRepository.save(upvoteQuestion);
@@ -72,7 +75,6 @@ public class VoteService {
         UpvoteQuestion upvoteQuestion = questionVoteRepository
                 .find(participatorId, questionId);
         if (upvoteQuestion != null) {
-            upvoteQuestion = new UpvoteQuestion(participator, question);
             question.setUpvoteCount(question.getUpvoteCount() - 1);
             questionRepository.save(question);
             questionVoteRepository.remove(upvoteQuestion);
@@ -95,7 +97,7 @@ public class VoteService {
         UpvoteAnswer upvoteAnswer = answerVoteRepository
                 .find(participatorId, answerId);
         if (upvoteAnswer == null) {
-            upvoteAnswer = new UpvoteAnswer(participator, answer);
+            upvoteAnswer = new UpvoteAnswer(idGenerator.nextId(), participator, answer);
             answer.setUpvoteCount(answer.getUpvoteCount() + 1);
             answerRepository.save(answer);
             answerVoteRepository.save(upvoteAnswer);
@@ -118,7 +120,6 @@ public class VoteService {
         UpvoteAnswer upvoteAnswer = answerVoteRepository
                 .find(participatorId, answerId);
         if (upvoteAnswer != null) {
-            upvoteAnswer = new UpvoteAnswer(participator, answer);
             answer.setUpvoteCount(answer.getUpvoteCount() - 1);
             answerRepository.save(answer);
             answerVoteRepository.remove(upvoteAnswer);

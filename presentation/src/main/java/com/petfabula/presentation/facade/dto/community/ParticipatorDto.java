@@ -25,5 +25,7 @@ public class ParticipatorDto {
 
     private Integer followedCount;
 
+    private Integer petCount;
+
     private boolean followed;
 }

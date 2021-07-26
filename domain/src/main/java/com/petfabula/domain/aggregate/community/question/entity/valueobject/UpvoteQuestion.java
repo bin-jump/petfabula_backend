@@ -2,6 +2,7 @@ package com.petfabula.domain.aggregate.community.question.entity.valueobject;
 
 import com.petfabula.domain.aggregate.community.participator.entity.Participator;
 import com.petfabula.domain.aggregate.community.question.entity.Question;
+import com.petfabula.domain.common.domain.EntityBase;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
@@ -12,27 +13,21 @@ import java.time.Instant;
 @Getter
 @Entity
 @NoArgsConstructor
-@Table(name = "question_like")
-public class UpvoteQuestion {
+@Table(name = "question_like", uniqueConstraints={
+        @UniqueConstraint(columnNames = {"participator_id", "question_id"})})
+public class UpvoteQuestion extends EntityBase {
 
-    public UpvoteQuestion(Participator participator, Question question) {
-        this.upvoteQuestionId = new UpvoteQuestionId(participator.getId(), question.getId());
-        this.participator = participator;
-        this.question = question;
+    public UpvoteQuestion(Long id, Participator participator, Question question) {
+        setId(id);
+        this.participatorId = participator.getId();
+        this.questionId = question.getId();
     }
 
-    @EmbeddedId
-    private UpvoteQuestionId upvoteQuestionId;
+    @Column(name = "participator_id")
+    private Long participatorId;
 
-    @ManyToOne()
-    @JoinColumn(foreignKey = @ForeignKey(name = "none"))
-    @MapsId("participatorId")
-    private Participator participator;
-
-    @ManyToOne()
-    @JoinColumn(foreignKey = @ForeignKey(name = "none"))
-    @MapsId("questionId")
-    private Question question;
+    @Column(name = "question_id")
+    private Long questionId;
 
     @CreatedDate
     @Column(name = "created_date", nullable = false, updatable = false)

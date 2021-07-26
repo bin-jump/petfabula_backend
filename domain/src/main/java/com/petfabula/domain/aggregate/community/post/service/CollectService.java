@@ -24,6 +24,9 @@ public class CollectService {
     @Autowired
     private CollectPostRepository collectPostRepository;
 
+    @Autowired
+    private PostIdGenerator idGenerator;
+
     public CollectPost collect(Long participatorId, Long postId) {
         Post post = postRepository.findById(postId);
         if (post == null) {
@@ -40,7 +43,7 @@ public class CollectService {
 
         CollectPost collectPost = collectPostRepository.find(participatorId, postId);
         if (collectPost == null) {
-            collectPost = new CollectPost(participator, post);
+            collectPost = new CollectPost(idGenerator.nextId(), participator, post);
             collectPost = collectPostRepository.save(collectPost);
             participator.setCollectCount(participator.getCollectCount() + 1);
             post.setCollectCount(post.getCollectCount() + 1);

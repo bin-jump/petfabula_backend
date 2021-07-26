@@ -19,6 +19,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.util.List;
 
 @Repository
 public class PostRepositoryImpl implements PostRepository {
@@ -50,6 +51,11 @@ public class PostRepositoryImpl implements PostRepository {
         Page<Post> res = postJpaRepository.findAll(spec, limit);
 
         return CursorPage.of(res.getContent(), res.hasNext(), size);
+    }
+
+    @Override
+    public List<Post> findByIds(List<Long> ids) {
+        return postJpaRepository.findByIdIn(ids);
     }
 
     @Override

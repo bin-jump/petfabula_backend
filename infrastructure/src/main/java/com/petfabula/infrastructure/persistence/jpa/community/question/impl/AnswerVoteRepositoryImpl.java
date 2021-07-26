@@ -1,7 +1,6 @@
 package com.petfabula.infrastructure.persistence.jpa.community.question.impl;
 
 import com.petfabula.domain.aggregate.community.question.entity.valueobject.UpvoteAnswer;
-import com.petfabula.domain.aggregate.community.question.entity.valueobject.UpvoteAnswerId;
 import com.petfabula.domain.aggregate.community.question.repository.AnswerVoteRepository;
 import com.petfabula.infrastructure.persistence.jpa.community.question.repository.AnswerUpvoteJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,15 +21,13 @@ public class AnswerVoteRepositoryImpl implements AnswerVoteRepository {
 
     @Override
     public UpvoteAnswer find(Long participatorId, Long answerId) {
-        UpvoteAnswerId id = new UpvoteAnswerId(participatorId, answerId);
-        return answerUpvoteJpaRepository.findById(id).orElse(null);
+        return answerUpvoteJpaRepository.findByParticipatorIdAndAnswerId(participatorId, answerId);
     }
 
     @Override
-    public List<UpvoteAnswer> findByIds(List<UpvoteAnswerId> ids) {
-        return answerUpvoteJpaRepository.findAllById(ids);
+    public List<UpvoteAnswer> findByParticipatorIdVoted(Long participatorId, List<Long> answerIds) {
+        return answerUpvoteJpaRepository.findByParticipatorIdAndAnswerIdIn(participatorId, answerIds);
     }
-
 
     @Override
     public void remove(UpvoteAnswer upvoteAnswer) {

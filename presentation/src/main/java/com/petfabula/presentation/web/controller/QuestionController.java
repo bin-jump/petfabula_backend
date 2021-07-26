@@ -3,13 +3,11 @@ package com.petfabula.presentation.web.controller;
 import com.petfabula.application.community.QuestionApplicationService;
 import com.petfabula.domain.aggregate.community.participator.FollowParticipator;
 import com.petfabula.domain.aggregate.community.participator.repository.FollowParticipatorRepository;
-import com.petfabula.domain.aggregate.community.post.entity.Post;
 import com.petfabula.domain.aggregate.community.question.QuestionMessageKeys;
 import com.petfabula.domain.aggregate.community.question.entity.Answer;
 import com.petfabula.domain.aggregate.community.question.entity.AnswerComment;
 import com.petfabula.domain.aggregate.community.question.entity.Question;
 import com.petfabula.domain.aggregate.community.question.entity.valueobject.UpvoteAnswer;
-import com.petfabula.domain.aggregate.community.question.entity.valueobject.UpvoteAnswerId;
 import com.petfabula.domain.aggregate.community.question.entity.valueobject.UpvoteQuestion;
 import com.petfabula.domain.aggregate.community.question.repository.*;
 import com.petfabula.domain.common.image.ImageFile;
@@ -162,14 +160,13 @@ public class QuestionController {
         List<AnswerDto> answerDtos = answerAssembler.convertToDtos(answers.getResult());
         Long userId = LoginUtils.currentUserId();
         if (userId != null) {
-            List<UpvoteAnswerId> upvoteAnswerIds = answers.getResult()
-                    .stream().map(item -> new UpvoteAnswerId(userId, item.getId()))
+            List<Long> answerIds = answers.getResult()
+                    .stream().map(Answer::getId)
                     .collect(Collectors.toList());
             List<UpvoteAnswer> upvoteAnswers = answerVoteRepository
-                    .findByIds(upvoteAnswerIds);
+                    .findByParticipatorIdVoted(userId, answerIds);
             Set<Long> upvotedIds = upvoteAnswers.stream()
-                    .map(UpvoteAnswer::getUpvoteAnswerId)
-                    .map(UpvoteAnswerId::getAnswerId)
+                    .map(UpvoteAnswer::getAnswerId)
                     .collect(Collectors.toSet());
 
             answerDtos.stream().forEach(item -> {

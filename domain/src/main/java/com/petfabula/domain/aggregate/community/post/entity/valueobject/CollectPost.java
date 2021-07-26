@@ -2,6 +2,7 @@ package com.petfabula.domain.aggregate.community.post.entity.valueobject;
 
 import com.petfabula.domain.aggregate.community.participator.entity.Participator;
 import com.petfabula.domain.aggregate.community.post.entity.Post;
+import com.petfabula.domain.common.domain.EntityBase;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
@@ -12,27 +13,21 @@ import java.time.Instant;
 @Getter
 @Entity
 @NoArgsConstructor
-@Table(name = "post_collect")
-public class CollectPost {
+@Table(name = "post_collect", uniqueConstraints={
+        @UniqueConstraint(columnNames = {"participator_id", "post_id"})})
+public class CollectPost extends EntityBase {
 
-    public CollectPost(Participator participator, Post post) {
-        this.collectPostId = new CollectPostId(participator.getId(), post.getId());
-        this.participator = participator;
-        this.post = post;
+    public CollectPost(Long id, Participator participator, Post post) {
+        setId(id);
+        this.participatorId = participator.getId();
+        this.postId = post.getId();
     }
 
-    @EmbeddedId
-    private CollectPostId collectPostId;
+    @Column(name = "participator_id")
+    private Long participatorId;
 
-    @ManyToOne()
-    @JoinColumn(foreignKey = @ForeignKey(name = "none"))
-    @MapsId("participatorId")
-    private Participator participator;
-
-    @ManyToOne()
-    @JoinColumn(foreignKey = @ForeignKey(name = "none"))
-    @MapsId("postId")
-    private Post post;
+    @Column(name = "post_id")
+    private Long postId;
 
     @CreatedDate
     @Column(name = "created_date", nullable = false, updatable = false)

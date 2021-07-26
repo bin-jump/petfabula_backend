@@ -11,7 +11,7 @@ public interface AnswerVoteRepository {
 
     UpvoteAnswer find(Long participatorId, Long answerId);
 
-    List<UpvoteAnswer> findByIds(List<UpvoteAnswerId> ids);
+    List<UpvoteAnswer> findByParticipatorIdVoted(Long participatorId, List<Long> answerIds);
 
     void remove(UpvoteAnswer upvoteAnswer);
 }

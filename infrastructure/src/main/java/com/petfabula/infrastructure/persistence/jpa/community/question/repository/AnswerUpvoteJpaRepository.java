@@ -6,7 +6,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface AnswerUpvoteJpaRepository extends JpaRepository<UpvoteAnswer, UpvoteAnswerId> {
+public interface AnswerUpvoteJpaRepository extends JpaRepository<UpvoteAnswer, Long> {
 
-    List<UpvoteAnswer> findByAnswerIdIn(List<Long> answerIds);
+    UpvoteAnswer findByParticipatorIdAndAnswerId(Long participatorId, Long answerId);
+
+    List<UpvoteAnswer> findByParticipatorIdAndAnswerIdIn(Long participatorId, List<Long> answerIds);
 }

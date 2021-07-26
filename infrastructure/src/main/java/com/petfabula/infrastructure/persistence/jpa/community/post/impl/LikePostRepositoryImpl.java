@@ -1,7 +1,6 @@
 package com.petfabula.infrastructure.persistence.jpa.community.post.impl;
 
 import com.petfabula.domain.aggregate.community.post.entity.valueobject.LikePost;
-import com.petfabula.domain.aggregate.community.post.entity.valueobject.LikePostId;
 import com.petfabula.domain.aggregate.community.post.repository.LikePostRepository;
 import com.petfabula.infrastructure.persistence.jpa.community.post.repository.LikePostJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +14,7 @@ public class LikePostRepositoryImpl implements LikePostRepository {
 
     @Override
     public LikePost find(Long participatorId, Long postId) {
-        LikePostId likePostId = new LikePostId(participatorId, postId);
-        return likePostJpaRepository.findById(likePostId).orElse(null);
+        return likePostJpaRepository.findByParticipatorIdAndPostId(participatorId, postId);
     }
 
     @Override

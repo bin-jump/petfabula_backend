@@ -23,6 +23,9 @@ public class LikeService {
     @Autowired
     private LikePostRepository likePostRepository;
 
+    @Autowired
+    private PostIdGenerator idGenerator;
+
     public LikePost likePost(Long participatorId, Long postId) {
         Participator participator = participatorRepository.findById(participatorId);
         if (participator == null) {
@@ -37,7 +40,7 @@ public class LikeService {
         LikePost likePost = likePostRepository.find(participatorId, postId);
         if (likePost == null) {
             post.setLikeCount(post.getLikeCount() + 1);
-            likePost = likePostRepository.save(new LikePost(participator, post));
+            likePost = likePostRepository.save(new LikePost(idGenerator.nextId(), participator, post));
             postRepository.save(post);
         }
         return likePost;

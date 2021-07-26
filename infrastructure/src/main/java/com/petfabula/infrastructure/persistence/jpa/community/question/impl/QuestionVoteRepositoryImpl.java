@@ -1,7 +1,6 @@
 package com.petfabula.infrastructure.persistence.jpa.community.question.impl;
 
 import com.petfabula.domain.aggregate.community.question.entity.valueobject.UpvoteQuestion;
-import com.petfabula.domain.aggregate.community.question.entity.valueobject.UpvoteQuestionId;
 import com.petfabula.domain.aggregate.community.question.repository.QuestionVoteRepository;
 import com.petfabula.infrastructure.persistence.jpa.community.question.repository.QuestionUpvoteJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +19,7 @@ public class QuestionVoteRepositoryImpl implements QuestionVoteRepository {
 
     @Override
     public UpvoteQuestion find(Long participatorId, Long questionId) {
-        UpvoteQuestionId id = new UpvoteQuestionId(participatorId, questionId);
-        return questionUpvoteJpaRepository.findById(id).orElse(null);
+        return questionUpvoteJpaRepository.findByParticipatorIdAndQuestionId(participatorId, questionId);
     }
 
     @Override
