@@ -1,11 +1,9 @@
 package com.petfabula.presentation.web.controller;
 
 import com.petfabula.application.community.PostApplicationService;
-import com.petfabula.domain.aggregate.community.participator.FollowParticipator;
+import com.petfabula.domain.aggregate.community.participator.entity.FollowParticipator;
 import com.petfabula.domain.aggregate.community.participator.repository.FollowParticipatorRepository;
 import com.petfabula.domain.aggregate.community.participator.repository.ParticipatorPetRepository;
-import com.petfabula.domain.aggregate.community.post.PostSearchItem;
-import com.petfabula.domain.aggregate.community.post.PostSearchService;
 import com.petfabula.domain.aggregate.community.post.entity.valueobject.CollectPost;
 import com.petfabula.domain.aggregate.community.post.entity.valueobject.LikePost;
 import com.petfabula.domain.aggregate.community.post.entity.*;
@@ -15,8 +13,6 @@ import com.petfabula.domain.aggregate.community.post.entity.valueobject.PostTopi
 import com.petfabula.domain.aggregate.community.post.repository.*;
 import com.petfabula.domain.common.image.ImageFile;
 import com.petfabula.domain.common.paging.CursorPage;
-import com.petfabula.domain.common.search.SearchAfterResult;
-import com.petfabula.domain.common.search.SearchQueryRequest;
 import com.petfabula.domain.exception.InvalidOperationException;
 import com.petfabula.domain.exception.NotFoundException;
 import com.petfabula.presentation.facade.assembler.community.*;

@@ -19,6 +19,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -26,9 +27,6 @@ public class PostRepositoryImpl implements PostRepository {
 
     @Autowired
     private PostJpaRepository postJpaRepository;
-
-    @PersistenceContext
-    private EntityManager em;
 
     @FilterSoftDelete
     @Transactional
@@ -55,6 +53,9 @@ public class PostRepositoryImpl implements PostRepository {
 
     @Override
     public List<Post> findByIds(List<Long> ids) {
+        if (ids.size() == 0) {
+            return new ArrayList<>();
+        }
         return postJpaRepository.findByIdIn(ids);
     }
 

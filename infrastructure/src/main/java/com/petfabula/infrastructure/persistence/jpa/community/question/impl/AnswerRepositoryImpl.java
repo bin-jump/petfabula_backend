@@ -17,6 +17,8 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.util.ArrayList;
+import java.util.List;
 
 @Repository
 public class AnswerRepositoryImpl implements AnswerRepository {
@@ -34,6 +36,14 @@ public class AnswerRepositoryImpl implements AnswerRepository {
     @Override
     public Answer findById(Long answerId) {
         return answerJpaRepository.findById(answerId).orElse(null);
+    }
+
+    @Override
+    public List<Answer> findByIds(List<Long> ids) {
+        if (ids.size() == 0) {
+            return new ArrayList<>();
+        }
+        return answerJpaRepository.findByIdIn(ids);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.petfabula.infrastructure.persistence.jpa.community.post.repository;
+package com.petfabula.infrastructure.persistence.jpa.community.participator.repository;
 
 import com.petfabula.domain.aggregate.community.participator.entity.ParticipatorPet;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,5 +1,9 @@
 package com.petfabula.application.community;
 
+import com.petfabula.application.event.AnswerCommentCreateEvent;
+import com.petfabula.application.event.AnswerCreateEvent;
+import com.petfabula.application.event.IntegratedEventPublisher;
+import com.petfabula.application.event.QuestionLikedEvent;
 import com.petfabula.domain.aggregate.community.question.entity.Answer;
 import com.petfabula.domain.aggregate.community.question.entity.AnswerComment;
 import com.petfabula.domain.aggregate.community.question.entity.AnswerCommentReply;
@@ -32,6 +36,9 @@ public class QuestionApplicationService {
     @Autowired
     private VoteService voteService;
 
+    @Autowired
+    private IntegratedEventPublisher eventPublisher;
+
     @Transactional
     public Question createQuestion(Long participatorId, String title,
                                    String content, List<ImageFile> images) {
@@ -51,12 +58,17 @@ public class QuestionApplicationService {
 
     @Transactional
     public Answer createAnswer(Long participatorId, Long questionId, String content, List<ImageFile> images) {
-        return answerService.create(participatorId, questionId, content, images);
+        Answer answer =
+                answerService.create(participatorId, questionId, content, images);
+        eventPublisher.publish(new AnswerCreateEvent(answer));
+        return answer;
     }
 
     @Transactional
     public Answer updateAnswer(Long participatorId, Long answerId, String content) {
-        return answerService.update(participatorId, answerId, content);
+        Answer answer = answerService.update(participatorId, answerId, content);
+        eventPublisher.publish(new AnswerCreateEvent(answer));
+        return answer;
     }
 
     @Transactional
@@ -66,7 +78,10 @@ public class QuestionApplicationService {
 
     @Transactional
     public AnswerComment createAnswerComment(Long participatorId, Long answerId, Long replyTo, String content) {
-        return answerCommentService.createAnswerComment(participatorId, answerId, replyTo, content);
+        AnswerComment answerComment =
+                answerCommentService.createAnswerComment(participatorId, answerId, replyTo, content);
+        eventPublisher.publish(new AnswerCommentCreateEvent(answerComment));
+        return answerComment;
     }
 
     @Transactional
@@ -86,7 +101,9 @@ public class QuestionApplicationService {
 
     @Transactional
     public UpvoteQuestion upvoteQuestion(Long participatorId, Long questionId) {
-        return voteService.upvoteQuestion(participatorId, questionId);
+        UpvoteQuestion upvoteQuestion =  voteService.upvoteQuestion(participatorId, questionId);
+        eventPublisher.publish(new QuestionLikedEvent(questionId, participatorId));
+        return upvoteQuestion;
     }
 
     @Transactional

@@ -9,9 +9,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.lang.Nullable;
 
+import java.util.List;
+
 public interface PostCommentJpaRepository extends JpaRepository<PostComment, Long>, JpaSpecificationExecutor {
 
     @EntityGraph(value = "postComment.all")
     @Override
     Page<PostComment> findAll(@Nullable Specification var1, Pageable var2);
+
+    @EntityGraph(value = "postComment.all")
+    List<PostComment> findByIdIn(List<Long> ids);
 }

@@ -17,14 +17,18 @@ import javax.persistence.*;
 public class AnswerComment extends GeneralEntity {
 
     public AnswerComment(Long id, Participator participator,
-                         Long answerId, Long replyTo, String content) {
+                         Long answerId, Long questionId, Long replyTo, String content) {
         EntityValidationUtils.validStringLendth("content", content, 1, 240);
         setId(id);
         this.content = content;
         this.participator = participator;
+        this.questionId = questionId;
         this.answerId = answerId;
         this.replyTo = replyTo;
     }
+
+    @Column(name = "question_id", nullable = false)
+    private Long questionId;
 
     @Column(name = "content")
     private String content;

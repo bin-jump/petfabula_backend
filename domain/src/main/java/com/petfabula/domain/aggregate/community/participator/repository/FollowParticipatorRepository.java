@@ -1,6 +1,6 @@
 package com.petfabula.domain.aggregate.community.participator.repository;
 
-import com.petfabula.domain.aggregate.community.participator.FollowParticipator;
+import com.petfabula.domain.aggregate.community.participator.entity.FollowParticipator;
 import com.petfabula.domain.aggregate.community.participator.entity.Participator;
 import com.petfabula.domain.common.paging.CursorPage;
 

@@ -3,11 +3,15 @@ package com.petfabula.domain.aggregate.community.question.repository;
 import com.petfabula.domain.aggregate.community.question.entity.Answer;
 import com.petfabula.domain.common.paging.CursorPage;
 
+import java.util.List;
+
 public interface AnswerRepository {
 
     Answer save(Answer answer);
 
     Answer findById(Long answerId);
+
+    List<Answer> findByIds(List<Long> ids);
 
     void remove(Answer answer);
 

@@ -45,7 +45,8 @@ public class AnswerCommentService {
         }
 
         AnswerComment answerComment =
-                new AnswerComment(idGenerator.nextId(), participator, answerId, replyTo, content);
+                new AnswerComment(idGenerator.nextId(), participator, answerId,
+                        answer.getQuestionId(), replyTo, content);
         answer.setCommentCount(answer.getCommentCount() + 1);
         answerRepository.save(answer);
 

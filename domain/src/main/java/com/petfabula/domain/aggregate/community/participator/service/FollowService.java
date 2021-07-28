@@ -1,10 +1,11 @@
 package com.petfabula.domain.aggregate.community.participator.service;
 
-import com.petfabula.domain.aggregate.community.participator.FollowParticipator;
+import com.petfabula.domain.aggregate.community.participator.entity.FollowParticipator;
 import com.petfabula.domain.aggregate.community.participator.ParticipatorMessageKeys;
 import com.petfabula.domain.aggregate.community.participator.entity.Participator;
 import com.petfabula.domain.aggregate.community.participator.repository.FollowParticipatorRepository;
 import com.petfabula.domain.aggregate.community.participator.repository.ParticipatorRepository;
+import com.petfabula.domain.aggregate.community.post.service.PostIdGenerator;
 import com.petfabula.domain.common.CommonMessageKeys;
 import com.petfabula.domain.exception.InvalidOperationException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,9 @@ public class FollowService {
 
     @Autowired
     private FollowParticipatorRepository followParticipatorRepository;
+
+    @Autowired
+    private PostIdGenerator idGenerator;
 
     public FollowParticipator follow(Long followerId, Long followedId) {
         if (followedId.equals(followerId)) {
@@ -35,7 +39,7 @@ public class FollowService {
 
         FollowParticipator followParticipator = followParticipatorRepository.find(followerId, followedId);
         if (followParticipator == null) {
-            followParticipator = new FollowParticipator(follower, followed);
+            followParticipator = new FollowParticipator(idGenerator.nextId(), follower, followed);
             follower.setFollowedCount(follower.getFollowedCount() + 1);
             followed.setFollowerCount(followed.getFollowerCount() + 1);
             participatorRepository.save(follower);

@@ -1,8 +1,8 @@
 package com.petfabula.application.community;
 
-import com.petfabula.domain.aggregate.community.participator.FollowParticipator;
+import com.petfabula.application.event.*;
+import com.petfabula.domain.aggregate.community.participator.entity.FollowParticipator;
 import com.petfabula.domain.aggregate.community.participator.service.FollowService;
-import com.petfabula.domain.aggregate.community.post.PostSearchService;
 import com.petfabula.domain.aggregate.community.post.entity.valueobject.CollectPost;
 import com.petfabula.domain.aggregate.community.post.entity.valueobject.LikePost;
 import com.petfabula.domain.aggregate.community.post.entity.*;
@@ -31,6 +31,9 @@ public class PostApplicationService {
     @Autowired
     private CollectService collectService;
 
+    @Autowired
+    private IntegratedEventPublisher eventPublisher;
+
     @Transactional
     public Post createPost(Long participatorId, String content, Long relatePetId, Long topicId, List<ImageFile> images) {
         return postService.create(participatorId, content, relatePetId, topicId, images);
@@ -43,7 +46,10 @@ public class PostApplicationService {
 
     @Transactional
     public PostComment createPostComment(Long participatorId, Long postId, String content) {
-        return postCommentService.createPostComment(participatorId, postId, content);
+        PostComment postComment =
+                postCommentService.createPostComment(participatorId, postId, content);
+        eventPublisher.publish(new PostCommentCreateEvent(postComment));
+        return postComment;
     }
 
     @Transactional
@@ -53,7 +59,10 @@ public class PostApplicationService {
 
     @Transactional
     public PostCommentReply createReplyComment(Long participatorId, Long postCommentId, Long replyToId, String content) {
-        return postCommentService.createCommentReply(participatorId, postCommentId, replyToId, content);
+        PostCommentReply commentReply =
+                postCommentService.createCommentReply(participatorId, postCommentId, replyToId, content);
+        eventPublisher.publish(new PostCommentReplyCreateEvent(commentReply));
+        return commentReply;
     }
 
     @Transactional
@@ -63,7 +72,10 @@ public class PostApplicationService {
 
     @Transactional
     public LikePost likePost(Long participatorId, Long postId) {
-        return likeService.likePost(participatorId, postId);
+        LikePost likePost = likeService.likePost(participatorId, postId);
+        eventPublisher.publish(new PostLikedEvent(likePost.getPostId(), participatorId));
+
+        return likePost;
     }
 
     @Transactional
@@ -83,7 +95,11 @@ public class PostApplicationService {
 
     @Transactional
     public FollowParticipator follow(Long followerId, Long followedId) {
-        return followService.follow(followerId, followedId);
+        FollowParticipator followParticipator = followService.follow(followerId, followedId);
+        eventPublisher.publish(new ParticipatorFollowEvent(followParticipator.getFollowerId(),
+                followParticipator.getFollowedId()));
+
+        return followParticipator;
     }
 
     @Transactional

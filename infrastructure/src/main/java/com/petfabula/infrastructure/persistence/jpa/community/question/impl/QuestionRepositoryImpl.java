@@ -17,6 +17,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -39,6 +40,9 @@ public class QuestionRepositoryImpl implements QuestionRepository {
 
     @Override
     public List<Question> findByIds(List<Long> ids) {
+        if (ids.size() == 0) {
+            return new ArrayList<>();
+        }
         return questionJpaRepository.findAllById(ids);
     }
 

@@ -1,7 +1,7 @@
 package com.petfabula.presentation.web.controller;
 
 import com.petfabula.application.community.QuestionApplicationService;
-import com.petfabula.domain.aggregate.community.participator.FollowParticipator;
+import com.petfabula.domain.aggregate.community.participator.entity.FollowParticipator;
 import com.petfabula.domain.aggregate.community.participator.repository.FollowParticipatorRepository;
 import com.petfabula.domain.aggregate.community.question.QuestionMessageKeys;
 import com.petfabula.domain.aggregate.community.question.entity.Answer;
@@ -29,9 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @RestController

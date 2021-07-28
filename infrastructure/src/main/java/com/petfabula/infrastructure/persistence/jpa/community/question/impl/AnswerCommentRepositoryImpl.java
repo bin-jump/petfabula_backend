@@ -17,6 +17,8 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.util.ArrayList;
+import java.util.List;
 
 @Repository
 public class AnswerCommentRepositoryImpl implements AnswerCommentRepository {
@@ -44,6 +46,14 @@ public class AnswerCommentRepositoryImpl implements AnswerCommentRepository {
         Pageable limit = PageRequest.of(0, size);
         Page<AnswerComment> res = answerCommentJpaRepository.findAll(spec, limit);
         return CursorPage.of(res.getContent(), res.hasNext(), size);
+    }
+
+    @Override
+    public List<AnswerComment> findByIds(List<Long> ids) {
+        if (ids.size() == 0) {
+            return new ArrayList<>();
+        }
+        return answerCommentJpaRepository.findByIdIn(ids);
     }
 
     @FilterSoftDelete

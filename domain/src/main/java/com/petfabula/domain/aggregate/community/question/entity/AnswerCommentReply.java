@@ -11,11 +11,11 @@ import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.Table;
 
-@Getter
-@Entity
-@NoArgsConstructor
-@Table(name = "answer_comment_reply",
-        indexes = {@Index(name = "comment_id_index",  columnList="comment_id")})
+//@Getter
+//@Entity
+//@NoArgsConstructor
+//@Table(name = "answer_comment_reply",
+//        indexes = {@Index(name = "comment_id_index",  columnList="comment_id")})
 public class AnswerCommentReply extends CommentReplyBase {
 
     public AnswerCommentReply(Long id, Participator participator, Long answerId,

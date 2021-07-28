@@ -3,10 +3,8 @@ package com.petfabula.presentation.web.controller;
 import com.petfabula.domain.aggregate.community.post.entity.Post;
 import com.petfabula.domain.aggregate.community.question.entity.Question;
 import com.petfabula.domain.aggregate.community.recommendation.PostRecommendationService;
-import com.petfabula.domain.aggregate.community.recommendation.QuestionRecommendation;
 import com.petfabula.domain.aggregate.community.recommendation.QuestionRecommendationService;
 import com.petfabula.domain.aggregate.community.recommendation.RecommendationResult;
-import com.petfabula.domain.common.paging.CursorPage;
 import com.petfabula.domain.exception.InvalidOperationException;
 import com.petfabula.presentation.facade.assembler.community.PostAssembler;
 import com.petfabula.presentation.facade.assembler.community.QuestionAssembler;
@@ -21,9 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 @RestController
 @RequestMapping("/api/recommend")

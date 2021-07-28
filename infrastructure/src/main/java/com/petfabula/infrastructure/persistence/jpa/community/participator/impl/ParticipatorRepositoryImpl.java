@@ -1,12 +1,15 @@
-package com.petfabula.infrastructure.persistence.jpa.community.post.impl;
+package com.petfabula.infrastructure.persistence.jpa.community.participator.impl;
 
 import com.petfabula.domain.aggregate.community.participator.entity.Participator;
 import com.petfabula.domain.aggregate.community.participator.repository.ParticipatorRepository;
 import com.petfabula.infrastructure.persistence.jpa.annotation.FilterSoftDelete;
-import com.petfabula.infrastructure.persistence.jpa.community.post.repository.ParticipatorJpaRepository;
+import com.petfabula.infrastructure.persistence.jpa.community.participator.repository.ParticipatorJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Repository
 public class ParticipatorRepositoryImpl implements ParticipatorRepository {
@@ -24,5 +27,13 @@ public class ParticipatorRepositoryImpl implements ParticipatorRepository {
     @Override
     public Participator findById(Long id) {
         return participatorJpaRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public List<Participator> findByIds(List<Long> ids) {
+        if (ids.size() == 0) {
+            return new ArrayList<>();
+        }
+        return participatorJpaRepository.findByIdIn(ids);
     }
 }

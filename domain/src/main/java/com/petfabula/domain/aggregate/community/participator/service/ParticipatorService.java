@@ -3,7 +3,6 @@ package com.petfabula.domain.aggregate.community.participator.service;
 import com.petfabula.domain.aggregate.community.participator.ParticipatorMessageKeys;
 import com.petfabula.domain.aggregate.community.participator.entity.Participator;
 import com.petfabula.domain.aggregate.community.participator.entity.ParticipatorPet;
-import com.petfabula.domain.aggregate.community.participator.entity.PetCategory;
 import com.petfabula.domain.aggregate.community.participator.repository.ParticipatorPetRepository;
 import com.petfabula.domain.aggregate.community.participator.repository.ParticipatorRepository;
 import com.petfabula.domain.exception.InvalidOperationException;

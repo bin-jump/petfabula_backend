@@ -17,6 +17,8 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.util.ArrayList;
+import java.util.List;
 
 @Repository
 public class PostCommentRepositoryImpl implements PostCommentRepository {
@@ -53,6 +55,14 @@ public class PostCommentRepositoryImpl implements PostCommentRepository {
     @Override
     public PostComment findById(Long id) {
         return postCommentJpaRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public List<PostComment> findByIds(List<Long> ids) {
+        if (ids.size() == 0) {
+            return new ArrayList<>();
+        }
+        return postCommentJpaRepository.findByIdIn(ids);
     }
 
     @Override

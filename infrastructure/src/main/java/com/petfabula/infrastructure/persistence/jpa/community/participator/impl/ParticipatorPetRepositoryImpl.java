@@ -1,9 +1,9 @@
-package com.petfabula.infrastructure.persistence.jpa.community.post.impl;
+package com.petfabula.infrastructure.persistence.jpa.community.participator.impl;
 
 import com.petfabula.domain.aggregate.community.participator.entity.ParticipatorPet;
 import com.petfabula.domain.aggregate.community.participator.repository.ParticipatorPetRepository;
 import com.petfabula.infrastructure.persistence.jpa.annotation.FilterSoftDelete;
-import com.petfabula.infrastructure.persistence.jpa.community.post.repository.ParticipatorPetJpaRepository;
+import com.petfabula.infrastructure.persistence.jpa.community.participator.repository.ParticipatorPetJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;

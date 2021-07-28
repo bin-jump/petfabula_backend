@@ -58,6 +58,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authenticated()
                 .antMatchers(HttpMethod.GET,"/api/participator/profile")
                 .authenticated()
+                .antMatchers(HttpMethod.GET,"/api/notification/**")
+                .authenticated()
 
                 .antMatchers(HttpMethod.GET,"/api/**")
                 .permitAll()

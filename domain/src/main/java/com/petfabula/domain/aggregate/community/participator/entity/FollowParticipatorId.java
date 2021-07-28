@@ -1,4 +1,4 @@
-package com.petfabula.domain.aggregate.community.participator;
+package com.petfabula.domain.aggregate.community.participator.entity;
 
 import com.petfabula.domain.common.domain.ValueObject;
 import lombok.EqualsAndHashCode;
