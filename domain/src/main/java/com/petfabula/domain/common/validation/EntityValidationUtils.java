@@ -5,6 +5,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.apache.commons.validator.routines.RegexValidator;
 
+import java.time.LocalDate;
+
 public abstract class EntityValidationUtils {
 
     private static final EmailValidator emailValidator = EmailValidator.getInstance();
@@ -62,6 +64,12 @@ public abstract class EntityValidationUtils {
     public static void validStringLendth(String fieldName, String value, int min, int max) {
         if (StringUtils.length(value) < min || StringUtils.length(value) > max) {
             throw new InvalidValueException(fieldName, MessageKey.INVALID_STRING_LEGNTH);
+        }
+    }
+
+    public static void validBirthday(String fieldName, LocalDate value) {
+        if (!value.isAfter(LocalDate.now())) {
+            throw new InvalidValueException(fieldName, MessageKey.INVALID_BIRTHDAY);
         }
     }
 }

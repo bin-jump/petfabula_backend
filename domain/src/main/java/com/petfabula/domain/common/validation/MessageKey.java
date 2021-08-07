@@ -17,4 +17,6 @@ public interface MessageKey {
     String INVALID_PET_NAME_PATTERN = "validation.invalidPetNamePattern";
 
     String INVALID_STRING_LEGNTH = "validation.invalidStringLength";
+
+    String INVALID_BIRTHDAY = "validation.invalidBirthday";
 }

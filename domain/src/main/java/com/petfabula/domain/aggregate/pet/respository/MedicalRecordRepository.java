@@ -1,0 +1,15 @@
+package com.petfabula.domain.aggregate.pet.respository;
+
+import com.petfabula.domain.aggregate.pet.entity.MedicalRecord;
+import com.petfabula.domain.common.paging.CursorPage;
+
+public interface MedicalRecordRepository {
+
+    MedicalRecord save(MedicalRecord medicalRecord);
+
+    MedicalRecord findById(Long id);
+
+    CursorPage<MedicalRecord> findByPetId(Long petId, Long cursor, int size);
+
+    void remove(MedicalRecord medicalRecord);
+}

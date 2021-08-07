@@ -2,7 +2,6 @@ package com.petfabula.domain.aggregate.community.post.entity;
 
 import com.petfabula.domain.aggregate.community.participator.entity.Participator;
 import com.petfabula.domain.aggregate.community.participator.entity.ParticipatorPet;
-import com.petfabula.domain.aggregate.community.participator.entity.PetCategory;
 import com.petfabula.domain.aggregate.community.post.PostMessageKeys;
 import com.petfabula.domain.common.domain.ConcurrentEntity;
 import com.petfabula.domain.common.validation.EntityValidationUtils;
@@ -12,9 +11,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @NamedEntityGraph(name = "post.all",
         attributeNodes = {@NamedAttributeNode("participator"), @NamedAttributeNode("images")}
