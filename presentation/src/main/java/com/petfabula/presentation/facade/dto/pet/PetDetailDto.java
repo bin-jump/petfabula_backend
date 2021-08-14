@@ -36,10 +36,13 @@ public class PetDetailDto {
 
     private Double weight;
 
-    @NotNull
+    private Long categoryId;
+
     private String category;
 
     @NotNull
+    private Long breedId;
+
     private String breed;
 
     private String bio;

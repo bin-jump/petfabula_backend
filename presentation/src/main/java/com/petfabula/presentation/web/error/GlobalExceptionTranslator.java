@@ -38,7 +38,7 @@ public class GlobalExceptionTranslator {
     public Response handleInvalidValueException(InvalidValueException ex, HttpServletRequest request) {
         log.error(ex.toString());
         Response res = Response.failedOnValidation();
-        res.setMessage(ex.getMessage());
+//        res.setMessage(ex.getMessage());
         res.getErrors().put(ex.getName(),
                 messageSource.getMessage(ex.getMsg(), null, LocaleContextHolder.getLocale()));
 
@@ -78,6 +78,7 @@ public class GlobalExceptionTranslator {
     @ExceptionHandler(InvalidOperationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Response handleInvalidOperationException(InvalidOperationException ex, HttpServletRequest request) {
+        ex.printStackTrace();
         log.error(ex.toString());
         Response res = Response.failed(Response.ResponseCode.BAD_REQUEST);
         //res.setMessage(ex.getMessage());

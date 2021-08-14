@@ -23,9 +23,9 @@ public class WeightRecordService {
     @Autowired
     private WeightRecordRepository weightRecordRepository;
 
-    public WeightRecord create(Long petId, Instant date, Double weight) {
+    public WeightRecord create(Long feederId, Long petId, Instant date, Double weight) {
         Pet pet = petRepository.findById(petId);
-        if (pet != null) {
+        if (pet == null || !pet.getFeederId().equals(feederId)) {
             throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
         }
 

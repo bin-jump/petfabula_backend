@@ -14,8 +14,12 @@ public class FeederService {
     private FeederRepository feederRepository;
 
     public Feeder create(Long id, String name, String photo) {
+        Feeder feeder = feederRepository.findById(id);
+        if (feeder != null) {
+            return feeder;
+        }
 
-        Feeder feeder = new Feeder(id, name, photo);
+        feeder = new Feeder(id, name, photo);
         return feederRepository.save(feeder);
     }
 

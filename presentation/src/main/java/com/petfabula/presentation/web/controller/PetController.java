@@ -1,12 +1,14 @@
 package com.petfabula.presentation.web.controller;
 
 import com.petfabula.application.pet.PetApplicationService;
-import com.petfabula.domain.aggregate.pet.entity.Pet;
+import com.petfabula.domain.aggregate.pet.entity.*;
+import com.petfabula.domain.aggregate.pet.respository.PetBreedRepository;
 import com.petfabula.domain.aggregate.pet.respository.PetRepository;
+import com.petfabula.domain.common.image.ImageFile;
+import com.petfabula.domain.exception.InvalidOperationException;
 import com.petfabula.presentation.facade.assembler.AssemblerHelper;
 import com.petfabula.presentation.facade.assembler.pet.*;
-import com.petfabula.presentation.facade.dto.pet.PetDetailDto;
-import com.petfabula.presentation.facade.dto.pet.PetDto;
+import com.petfabula.presentation.facade.dto.pet.*;
 import com.petfabula.presentation.web.api.Response;
 import com.petfabula.presentation.web.security.LoginUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +16,11 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/pet")
@@ -48,11 +54,22 @@ public class PetController {
     @Autowired
     private PetRepository petRepository;
 
+    @Autowired
+    private PetBreedRepository petBreedRepository;
+
     @GetMapping("pets")
     public Response<List<PetDetailDto>> getMyPets() {
         Long userId = LoginUtils.currentUserId();
         List<Pet> pets = petRepository.findByFeederId(userId);
         List<PetDetailDto> res = petAssembler.convertToDetailDtos(pets);
+        List<Long> breedIds = pets.stream().map(Pet::getBreedId)
+                .distinct()
+                .collect(Collectors.toList());
+
+        Map<Long, PetBreed> breedMap = petBreedRepository.findByIds(breedIds)
+                .stream().collect(Collectors.toMap(item -> item.getId(), item -> item));
+
+        res.stream().forEach(item -> item.setBreed(breedMap.get(item.getBreedId()).getName()));
         return Response.ok(res);
     }
 
@@ -61,6 +78,30 @@ public class PetController {
         Long userId = LoginUtils.currentUserId();
         List<Pet> pets = petRepository.findByFeederId(userId);
         List<PetDto> res = petAssembler.convertToDtos(pets);
+        List<Long> breedIds = pets.stream().map(Pet::getBreedId)
+                .distinct()
+                .collect(Collectors.toList());
+
+        Map<Long, PetBreed> breedMap = petBreedRepository.findByIds(breedIds)
+                .stream().collect(Collectors.toMap(item -> item.getId(), item -> item));
+
+        res.stream().forEach(item -> item.setBreed(breedMap.get(item.getBreedId()).getName()));
+        return Response.ok(res);
+    }
+
+    @GetMapping("breeds")
+    public Response<List<PetBreedDto>> getPetBreeds() {
+        List<PetBreed> petBreeds = petBreedRepository.findAll();
+        List<PetBreedDto> res = new ArrayList<>();
+        petBreeds.forEach(item -> {
+            PetBreedDto breedDto = PetBreedDto.builder()
+                    .id(item.getId())
+                    .category(item.getCategory())
+                    .categoryId(item.getCategoryId())
+                    .name(item.getName())
+                    .build();
+            res.add(breedDto);
+        });
         return Response.ok(res);
     }
 
@@ -71,9 +112,96 @@ public class PetController {
         Pet pet = petApplicationService.createPet(userId,
                 petDto.getName(), AssemblerHelper.toLocalDate(petDto.getBirthday()),
                 AssemblerHelper.toLocalDate(petDto.getArrivalDay()),
-                petDto.getGender(), petDto.getWeight(), petDto.getCategory(), petDto.getBreed());
-
+                petDto.getGender(), petDto.getWeight(), petDto.getBreedId(), petDto.getBio());
+        PetBreed breed = petBreedRepository.findById(pet.getBreedId());
         PetDetailDto res = petAssembler.convertToDetailDto(pet);
+        res.setBreed(breed.getName());
         return Response.ok(res);
+    }
+
+    @PostMapping("feedrecords")
+    public Response<FeedRecordDto> createFeedRecord(@Validated @RequestBody FeedRecordDto feedRecordDto) {
+        Long userId = LoginUtils.currentUserId();
+        FeedRecord record = petApplicationService.createFeedRecord(userId, feedRecordDto.getPetId(),
+                AssemblerHelper.toInstant(feedRecordDto.getDateTime()),
+                feedRecordDto.getFoodContent(), feedRecordDto.getAmount(), feedRecordDto.getNote());
+        feedRecordDto = feedRecordAssember.convertToDto(record);
+        return Response.ok(feedRecordDto);
+    }
+
+    @PostMapping("weightrecords")
+    public Response<WeightRecordDto> createWeightRecord(@Validated @RequestBody WeightRecordDto weightRecordDto) {
+        Long userId = LoginUtils.currentUserId();
+        WeightRecord record = petApplicationService.createWeightRecord(userId, weightRecordDto.getPetId(),
+                AssemblerHelper.toInstant(weightRecordDto.getDate()), weightRecordDto.getWeight());
+        weightRecordDto = weightRecordAssembler.convertToDto(record);
+        return Response.ok(weightRecordDto);
+    }
+
+    @PostMapping("/disorderrecords")
+    public Response<DisorderRecordDto> createDisorderRecord(@RequestPart(name = "record") @Validated DisorderRecordDto disorderRecordDto,
+                                                            @RequestPart(value = "images", required = false) List<MultipartFile> images) throws IOException {
+        Long userId = LoginUtils.currentUserId();
+        List<ImageFile> imageFiles = new ArrayList<>();
+        if (images != null) {
+            for (MultipartFile file : images) {
+                if (file.isEmpty()) {
+                    throw new InvalidOperationException("Empty image file");
+                }
+                imageFiles.add(new ImageFile(file.getOriginalFilename(),
+                        file.getInputStream(), file.getSize()));
+            }
+        }
+        DisorderRecord disorderRecord = petApplicationService
+                .createDisorderRecord(userId, disorderRecordDto.getPetId(),
+                        AssemblerHelper.toInstant(disorderRecordDto.getDateTime()),
+                        disorderRecordDto.getDisorderType(), disorderRecordDto.getContent(), imageFiles);
+        disorderRecordDto = disorderRecordAssembler.convertToDto(disorderRecord);
+        return Response.ok(disorderRecordDto);
+    }
+
+    @PostMapping("/peteventrecords")
+    public Response<PetEventRecordDto> createPetEventRecord(@RequestPart(name = "record") @Validated PetEventRecordDto recordDto,
+                                                            @RequestPart(value = "images", required = false) List<MultipartFile> images) throws IOException {
+        Long userId = LoginUtils.currentUserId();
+        List<ImageFile> imageFiles = new ArrayList<>();
+        if (images != null) {
+            for (MultipartFile file : images) {
+                if (file.isEmpty()) {
+                    throw new InvalidOperationException("Empty image file");
+                }
+                imageFiles.add(new ImageFile(file.getOriginalFilename(),
+                        file.getInputStream(), file.getSize()));
+            }
+        }
+        PetEventRecord record = petApplicationService
+                .createPetEventRecord(userId, recordDto.getPetId(),
+                        AssemblerHelper.toInstant(recordDto.getDateTime()),
+                        recordDto.getEventType(), recordDto.getContent(), imageFiles);
+        recordDto = petEventRecordAssembler.convertToDto(record);
+        return Response.ok(recordDto);
+    }
+
+    @PostMapping("/medicalrecords")
+    public Response<MedicalRecordDto> createMedicalRecord(@RequestPart(name = "record") @Validated MedicalRecordDto recordDto,
+                                                            @RequestPart(value = "images", required = false) List<MultipartFile> images) throws IOException {
+        Long userId = LoginUtils.currentUserId();
+        List<ImageFile> imageFiles = new ArrayList<>();
+        if (images != null) {
+            for (MultipartFile file : images) {
+                if (file.isEmpty()) {
+                    throw new InvalidOperationException("Empty image file");
+                }
+                imageFiles.add(new ImageFile(file.getOriginalFilename(),
+                        file.getInputStream(), file.getSize()));
+            }
+        }
+        MedicalRecord record = petApplicationService
+                .createMedicalRecord(userId, recordDto.getPetId(), recordDto.getHospitalName(),
+                        recordDto.getSymptom(), recordDto.getDiagnosis(), recordDto.getTreatment(),
+                        AssemblerHelper.toInstant(recordDto.getDateTime()),
+                        recordDto.getNote(), imageFiles);
+        recordDto = medicalRecordAssembler.convertToDto(record);
+        return Response.ok(recordDto);
     }
 }

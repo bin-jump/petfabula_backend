@@ -2,6 +2,7 @@ package com.petfabula.domain.aggregate.pet.entity;
 
 import com.petfabula.domain.common.CommonMessageKeys;
 import com.petfabula.domain.common.domain.GeneralEntity;
+import com.petfabula.domain.common.validation.EntityValidationUtils;
 import com.petfabula.domain.exception.InvalidOperationException;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,30 +16,30 @@ import java.util.List;
 @Getter
 @Entity
 @Table(name = "pet_event_record",
-        indexes = {@Index(columnList = "pet_id, date")})
+        indexes = {@Index(columnList = "pet_id, date_time")})
 public class PetEventRecord extends GeneralEntity {
 
-    public PetEventRecord(Long id, Long petId, Instant date, String eventType, String note) {
+    public PetEventRecord(Long id, Long petId, Instant dateTime, String eventType, String content) {
         setId(id);
         this.petId = petId;
-        this.date = date;
+        this.dateTime = dateTime;
         this.eventType = eventType;
-        this.note = note;
+        setContent(content);
     }
 
     @Column(name = "pet_id", nullable = false)
     private Long petId;
 
-    @Column(name = "date", nullable = false)
-    private Instant date;
+    @Column(name = "date_time", nullable = false)
+    private Instant dateTime;
 
     @Column(name = "disorder_type", nullable = false)
     private String eventType;
 
-    @Column(name = "note")
-    private String note;
+    @Column(name = "content", length = 500)
+    private String content;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name="pet_event_record_id")
     private List<PetEventRecordImage> images = new ArrayList<>();
 
@@ -47,5 +48,10 @@ public class PetEventRecord extends GeneralEntity {
             throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
         }
         images.add(image);
+    }
+
+    public void setContent(String content) {
+        EntityValidationUtils.validStringLength("content", content, 0, 240);
+        this.content = content;
     }
 }

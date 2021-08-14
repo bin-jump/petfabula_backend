@@ -19,7 +19,7 @@ import javax.persistence.*;
 public class PostComment extends GeneralEntity {
 
     public PostComment(Long id, Participator participator, Long postId, String content) {
-        EntityValidationUtils.validStringLendth("content", content, 1, 240);
+        EntityValidationUtils.validStringLength("content", content, 1, 240);
         setId(id);
         this.content = content;
         this.participator = participator;

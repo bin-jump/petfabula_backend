@@ -5,26 +5,17 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotNull;
-
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class FeedRecordDto {
+public class PetBreedDto {
 
     private Long id;
 
-    private Long petId;
+    private Long categoryId;
 
-    @NotNull
-    private Long dateTime;
+    private String category;
 
-    private String foodContent;
-
-    @NotNull
-    private Integer amount;
-
-    private String note;
+    private String name;
 }

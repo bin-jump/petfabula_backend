@@ -19,6 +19,8 @@ public class QuestionDto {
 
     private Long id;
 
+    private Long relatePetId;
+
     @NotBlank
     private String title;
 
@@ -34,6 +36,8 @@ public class QuestionDto {
     private boolean upvoted;
 
     private ParticipatorDto participator;
+
+    private ParticipatorPetDto relatePet;
 
     @Builder.Default
     private List<ImageDto> images = new ArrayList<>();

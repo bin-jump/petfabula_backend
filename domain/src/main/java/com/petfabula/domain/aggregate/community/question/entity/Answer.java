@@ -57,7 +57,7 @@ public class Answer extends ConcurrentEntity {
     private List<AnswerImage> images = new ArrayList<>();
 
     public void setContent(String content) {
-        EntityValidationUtils.validStringLendth("content", content, 0, 10000);
+        EntityValidationUtils.validStringLength("content", content, 0, 10000);
         this.content = content;
     }
 

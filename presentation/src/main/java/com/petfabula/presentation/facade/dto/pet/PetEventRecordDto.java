@@ -19,11 +19,11 @@ public class PetEventRecordDto {
 
     private Long petId;
 
-    private Long date;
+    private Long dateTime;
 
     private String eventType;
 
-    private String note;
+    private String content;
 
     @Builder.Default
     private List<ImageDto> images = new ArrayList<>();

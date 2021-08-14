@@ -23,9 +23,9 @@ public class FeedRecordService {
     @Autowired
     private FeedRecordRepository feedRecordRepository;
 
-    public FeedRecord create(Long petId, Instant date, String foodContent, Integer amount, String note) {
+    public FeedRecord create(Long feederId, Long petId, Instant date, String foodContent, Integer amount, String note) {
         Pet pet = petRepository.findById(petId);
-        if (pet != null) {
+        if (pet == null || !pet.getFeederId().equals(feederId)) {
             throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
         }
 

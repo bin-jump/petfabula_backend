@@ -1,6 +1,10 @@
 package com.petfabula.domain.aggregate.pet.entity;
 
+import com.petfabula.domain.common.CommonMessageKeys;
 import com.petfabula.domain.common.domain.GeneralEntity;
+import com.petfabula.domain.common.validation.EntityValidationUtils;
+import com.petfabula.domain.common.validation.MessageKey;
+import com.petfabula.domain.exception.InvalidValueException;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -14,23 +18,23 @@ import java.time.Instant;
 @Getter
 @Entity
 @Table(name = "pet_feed_record",
-        indexes = {@Index(columnList = "pet_id, date")})
+        indexes = {@Index(columnList = "pet_id, date_time")})
 public class FeedRecord extends GeneralEntity {
 
-    public FeedRecord(Long id, Long petId, Instant date, String foodContent, Integer amount, String note) {
+    public FeedRecord(Long id, Long petId, Instant dateTime, String foodContent, Integer amount, String note) {
         setId(id);
         this.petId = petId;
-        this.date = date;
-        this.foodContent = foodContent;
-        this.amount = amount;
-        this.note = note;
+        setDateTime(dateTime);
+        setFoodContent(foodContent);
+        setAmount(amount);
+        setNote(note);
     }
 
     @Column(name = "pet_id", nullable = false)
     private Long petId;
 
-    @Column(name = "date", nullable = false)
-    private Instant date;
+    @Column(name = "date_time", nullable = false)
+    private Instant dateTime;
 
     @Column(name = "food_content", nullable = false)
     private String foodContent;
@@ -40,4 +44,26 @@ public class FeedRecord extends GeneralEntity {
 
     @Column(name = "note")
     private String note;
+
+    public void setAmount(Integer amount) {
+        if (amount <= 0 || amount > 100000) {
+            throw new InvalidValueException("amount", CommonMessageKeys.CANNOT_PROCEED);
+        }
+        this.amount = amount;
+    }
+
+    public void setFoodContent(String foodContent) {
+        EntityValidationUtils.validStringLength("foodContent", foodContent, 0, 200);
+        this.foodContent = foodContent;
+    }
+
+    public void setNote(String note) {
+        EntityValidationUtils.validStringLength("note", note, 0, 200);
+        this.note = note;
+    }
+
+    public void setDateTime(Instant dateTime) {
+        EntityValidationUtils.validRecordDate("dateTime", dateTime);
+        this.dateTime = dateTime;
+    }
 }

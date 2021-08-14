@@ -1,9 +1,11 @@
 package com.petfabula.infrastructure.persistence.jpa.community.post.impl;
 
 import com.petfabula.domain.aggregate.community.post.entity.Post;
+import com.petfabula.domain.aggregate.community.post.repository.PostRepository;
 import com.petfabula.domain.aggregate.community.post.repository.TimelineRepository;
 import com.petfabula.domain.common.paging.CursorPage;
 import com.petfabula.infrastructure.persistence.jpa.annotation.FilterSoftDelete;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,13 +20,16 @@ public class TimeLineRepositoryImpl implements TimelineRepository {
     @PersistenceContext
     private EntityManager em;
 
+    @Autowired
+    private PostRepository postRepository;
+
     @FilterSoftDelete
     @Transactional
     @Override
     public CursorPage<Post> findFollowedByParticipatorId(Long participatorId, Long cursor, int size) {
 
-        String q = "select p from Post p inner join FollowParticipator f on f.followed = p.participator " +
-                "where f.followParticipatorId.followerId = :participatorId and (:cursor is null or p.id < :cursor)" +
+        String q = "select p from Post p inner join FollowParticipator f on f.followedId = p.participator.id " +
+                "where f.followerId = :participatorId and (:cursor is null or p.id < :cursor)" +
                 " order by p.id desc ";
 
         TypedQuery<Post> query = em.createQuery(q, Post.class);
@@ -34,8 +39,8 @@ public class TimeLineRepositoryImpl implements TimelineRepository {
         query.setMaxResults(size);
 
 
-        String cq = "select count(p) from Post p inner join FollowParticipator f on f.followed = p.participator " +
-                "where f.followParticipatorId.followerId = :participatorId and (:cursor is null or p.id < :cursor)" +
+        String cq = "select count(p) from Post p inner join FollowParticipator f on f.followedId = p.participator.id " +
+                "where f.followerId = :participatorId and (:cursor is null or p.id < :cursor)" +
                 " order by p.id desc ";
         TypedQuery<Long> countQuery = em.createQuery(cq, Long.class);
         countQuery.setParameter("participatorId", participatorId);

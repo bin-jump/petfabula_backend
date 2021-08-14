@@ -6,24 +6,30 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Index;
 import javax.persistence.Table;
 
 @NoArgsConstructor
 @Getter
 @Entity
-@Table(name = "pet_breed")
+@Table(name = "pet_breed",
+        indexes = {@Index(name = "category_index",  columnList="category_id, name", unique = true)})
 public class PetBreed extends EntityBase {
 
-    public PetBreed(Long id, String category, String name) {
+    public PetBreed(Long id, Long categoryId, String category, String name) {
         setId(id);
+        this.categoryId = categoryId;
         this.category = category;
         this.name = name;
     }
 
-    @Column(name = "category")
+    @Column(name = "category_id", nullable = false)
+    private Long categoryId;
+
+    @Column(name = "category", nullable = false)
     private String category;
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
 
 }

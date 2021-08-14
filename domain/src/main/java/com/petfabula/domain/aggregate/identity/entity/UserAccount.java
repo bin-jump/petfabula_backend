@@ -22,7 +22,7 @@ public class UserAccount extends ConcurrentEntity {
         setName(name);
         this.status = UserStatus.REGISTED;
         this.registerEntry = registerEntry;
-        gender = Gender.UNSET;
+        gender = null;
     }
 
     @Column(name = "name", unique = true, nullable = false, length = 32)
@@ -61,7 +61,7 @@ public class UserAccount extends ConcurrentEntity {
     }
 
     public enum Gender {
-        MALE, FEMALE, UNSET
+        MALE, FEMALE, OTHER
     }
 
     public enum UserStatus {

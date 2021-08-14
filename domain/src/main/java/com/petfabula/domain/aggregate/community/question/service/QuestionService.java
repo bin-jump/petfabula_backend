@@ -1,7 +1,10 @@
 package com.petfabula.domain.aggregate.community.question.service;
 
 import com.petfabula.domain.aggregate.community.participator.entity.Participator;
+import com.petfabula.domain.aggregate.community.participator.entity.ParticipatorPet;
+import com.petfabula.domain.aggregate.community.participator.repository.ParticipatorPetRepository;
 import com.petfabula.domain.aggregate.community.participator.repository.ParticipatorRepository;
+import com.petfabula.domain.aggregate.community.post.PostMessageKeys;
 import com.petfabula.domain.aggregate.community.question.QuestionAnswerCreated;
 import com.petfabula.domain.aggregate.community.question.QuestionCreated;
 import com.petfabula.domain.aggregate.community.question.entity.Question;
@@ -28,6 +31,9 @@ public class QuestionService {
     private QuestionRepository questionRepository;
 
     @Autowired
+    private ParticipatorPetRepository participatorPetRepository;
+
+    @Autowired
     private ParticipatorRepository participatorRepository;
 
     @Autowired
@@ -36,15 +42,23 @@ public class QuestionService {
     @Autowired
     private DomainEventPublisher domainEventPublisher;
 
-    public Question create(Long participatorId, String title,
+    public Question create(Long participatorId, Long relatePetId, String title,
                            String content, List<ImageFile> images) {
         Participator participator = participatorRepository.findById(participatorId);
         if (participator == null) {
             throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
         }
 
+        ParticipatorPet participatorPet = null;
+        if (relatePetId != null) {
+            participatorPet = participatorPetRepository.findById(relatePetId);
+            if (participatorPet == null || !participatorPet.getParticipatorId().equals(participatorId)) {
+                throw new InvalidOperationException(PostMessageKeys.CANNOT_CREATE_POST);
+            }
+        }
+
         Long questionId = idGenerator.nextId();
-        Question question = new Question(questionId, participator, title, content);
+        Question question = new Question(questionId, participator, title, content, participatorPet);
 
         participator.setQuestionCount(participator.getQuestionCount() + 1);
         participatorRepository.save(participator);

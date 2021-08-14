@@ -56,11 +56,8 @@ public class PostService {
 
         ParticipatorPet participatorPet = null;
         if (relatePetId != null) {
-            participatorPet = participatorPetRepository
-                    .findByParticipatorId(participatorId).stream()
-                    .filter(p -> p.getId().equals(relatePetId))
-                    .findAny().orElse(null);
-            if (participatorPet == null) {
+            participatorPet = participatorPetRepository.findById(relatePetId);
+            if (participatorPet == null || !participatorPet.getParticipatorId().equals(participatorId)) {
                 throw new InvalidOperationException(PostMessageKeys.CANNOT_CREATE_POST);
             }
         }

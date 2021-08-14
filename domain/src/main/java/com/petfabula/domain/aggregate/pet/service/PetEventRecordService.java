@@ -3,7 +3,9 @@ package com.petfabula.domain.aggregate.pet.service;
 import com.petfabula.domain.aggregate.pet.entity.Pet;
 import com.petfabula.domain.aggregate.pet.entity.PetEventRecord;
 import com.petfabula.domain.aggregate.pet.entity.PetEventRecordImage;
+import com.petfabula.domain.aggregate.pet.entity.PetEventType;
 import com.petfabula.domain.aggregate.pet.respository.PetEventRecordRepository;
+import com.petfabula.domain.aggregate.pet.respository.PetEventTypeRepository;
 import com.petfabula.domain.aggregate.pet.respository.PetRepository;
 import com.petfabula.domain.common.CommonMessageKeys;
 import com.petfabula.domain.common.image.ImageDimension;
@@ -29,11 +31,18 @@ public class PetEventRecordService {
     private PetEventRecordRepository petEventRecordRepository;
 
     @Autowired
+    private PetEventTypeRepository petEventTypeRepository;
+
+    @Autowired
     private ImageRepository imageRepository;
 
-    public PetEventRecord create(Long petId, Instant date, String eventType, String note, List<ImageFile> images) {
+    public PetEventRecord create(Long feederId, Long petId, Instant dateTime, String eventType, String content, List<ImageFile> images) {
         Pet pet = petRepository.findById(petId);
-        if (pet != null) {
+        if (pet == null || !pet.getFeederId().equals(feederId)) {
+            throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
+        }
+        PetEventType petEventType = petEventTypeRepository.findByEventType(eventType);
+        if (petEventType == null) {
             throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
         }
 
@@ -42,7 +51,7 @@ public class PetEventRecordService {
         }
 
         Long id = idGenerator.nextId();
-        PetEventRecord record = new PetEventRecord(id, petId, date, eventType, note);
+        PetEventRecord record = new PetEventRecord(id, petId, dateTime, eventType, content);
 
         List<String> imagePathes = imageRepository.save(images);
         for (int i = 0; i < imagePathes.size(); i++) {

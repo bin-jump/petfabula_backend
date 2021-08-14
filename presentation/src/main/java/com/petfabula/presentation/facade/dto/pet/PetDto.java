@@ -31,6 +31,8 @@ public class PetDto {
     @NotNull
     private Pet.Gender gender;
 
+    private Long breedId;
+
     @NotNull
     private String category;
 

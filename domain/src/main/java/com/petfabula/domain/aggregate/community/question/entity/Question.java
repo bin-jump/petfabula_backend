@@ -1,6 +1,7 @@
 package com.petfabula.domain.aggregate.community.question.entity;
 
 import com.petfabula.domain.aggregate.community.participator.entity.Participator;
+import com.petfabula.domain.aggregate.community.participator.entity.ParticipatorPet;
 import com.petfabula.domain.common.CommonMessageKeys;
 import com.petfabula.domain.common.domain.ConcurrentEntity;
 import com.petfabula.domain.common.validation.EntityValidationUtils;
@@ -24,7 +25,7 @@ import java.util.List;
 @Table(name = "question")
 public class Question extends ConcurrentEntity {
 
-    public Question(Long id, Participator participator, String title, String content) {
+    public Question(Long id, Participator participator, String title, String content, ParticipatorPet pet) {
         setId(id);
         setTitle(title);
         setContent(content);
@@ -32,7 +33,17 @@ public class Question extends ConcurrentEntity {
         this.answerCount = 0;
         this.upvoteCount = 0;
         this.viewCount = 0;
+        if (pet != null) {
+            this.relatePetId = pet.getId();
+            this.petCategory = pet.getPetCategory();
+        }
     }
+
+    @Column(name = "pet_id")
+    private Long relatePetId;
+
+    @Column(name = "pet_category")
+    private String petCategory;
 
     @Column(name = "title", nullable = false, length = 50)
     private String title;
@@ -59,12 +70,12 @@ public class Question extends ConcurrentEntity {
     private Participator participator;
 
     public void setTitle(String title) {
-        EntityValidationUtils.validStringLendth("title", title, 3, 50);
+        EntityValidationUtils.validStringLength("title", title, 3, 50);
         this.title = title;
     }
 
     public void setContent(String content) {
-        EntityValidationUtils.validStringLendth("content", content, 0, 1000);
+        EntityValidationUtils.validStringLength("content", content, 0, 1000);
         this.content = content;
     }
 

@@ -70,7 +70,7 @@ public class Post extends ConcurrentEntity {
     private List<PostImage> images = new ArrayList<>();
 
     public void setContent(String content) {
-        EntityValidationUtils.validStringLendth("content", content, 0, 5000);
+        EntityValidationUtils.validStringLength("content", content, 0, 5000);
         this.content = content;
     }
 

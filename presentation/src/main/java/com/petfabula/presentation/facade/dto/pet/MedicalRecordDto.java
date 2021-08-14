@@ -27,7 +27,7 @@ public class MedicalRecordDto {
 
     private String treatment;
 
-    private Long date;
+    private Long dateTime;
 
     private String note;
 

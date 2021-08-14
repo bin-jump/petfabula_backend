@@ -19,4 +19,6 @@ public interface MessageKey {
     String INVALID_STRING_LEGNTH = "validation.invalidStringLength";
 
     String INVALID_BIRTHDAY = "validation.invalidBirthday";
+
+    String INVALID_ARRIVAL_DAY = "validation.invalidArrivalDay";
 }

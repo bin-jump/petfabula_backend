@@ -31,10 +31,10 @@ public class MedicalRecordService {
     @Autowired
     private ImageRepository imageRepository;
 
-    public MedicalRecord create(Long petId, String hospitalName, String symptom,
+    public MedicalRecord create(Long feederId, Long petId, String hospitalName, String symptom,
                                 String diagnosis, String treatment, Instant date, String note, List<ImageFile> images) {
         Pet pet = petRepository.findById(petId);
-        if (pet != null) {
+        if (pet == null || !pet.getFeederId().equals(feederId)) {
             throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
         }
 

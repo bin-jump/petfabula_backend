@@ -18,7 +18,7 @@ public class AnswerComment extends GeneralEntity {
 
     public AnswerComment(Long id, Participator participator,
                          Long answerId, Long questionId, Long replyTo, String content) {
-        EntityValidationUtils.validStringLendth("content", content, 1, 240);
+        EntityValidationUtils.validStringLength("content", content, 1, 240);
         setId(id);
         this.content = content;
         this.participator = participator;

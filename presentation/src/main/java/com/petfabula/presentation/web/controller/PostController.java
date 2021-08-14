@@ -135,7 +135,7 @@ public class PostController {
             }
         }
         if (post.getRelatePetId() != null) {
-            res.setParticipatorPet(participtorPetAssembler
+            res.setRelatePet(participtorPetAssembler
                     .convertToDto(participatorPetRepository.findById(post.getRelatePetId())));
         }
         PostTopicRelation postTopicRelation =

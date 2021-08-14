@@ -3,6 +3,7 @@ package com.petfabula.presentation.web.controller;
 import com.petfabula.application.community.QuestionApplicationService;
 import com.petfabula.domain.aggregate.community.participator.entity.FollowParticipator;
 import com.petfabula.domain.aggregate.community.participator.repository.FollowParticipatorRepository;
+import com.petfabula.domain.aggregate.community.participator.repository.ParticipatorPetRepository;
 import com.petfabula.domain.aggregate.community.question.QuestionMessageKeys;
 import com.petfabula.domain.aggregate.community.question.entity.Answer;
 import com.petfabula.domain.aggregate.community.question.entity.AnswerComment;
@@ -16,6 +17,7 @@ import com.petfabula.domain.exception.InvalidOperationException;
 import com.petfabula.domain.exception.NotFoundException;
 import com.petfabula.presentation.facade.assembler.community.AnswerAssembler;
 import com.petfabula.presentation.facade.assembler.community.AnswerCommentAssembler;
+import com.petfabula.presentation.facade.assembler.community.ParticiptorPetAssembler;
 import com.petfabula.presentation.facade.assembler.community.QuestionAssembler;
 import com.petfabula.presentation.facade.dto.community.*;
 import com.petfabula.presentation.web.api.CursorPageData;
@@ -49,8 +51,10 @@ public class QuestionController {
     private AnswerCommentAssembler answerCommentAssembler;
 
     @Autowired
-    private QuestionApplicationService questionApplicationService;
+    private ParticiptorPetAssembler participtorPetAssembler;
 
+    @Autowired
+    private QuestionApplicationService questionApplicationService;
 
     @Autowired
     private FollowParticipatorRepository followParticipatorRepository;
@@ -70,6 +74,9 @@ public class QuestionController {
     @Autowired
     private AnswerCommentRepository answerCommentRepository;
 
+    @Autowired
+    private ParticipatorPetRepository participatorPetRepository;
+
     @PostMapping("questions")
     public Response<QuestionDto> createQuestion(@RequestPart(name = "question") @Validated QuestionDto questionDto,
                                                 @RequestPart(value = "images", required = false) List<MultipartFile> images) throws IOException {
@@ -85,7 +92,7 @@ public class QuestionController {
             }
         }
         Question question = questionApplicationService
-                .createQuestion(userId, questionDto.getTitle(), questionDto.getContent(), imageFiles);
+                .createQuestion(userId, questionDto.getRelatePetId(), questionDto.getTitle(), questionDto.getContent(), imageFiles);
 
         questionDto = questionAssembler.convertToDto(question);
         return Response.ok(questionDto);
@@ -146,6 +153,11 @@ public class QuestionController {
                         .find(userId, question.getParticipator().getId());
                 res.getParticipator().setFollowed(followParticipator != null);
             }
+        }
+
+        if (question.getRelatePetId() != null) {
+            res.setRelatePet(participtorPetAssembler
+                    .convertToDto(participatorPetRepository.findById(question.getRelatePetId())));
         }
 
         return Response.ok(res);

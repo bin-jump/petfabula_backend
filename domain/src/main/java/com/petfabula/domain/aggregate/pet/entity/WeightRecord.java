@@ -1,6 +1,9 @@
 package com.petfabula.domain.aggregate.pet.entity;
 
+import com.petfabula.domain.common.CommonMessageKeys;
 import com.petfabula.domain.common.domain.GeneralEntity;
+import com.petfabula.domain.common.validation.EntityValidationUtils;
+import com.petfabula.domain.exception.InvalidValueException;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -13,7 +16,7 @@ import java.time.Instant;
 @NoArgsConstructor
 @Getter
 @Entity
-@Table(name = "weight_record",
+@Table(name = "pet_weight_record",
         indexes = {@Index(columnList = "pet_id, date")})
 public class WeightRecord extends GeneralEntity {
 
@@ -32,4 +35,16 @@ public class WeightRecord extends GeneralEntity {
 
     @Column(name = "weight", nullable = false)
     private Double weight;
+
+    public void setWeight(Double weight) {
+        if (weight <= 0 || weight > 100000) {
+            throw new InvalidValueException("weight", CommonMessageKeys.CANNOT_PROCEED);
+        }
+        this.weight = weight;
+    }
+
+    public void setDate(Instant date) {
+        EntityValidationUtils.validRecordDate("date", date);
+        this.date = date;
+    }
 }

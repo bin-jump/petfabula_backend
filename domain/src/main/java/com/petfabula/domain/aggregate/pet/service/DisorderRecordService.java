@@ -32,9 +32,9 @@ public class DisorderRecordService {
     @Autowired
     private ImageRepository imageRepository;
 
-    public DisorderRecord create(Long petId, Instant date, String disorderType, String note, List<ImageFile> images) {
+    public DisorderRecord create(Long feederId, Long petId, Instant dateTime, String disorderType, String content, List<ImageFile> images) {
         Pet pet = petRepository.findById(petId);
-        if (pet != null) {
+        if (pet == null || !pet.getFeederId().equals(feederId)) {
             throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
         }
 
@@ -43,7 +43,7 @@ public class DisorderRecordService {
         }
 
         Long id = idGenerator.nextId();
-        DisorderRecord disorderRecord = new DisorderRecord(id, petId, date, disorderType, note);
+        DisorderRecord disorderRecord = new DisorderRecord(id, petId, dateTime, disorderType, content);
 
         List<String> imagePathes = imageRepository.save(images);
         for (int i = 0; i < imagePathes.size(); i++) {

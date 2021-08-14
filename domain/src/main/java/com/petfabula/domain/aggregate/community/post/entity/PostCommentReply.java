@@ -20,7 +20,7 @@ public class PostCommentReply extends GeneralEntity {
 
     public PostCommentReply(Long id, Participator participator, Long postId,
                             Long postCommentId, Long replyToId, String content) {
-        EntityValidationUtils.validStringLendth("content", content, 1, 240);
+        EntityValidationUtils.validStringLength("content", content, 1, 240);
         setId(id);
         this.content = content;
         this.participator = participator;

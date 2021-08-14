@@ -28,12 +28,12 @@ public class ParticipatorService {
     }
 
     public ParticipatorPet addParticipatorPet(Long petId, Long participatorId, String name, String photo,
-                                              String petCategory) {
+                                              String petCategory, Long breedId) {
         Participator participator = participatorRepository.findById(participatorId);
         if (participator == null) {
             throw new InvalidOperationException(ParticipatorMessageKeys.CANNOT_ADD_PET);
         }
-        ParticipatorPet participatorPet = new ParticipatorPet(petId, participatorId, name, photo, petCategory);
+        ParticipatorPet participatorPet = new ParticipatorPet(petId, participatorId, name, photo, petCategory, breedId);
         participator.setPetCount(participator.getPostCount() + 1);
         participatorRepository.save(participator);
         return participatorPetRepository.save(participatorPet);

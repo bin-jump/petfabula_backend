@@ -16,6 +16,7 @@ public class PetCreatedListener {
     public void handle(PetCreateEvent event) {
         participatorService
                 .addParticipatorPet(event.getPet().getId(), event.getPet().getFeederId(),
-                        event.getPet().getName(), event.getPet().getPhoto(), event.getPet().getCategory().toString());
+                        event.getPet().getName(), event.getPet().getPhoto(),
+                        event.getPet().getCategory(), event.getPet().getBreedId());
     }
 }

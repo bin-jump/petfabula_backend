@@ -34,7 +34,6 @@ public class AssemblerHelper {
                 Instant.ofEpochMilli(val)
                         .atZone(ZoneOffset.UTC).toLocalDate();
         return date;
-
     }
 
     public static Long dateToLong(LocalDate val) {
@@ -42,5 +41,15 @@ public class AssemblerHelper {
             return null;
         }
         return val.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli();
+    }
+
+    public static Instant toInstant(Long val) {
+        if (val == null) {
+            return null;
+        }
+        // TODO: Use UTC?
+        Instant instant =
+                Instant.ofEpochMilli(val);
+        return instant;
     }
 }

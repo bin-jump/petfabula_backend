@@ -40,9 +40,9 @@ public class QuestionApplicationService {
     private IntegratedEventPublisher eventPublisher;
 
     @Transactional
-    public Question createQuestion(Long participatorId, String title,
+    public Question createQuestion(Long participatorId, Long relatedPetId, String title,
                                    String content, List<ImageFile> images) {
-        return questionService.create(participatorId, title, content, images);
+        return questionService.create(participatorId, relatedPetId, title, content, images);
     }
 
     @Transactional

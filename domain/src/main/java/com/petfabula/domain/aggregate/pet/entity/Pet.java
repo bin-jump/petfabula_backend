@@ -2,6 +2,8 @@ package com.petfabula.domain.aggregate.pet.entity;
 
 import com.petfabula.domain.common.domain.ConcurrentEntity;
 import com.petfabula.domain.common.validation.EntityValidationUtils;
+import com.petfabula.domain.common.validation.MessageKey;
+import com.petfabula.domain.exception.InvalidValueException;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -18,17 +20,19 @@ public class Pet extends ConcurrentEntity {
 
     public Pet(Long id, Long feederId, String name, String photo, LocalDate birthday,
                LocalDate arrivalDay, Gender gender, Double weight,
-               String category, String breed) {
+               Long categoryId, String category, Long breedId, String bio) {
         setId(id);
         this.feederId = feederId;
         setName(name);
         this.photo = photo;
         setBirthday(birthday);
-        this.arrivalDay = arrivalDay;
+        setArrivalDay(arrivalDay);
         this.gender = gender;
         this.weight = weight;
+        this.categoryId = categoryId;
         this.category = category;
-        this.breed = breed;
+        this.breedId = breedId;
+        setBio(bio);
         this.feedRecordCount = 0;
         this.disorderRecordCount = 0;
         this.eventRecordCount = 0;
@@ -48,8 +52,11 @@ public class Pet extends ConcurrentEntity {
     @Column(name = "birthday")
     private LocalDate birthday;
 
-    @Column(name = "arrivalday")
+    @Column(name = "arrival_day")
     private LocalDate arrivalDay;
+
+    @Column(name = "separate_day")
+    private LocalDate separateDay;
 
     @Column(name = "gender")
     private Gender gender;
@@ -57,16 +64,19 @@ public class Pet extends ConcurrentEntity {
     @Column(name = "weight")
     private Double weight;
 
+    @Column(name = "category_id")
+    private Long categoryId;
+
     @Column(name = "category")
     private String category;
 
-    @Column(name = "breed")
-    private String breed;
+    @Column(name = "breed_id")
+    private Long breedId;
 
     @Column(name = "register_number")
     private String registerNumber;
 
-    @Column(name = "bio")
+    @Column(name = "bio", length = 500)
     private String bio;
 
     @Column(name = "feed_record_count", nullable = false)
@@ -92,6 +102,18 @@ public class Pet extends ConcurrentEntity {
     public void setBirthday(LocalDate birthday) {
         EntityValidationUtils.validBirthday("birthday", birthday);
         this.birthday = birthday;
+    }
+
+    public void setBio(String bio) {
+        EntityValidationUtils.validStringLength("bio", bio, 0, 300);
+        this.bio = bio;
+    }
+
+    public void setArrivalDay(LocalDate arrivalDay) {
+        if (birthday.isAfter(arrivalDay)) {
+            throw new InvalidValueException("arrivalDay", MessageKey.INVALID_ARRIVAL_DAY);
+        }
+        this.arrivalDay = arrivalDay;
     }
 
     public void setFeedRecordCount(Integer feedRecordCount) {

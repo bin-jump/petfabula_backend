@@ -38,12 +38,12 @@ public class SystemNotification extends EntityBase {
     private Instant createdDate = Instant.now();
 
     public void setTitle(String title) {
-        EntityValidationUtils.validStringLendth("title", content, 0, 50);
+        EntityValidationUtils.validStringLength("title", content, 0, 50);
         this.title = title;
     }
 
     public void setContent(String content) {
-        EntityValidationUtils.validStringLendth("content", content, 0, 500);
+        EntityValidationUtils.validStringLength("content", content, 0, 500);
         this.content = content;
     }
 }

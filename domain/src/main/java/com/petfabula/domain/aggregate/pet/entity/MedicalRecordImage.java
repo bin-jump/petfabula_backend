@@ -11,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Entity
-@Table(name = "medical_record_image",
+@Table(name = "pet_medical_record_image",
         indexes = {@Index(name = "medical_record_id_index",  columnList="medical_record_id")})
 public class MedicalRecordImage extends EntityBase {
 

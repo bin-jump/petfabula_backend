@@ -43,45 +43,45 @@ public class PetApplicationService {
     @Transactional
     public Pet createPet(Long feederId, String name, LocalDate birthday,
                       LocalDate arrivalDay, Pet.Gender gender, Double weight,
-                      String category, String breed) {
+                         Long breedId, String bio) {
 
         Pet pet = petService.create(feederId, name, birthday,
                 arrivalDay, gender, weight,
-                category, breed);
+                breedId, bio);
 
         eventPublisher.publish(new PetCreateEvent(pet));
         return pet;
     }
 
     @Transactional
-    public DisorderRecord createDisorderRecord(Long petId, Instant date, String disorderType, String note, List<ImageFile> images) {
+    public DisorderRecord createDisorderRecord(Long feederId, Long petId, Instant dateTime, String disorderType, String content, List<ImageFile> images) {
 
-        return disorderRecordService.create(petId, date, disorderType, note, images);
+        return disorderRecordService.create(feederId, petId, dateTime, disorderType, content, images);
     }
 
     @Transactional
-    public FeedRecord createFeedRecord(Long petId, Instant date, String foodContent, Integer amount, String note) {
+    public FeedRecord createFeedRecord(Long feederId, Long petId, Instant dateTime, String foodContent, Integer amount, String note) {
 
-        return feedRecordService.create(petId, date, foodContent, amount, note);
+        return feedRecordService.create(feederId, petId, dateTime, foodContent, amount, note);
     }
 
     @Transactional
-    public PetEventRecord createPetEventRecord(Long petId, Instant date, String eventType, String note, List<ImageFile> images) {
+    public PetEventRecord createPetEventRecord(Long feederId, Long petId, Instant dateTime, String eventType, String content, List<ImageFile> images) {
 
-        return petEventRecordService.create(petId, date, eventType, note, images);
+        return petEventRecordService.create(feederId, petId, dateTime, eventType, content, images);
     }
 
     @Transactional
-    public WeightRecord createWeightRecord(Long petId, Instant date, Double weight) {
+    public WeightRecord createWeightRecord(Long feederId, Long petId, Instant date, Double weight) {
 
-        return weightRecordService.create(petId, date, weight);
+        return weightRecordService.create(feederId, petId, date, weight);
     }
 
     @Transactional
-    public MedicalRecord createMedicalRecord(Long petId, String hospitalName, String symptom,
+    public MedicalRecord createMedicalRecord(Long feederId, Long petId, String hospitalName, String symptom,
                                              String diagnosis, String treatment, Instant date, String note, List<ImageFile> images) {
 
-        return medicalRecordService.create(petId, hospitalName, symptom,
+        return medicalRecordService.create(feederId, petId, hospitalName, symptom,
                 diagnosis, treatment, date, note, images);
     }
 }

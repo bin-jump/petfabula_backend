@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,13 +18,14 @@ public class DisorderRecordDto {
 
     private Long id;
 
+    @NotNull
     private Long petId;
 
-    private Long date;
+    private Long dateTime;
 
     private String disorderType;
 
-    private String note;
+    private String content;
 
     @Builder.Default
     private List<ImageDto> images = new ArrayList<>();

@@ -41,7 +41,7 @@ public class PostDto {
 
     private PostTopicDto postTopic;
 
-    private ParticipatorPetDto participatorPet;
+    private ParticipatorPetDto relatePet;
 
     @Builder.Default
     private List<ImageDto> images = new ArrayList<>();
