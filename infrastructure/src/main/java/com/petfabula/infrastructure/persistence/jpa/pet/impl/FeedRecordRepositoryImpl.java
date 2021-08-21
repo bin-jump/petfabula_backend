@@ -2,6 +2,7 @@ package com.petfabula.infrastructure.persistence.jpa.pet.impl;
 
 import com.petfabula.domain.aggregate.pet.entity.FeedRecord;
 import com.petfabula.domain.aggregate.pet.respository.FeedRecordRepository;
+import com.petfabula.domain.aggregate.pet.respository.RecordCursor;
 import com.petfabula.domain.common.paging.CursorPage;
 import com.petfabula.infrastructure.persistence.jpa.pet.repository.FeedRecordJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,11 +38,11 @@ public class FeedRecordRepositoryImpl implements FeedRecordRepository {
         Specification<FeedRecord> spec = new Specification<FeedRecord>() {
             @Override
             public Predicate toPredicate(Root<FeedRecord> root, CriteriaQuery<?> cq, CriteriaBuilder cb) {
-                cq.orderBy(cb.asc(root.get("id")));
+                cq.orderBy(cb.desc(root.get("dateTime")), cb.desc(root.get("id")));
                 Predicate aPred = cb.equal(root.get("petId"), petId);
                 if (cursor != null) {
-                    Predicate cPred = cb.greaterThan(root.get("id"), cursor);
-                    return cb.and(aPred, cPred);
+                    Predicate dateTimePred = cb.lessThan(root.get("dateTime"), cursor);
+                    return cb.and(aPred, dateTimePred);
                 }
                 return aPred;
             }

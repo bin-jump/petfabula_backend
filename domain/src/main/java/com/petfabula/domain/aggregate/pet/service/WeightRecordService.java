@@ -23,14 +23,14 @@ public class WeightRecordService {
     @Autowired
     private WeightRecordRepository weightRecordRepository;
 
-    public WeightRecord create(Long feederId, Long petId, Instant date, Double weight) {
+    public WeightRecord create(Long feederId, Long petId, Instant dateTime, Integer weight) {
         Pet pet = petRepository.findById(petId);
         if (pet == null || !pet.getFeederId().equals(feederId)) {
             throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
         }
 
         Long id = idGenerator.nextId();
-        WeightRecord record = new WeightRecord(id, petId, date, weight);
+        WeightRecord record = new WeightRecord(id, petId, dateTime, weight);
 
         pet.setWeightRecordCount(pet.getWeightRecordCount() + 1);
         petRepository.save(pet);

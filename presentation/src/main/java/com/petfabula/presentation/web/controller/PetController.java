@@ -2,13 +2,14 @@ package com.petfabula.presentation.web.controller;
 
 import com.petfabula.application.pet.PetApplicationService;
 import com.petfabula.domain.aggregate.pet.entity.*;
-import com.petfabula.domain.aggregate.pet.respository.PetBreedRepository;
-import com.petfabula.domain.aggregate.pet.respository.PetRepository;
+import com.petfabula.domain.aggregate.pet.respository.*;
 import com.petfabula.domain.common.image.ImageFile;
+import com.petfabula.domain.common.paging.CursorPage;
 import com.petfabula.domain.exception.InvalidOperationException;
 import com.petfabula.presentation.facade.assembler.AssemblerHelper;
 import com.petfabula.presentation.facade.assembler.pet.*;
 import com.petfabula.presentation.facade.dto.pet.*;
+import com.petfabula.presentation.web.api.CursorPageData;
 import com.petfabula.presentation.web.api.Response;
 import com.petfabula.presentation.web.security.LoginUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,8 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/pet")
 @Validated
 public class PetController {
+
+    static final int DEAULT_PAGE_SIZE = 5;
 
     @Autowired
     private AssemblerHelper assemblerHelper;
@@ -57,6 +60,21 @@ public class PetController {
     @Autowired
     private PetBreedRepository petBreedRepository;
 
+    @Autowired
+    private WeightRecordRepository weightRecordRepository;
+
+    @Autowired
+    private FeedRecordRepository feedRecordRepository;
+
+    @Autowired
+    private DisorderRecordRepository disorderRecordRepository;
+
+    @Autowired
+    private PetEventRecordRepository petEventRecordRepository;
+
+    @Autowired
+    private MedicalRecordRepository medicalRecordRepository;
+
     @GetMapping("pets")
     public Response<List<PetDetailDto>> getMyPets() {
         Long userId = LoginUtils.currentUserId();
@@ -73,10 +91,18 @@ public class PetController {
         return Response.ok(res);
     }
 
+    @GetMapping("pets/{petId}")
+    public Response<PetDetailDto> getPet(@PathVariable("petId") Long petId) {
+        Pet pet = petRepository.findById(petId);
+        PetBreed breed = petBreedRepository.findById(pet.getBreedId());
+        PetDetailDto res = petAssembler.convertToDetailDto(pet);
+        res.setBreed(breed.getName());
+        return Response.ok(res);
+    }
+
     @GetMapping("feeders/{feederId}/pets")
     public Response<List<PetDto>> getFeederPets(@PathVariable("feederId") Long feederId) {
-        Long userId = LoginUtils.currentUserId();
-        List<Pet> pets = petRepository.findByFeederId(userId);
+        List<Pet> pets = petRepository.findByFeederId(feederId);
         List<PetDto> res = petAssembler.convertToDtos(pets);
         List<Long> breedIds = pets.stream().map(Pet::getBreedId)
                 .distinct()
@@ -133,7 +159,7 @@ public class PetController {
     public Response<WeightRecordDto> createWeightRecord(@Validated @RequestBody WeightRecordDto weightRecordDto) {
         Long userId = LoginUtils.currentUserId();
         WeightRecord record = petApplicationService.createWeightRecord(userId, weightRecordDto.getPetId(),
-                AssemblerHelper.toInstant(weightRecordDto.getDate()), weightRecordDto.getWeight());
+                AssemblerHelper.toInstant(weightRecordDto.getDateTime()), weightRecordDto.getWeight());
         weightRecordDto = weightRecordAssembler.convertToDto(record);
         return Response.ok(weightRecordDto);
     }
@@ -203,5 +229,55 @@ public class PetController {
                         recordDto.getNote(), imageFiles);
         recordDto = medicalRecordAssembler.convertToDto(record);
         return Response.ok(recordDto);
+    }
+
+    @GetMapping("pets/{petId}/feedrecords")
+    public Response<CursorPageData<FeedRecordDto>> getFeedRecords(@PathVariable("petId") Long petId,
+                                                                      @RequestParam(value = "cursor", required = false) Long cursor) {
+        CursorPage<FeedRecord> records = feedRecordRepository.findByPetId(petId, cursor, DEAULT_PAGE_SIZE);
+        CursorPageData<FeedRecordDto> res = CursorPageData
+                .of(feedRecordAssember.convertToDtos(records.getResult()), records.isHasMore(),
+                        records.getPageSize(), records.getNextCursor());
+        return Response.ok(res);
+    }
+
+    @GetMapping("pets/{petId}/weightrecords")
+    public Response<CursorPageData<WeightRecordDto>> getWeightRecords(@PathVariable("petId") Long petId,
+                                                    @RequestParam(value = "cursor", required = false) Long cursor) {
+        CursorPage<WeightRecord> records = weightRecordRepository.findByPetId(petId, cursor, DEAULT_PAGE_SIZE);
+        CursorPageData<WeightRecordDto> res = CursorPageData
+                .of(weightRecordAssembler.convertToDtos(records.getResult()), records.isHasMore(),
+                        records.getPageSize(), records.getNextCursor());
+        return Response.ok(res);
+    }
+
+    @GetMapping("pets/{petId}/disorderrecords")
+    public Response<CursorPageData<DisorderRecordDto>> getDisorderRecords(@PathVariable("petId") Long petId,
+                                                                      @RequestParam(value = "cursor", required = false) Long cursor) {
+        CursorPage<DisorderRecord> records = disorderRecordRepository.findByPetId(petId, cursor, DEAULT_PAGE_SIZE);
+        CursorPageData<DisorderRecordDto> res = CursorPageData
+                .of(disorderRecordAssembler.convertToDtos(records.getResult()), records.isHasMore(),
+                        records.getPageSize(), records.getNextCursor());
+        return Response.ok(res);
+    }
+
+    @GetMapping("pets/{petId}/peteventrecords")
+    public Response<CursorPageData<PetEventRecordDto>> getPetEventRecords(@PathVariable("petId") Long petId,
+                                                                          @RequestParam(value = "cursor", required = false) Long cursor) {
+        CursorPage<PetEventRecord> records = petEventRecordRepository.findByPetId(petId, cursor, DEAULT_PAGE_SIZE);
+        CursorPageData<PetEventRecordDto> res = CursorPageData
+                .of(petEventRecordAssembler.convertToDtos(records.getResult()), records.isHasMore(),
+                        records.getPageSize(), records.getNextCursor());
+        return Response.ok(res);
+    }
+
+    @GetMapping("pets/{petId}/medicalrecords")
+    public Response<CursorPageData<MedicalRecordDto>> getMedicalRecords(@PathVariable("petId") Long petId,
+                                                                          @RequestParam(value = "cursor", required = false) Long cursor) {
+        CursorPage<MedicalRecord> records = medicalRecordRepository.findByPetId(petId, cursor, DEAULT_PAGE_SIZE);
+        CursorPageData<MedicalRecordDto> res = CursorPageData
+                .of(medicalRecordAssembler.convertToDtos(records.getResult()), records.isHasMore(),
+                        records.getPageSize(), records.getNextCursor());
+        return Response.ok(res);
     }
 }

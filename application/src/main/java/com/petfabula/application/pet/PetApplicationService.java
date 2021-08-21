@@ -72,9 +72,9 @@ public class PetApplicationService {
     }
 
     @Transactional
-    public WeightRecord createWeightRecord(Long feederId, Long petId, Instant date, Double weight) {
+    public WeightRecord createWeightRecord(Long feederId, Long petId, Instant dateTime, Integer weight) {
 
-        return weightRecordService.create(feederId, petId, date, weight);
+        return weightRecordService.create(feederId, petId, dateTime, weight);
     }
 
     @Transactional

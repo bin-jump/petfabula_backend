@@ -52,6 +52,27 @@ public class PostRepositoryImpl implements PostRepository {
     }
 
     @Override
+    public CursorPage<Post> findByPetId(Long petId, Long cursor, int size) {
+        Specification<Post> spec = new Specification<Post>() {
+            @Override
+            public Predicate toPredicate(Root<Post> root, CriteriaQuery<?> cq, CriteriaBuilder cb) {
+                cq.orderBy(cb.desc(root.get("id")));
+                Predicate aPred = cb.equal(root.get("relatePetId"), petId);
+                if (cursor != null) {
+                    Predicate cPred = cb.lessThan(root.get("id"), cursor);
+                    return cb.and(aPred, cPred);
+                }
+                return aPred;
+            }
+        };
+
+        Pageable limit = PageRequest.of(0, size);
+        Page<Post> res = postJpaRepository.findAll(spec, limit);
+
+        return CursorPage.of(res.getContent(), res.hasNext(), size);
+    }
+
+    @Override
     public List<Post> findByIds(List<Long> ids) {
         if (ids.size() == 0) {
             return new ArrayList<>();

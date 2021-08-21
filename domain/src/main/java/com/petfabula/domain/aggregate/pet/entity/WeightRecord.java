@@ -17,34 +17,34 @@ import java.time.Instant;
 @Getter
 @Entity
 @Table(name = "pet_weight_record",
-        indexes = {@Index(columnList = "pet_id, date")})
+        indexes = {@Index(columnList = "pet_id, date_time")})
 public class WeightRecord extends GeneralEntity {
 
-    public WeightRecord(Long id, Long petId, Instant date, Double weight) {
+    public WeightRecord(Long id, Long petId, Instant dateTime, Integer weight) {
         setId(id);
         this.petId = petId;
-        this.date = date;
-        this.weight = weight;
+        setDateTime(dateTime);
+        setWeight(weight);
     }
 
     @Column(name = "pet_id", nullable = false)
     private Long petId;
 
-    @Column(name = "date", nullable = false)
-    private Instant date;
+    @Column(name = "date_time", nullable = false)
+    private Instant dateTime;
 
     @Column(name = "weight", nullable = false)
-    private Double weight;
+    private Integer weight;
 
-    public void setWeight(Double weight) {
+    public void setWeight(Integer weight) {
         if (weight <= 0 || weight > 100000) {
             throw new InvalidValueException("weight", CommonMessageKeys.CANNOT_PROCEED);
         }
         this.weight = weight;
     }
 
-    public void setDate(Instant date) {
+    public void setDateTime(Instant date) {
         EntityValidationUtils.validRecordDate("date", date);
-        this.date = date;
+        this.dateTime = date;
     }
 }

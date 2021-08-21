@@ -26,7 +26,7 @@ public class PetRepositoryImpl implements PetRepository {
 
     @Override
     public Pet findByName(String name) {
-        return null;
+        return petJpaRepository.findByName(name);
     }
 
     @Override

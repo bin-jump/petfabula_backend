@@ -37,10 +37,10 @@ public class WeightRecordRepositoryImpl implements WeightRecordRepository {
         Specification<WeightRecord> spec = new Specification<WeightRecord>() {
             @Override
             public Predicate toPredicate(Root<WeightRecord> root, CriteriaQuery<?> cq, CriteriaBuilder cb) {
-                cq.orderBy(cb.asc(root.get("id")));
+                cq.orderBy(cb.desc(root.get("dateTime")), cb.desc(root.get("id")));
                 Predicate aPred = cb.equal(root.get("petId"), petId);
                 if (cursor != null) {
-                    Predicate cPred = cb.greaterThan(root.get("id"), cursor);
+                    Predicate cPred = cb.lessThan(root.get("dateTime"), cursor);
                     return cb.and(aPred, cPred);
                 }
                 return aPred;

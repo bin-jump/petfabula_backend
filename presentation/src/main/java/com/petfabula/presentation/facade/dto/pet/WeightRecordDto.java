@@ -15,7 +15,7 @@ public class WeightRecordDto {
 
     private Long petId;
 
-    private Long date;
+    private Long dateTime;
 
-    private Double weight;
+    private Integer weight;
 }

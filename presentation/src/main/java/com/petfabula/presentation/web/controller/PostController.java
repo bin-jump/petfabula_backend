@@ -105,6 +105,16 @@ public class PostController {
         return Response.ok(res);
     }
 
+    @GetMapping("pet/{petId}/posts")
+    public Response<CursorPageData<PostDto>> getPetPosts(@PathVariable("petId") Long petId,
+                                                          @RequestParam(value = "cursor", required = false) Long cursor) {
+        CursorPage<Post> posts = postRepository.findByPetId(petId, cursor, DEAULT_PAGE_SIZE);
+        CursorPageData<PostDto> res = CursorPageData
+                .of(postAssembler.convertToDtos(posts.getResult()), posts.isHasMore(),
+                        posts.getPageSize(), posts.getNextCursor());
+        return Response.ok(res);
+    }
+
     @GetMapping("posts")
     public Response<CursorPageData<PostDto>> getMyPosts(@RequestParam(value = "cursor", required = false) Long cursor) {
         Long userId = LoginUtils.currentUserId();

@@ -9,6 +9,8 @@ public interface PostRepository {
 
     CursorPage<Post> findByParticipatorId(Long participatorId, Long cursor, int size);
 
+    CursorPage<Post> findByPetId(Long petId, Long cursor, int size);
+
     List<Post> findByIds(List<Long> ids);
 
     Post save(Post post);
