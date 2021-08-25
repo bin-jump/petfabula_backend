@@ -26,7 +26,7 @@ public class QuestionAssembler {
         QuestionDto questionDto = modelMapper.map(question, QuestionDto.class);
         questionDto.getImages().clear();
         question.getImages().forEach(item -> questionDto.getImages()
-                .add(new ImageDto(assemblerHelper
+                .add(new ImageDto(item.getId(), assemblerHelper
                         .completeImageUrl(item.getUrl()), item.getWidth(), item.getHeight())));
 
         return questionDto;
@@ -41,7 +41,7 @@ public class QuestionAssembler {
         questionAnswerSearchDto.getImages().clear();
         questionAnswerSearchItem.getImages()
                 .stream().forEach(item -> {
-            ImageDto img = new ImageDto(assemblerHelper
+            ImageDto img = new ImageDto(null, assemblerHelper
                     .completeImageUrl(item.getUrl()),
                     item.getWidth(), item.getHeight());
             questionAnswerSearchDto.getImages().add(img);

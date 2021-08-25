@@ -24,7 +24,7 @@ public class DisorderRecordAssembler {
         DisorderRecordDto disorderRecordDto = modelMapper.map(disorderRecord, DisorderRecordDto.class);
         disorderRecordDto.getImages().clear();
         disorderRecord.getImages().forEach(item -> disorderRecordDto.getImages()
-                .add(new ImageDto(assemblerHelper
+                .add(new ImageDto(item.getId(), assemblerHelper
                         .completeImageUrl(item.getUrl()), item.getWidth(), item.getHeight())));
         return disorderRecordDto;
     }

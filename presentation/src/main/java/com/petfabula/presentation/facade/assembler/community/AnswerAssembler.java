@@ -26,7 +26,7 @@ public class AnswerAssembler {
         AnswerDto answerDto = modelMapper.map(answer, AnswerDto.class);
         answerDto.getImages().clear();
         answer.getImages().forEach(item -> answerDto.getImages()
-                .add(new ImageDto(assemblerHelper
+                .add(new ImageDto(item.getId(), assemblerHelper
                         .completeImageUrl(item.getUrl()), item.getWidth(), item.getHeight())));
 
         return answerDto;
@@ -40,7 +40,7 @@ public class AnswerAssembler {
         AnswerWithQuestionDto answerWithQuestionDto = modelMapper.map(answer, AnswerWithQuestionDto.class);
         answerWithQuestionDto.getImages().clear();
         answer.getImages().forEach(item -> answerWithQuestionDto.getImages()
-                .add(new ImageDto(assemblerHelper
+                .add(new ImageDto(item.getId(), assemblerHelper
                         .completeImageUrl(item.getUrl()), item.getWidth(), item.getHeight())));
         answerWithQuestionDto.setQuestionTitle(question.getTitle());
         return answerWithQuestionDto;

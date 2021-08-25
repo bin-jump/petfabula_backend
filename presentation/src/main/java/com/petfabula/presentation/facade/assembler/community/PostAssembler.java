@@ -25,7 +25,7 @@ public class PostAssembler {
         PostDto postDto = modelMapper.map(post, PostDto.class);
         postDto.getImages().clear();
         post.getImages().forEach(item -> postDto.getImages()
-                .add(new ImageDto(assemblerHelper
+                .add(new ImageDto(item.getId(), assemblerHelper
                         .completeImageUrl(item.getUrl()), item.getWidth(), item.getHeight())));
 
         return postDto;
@@ -38,7 +38,7 @@ public class PostAssembler {
     public PostDto convertSearchDto(PostSearchItem postSearchItem) {
         PostDto postDto = modelMapper.map(postSearchItem, PostDto.class);
         if (postSearchItem.getCoverImage() != null) {
-            ImageDto coverImage = new ImageDto(assemblerHelper
+            ImageDto coverImage = new ImageDto(null, assemblerHelper
                     .completeImageUrl(postSearchItem.getCoverImage().getUrl()),
                     postSearchItem.getCoverImage().getWidth(),
                     postSearchItem.getCoverImage().getHeight());

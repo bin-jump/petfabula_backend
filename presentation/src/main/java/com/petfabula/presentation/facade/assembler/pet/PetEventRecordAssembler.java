@@ -24,7 +24,7 @@ public class PetEventRecordAssembler {
         PetEventRecordDto petEventRecordDto = modelMapper.map(petEventRecord, PetEventRecordDto.class);
         petEventRecordDto.getImages().clear();
         petEventRecord.getImages().forEach(item -> petEventRecordDto.getImages()
-                .add(new ImageDto(assemblerHelper
+                .add(new ImageDto(item.getId(), assemblerHelper
                         .completeImageUrl(item.getUrl()), item.getWidth(), item.getHeight())));
         return petEventRecordDto;
     }

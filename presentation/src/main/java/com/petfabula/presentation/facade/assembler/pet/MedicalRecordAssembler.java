@@ -24,7 +24,7 @@ public class MedicalRecordAssembler {
         MedicalRecordDto medicalRecordDto = modelMapper.map(medicalRecord, MedicalRecordDto.class);
         medicalRecordDto.getImages().clear();
         medicalRecord.getImages().forEach(item -> medicalRecordDto.getImages()
-                .add(new ImageDto(assemblerHelper
+                .add(new ImageDto(item.getId(), assemblerHelper
                         .completeImageUrl(item.getUrl()), item.getWidth(), item.getHeight())));
         return medicalRecordDto;
     }
