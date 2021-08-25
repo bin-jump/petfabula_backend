@@ -38,12 +38,14 @@ public class QuestionRepositoryImpl implements QuestionRepository {
         return questionJpaRepository.findById(id).orElse(null);
     }
 
+    @FilterSoftDelete
+    @Transactional
     @Override
     public List<Question> findByIds(List<Long> ids) {
         if (ids.size() == 0) {
             return new ArrayList<>();
         }
-        return questionJpaRepository.findAllById(ids);
+        return questionJpaRepository.findByIdInOrderByIdDesc(ids);
     }
 
     @Override

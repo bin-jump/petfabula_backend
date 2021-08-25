@@ -7,11 +7,17 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.lang.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface PostCommentReplyJpaRepository extends JpaRepository<PostCommentReply, Long>, JpaSpecificationExecutor {
+
+    @EntityGraph(value = "postCommentReply.all")
+    @Query("select r from PostCommentReply r where r.id = :id")
+    Optional<PostCommentReply> findById(Long id);
 
     @EntityGraph(value = "postCommentReply.all")
     @Override

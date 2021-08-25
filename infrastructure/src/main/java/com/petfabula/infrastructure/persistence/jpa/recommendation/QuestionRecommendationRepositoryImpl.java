@@ -17,6 +17,7 @@ import java.math.BigInteger;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -32,7 +33,7 @@ public class QuestionRecommendationRepositoryImpl implements QuestionRecommendat
     private QuestionRecommendationJpaRepository questionRecommendationJpaRepository;
 
     @Autowired
-    private QuestionJpaRepository questionJpaRepository;
+    private QuestionRepository questionRepository;
 
 
     @Override
@@ -42,6 +43,15 @@ public class QuestionRecommendationRepositoryImpl implements QuestionRecommendat
 
     @Override
     public RecommendationResult<Question> findRandomRecommend(int page, int size, int seed, Long cursor) {
+        // cursor here is for filtering new created questions
+        if(cursor == null) {
+            QuestionRecommendation questionRecommendation =
+                    questionRecommendationJpaRepository.findTopByOrderByIdDesc();
+            cursor =  questionRecommendation.getId();
+            if (questionRecommendation == null) {
+                return new RecommendationResult<>(OffsetPage.ofEmpty(page, size), seed, cursor);
+            }
+        }
 
 //        String q = "select q from QuestionRecommendation q where q.id < :cursor order by rand(42)";
 
@@ -61,18 +71,22 @@ public class QuestionRecommendationRepositoryImpl implements QuestionRecommendat
             return new RecommendationResult<>(OffsetPage.ofEmpty(page, size), seed, cursor);
         }
 
-        if(cursor == null) {
-            QuestionRecommendation questionRecommendation =
-                    questionRecommendationJpaRepository.findTopByOrderByIdDesc();
-            cursor =  questionRecommendation.getId();
-        }
+        String countQ = "select count(*) from question_recommendation where (:cursor is null or id <= :cursor) order by rand(:seed)";
+        Query countQuery = entityManager.createNativeQuery(countQ);
+        countQuery.setParameter("cursor", cursor);
+        countQuery.setParameter("seed", seed);
+        BigInteger cnt = (BigInteger)countQuery.getSingleResult();
+        Long count = cnt.longValue();
+        boolean hasMore = (count - page * size) > 0;
 
-        Map<Long, Question> questionMap = questionJpaRepository
-                .findByIdIn(questionIds)
+        Map<Long, Question> questionMap = questionRepository
+                .findByIds(questionIds)
                 .stream().collect(Collectors.toMap(Question::getId,
                         Function.identity()));
         List<Question> questions = questionIds.stream()
-                .map(item -> questionMap.get(item)).collect(Collectors.toList());
+                .map(item -> questionMap.get(item))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
 
         OffsetPage<Question> offsetPage =
         OffsetPage.of(questions, page, size, questions.size() == size);

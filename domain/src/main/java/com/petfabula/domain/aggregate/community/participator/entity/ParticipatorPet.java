@@ -18,10 +18,10 @@ import javax.persistence.Table;
 public class ParticipatorPet extends ConcurrentEntity {
 
     public ParticipatorPet(Long id, Long participatorId, String name,
-                           String photo, String petCategory, Long breedId) {
+                           String photo, String category, Long breedId) {
         setId(id);
         this.participatorId = participatorId;
-        this.petCategory = petCategory;
+        this.category = category;
         this.breedId = breedId;
         setName(name);
         setPhoto(photo);
@@ -36,8 +36,8 @@ public class ParticipatorPet extends ConcurrentEntity {
     @Column(name = "photo")
     private String photo;
 
-    @Column(name = "pet_category", nullable = false)
-    private String petCategory;
+    @Column(name = "category", nullable = false)
+    private String category;
 
     @Column(name = "breed_id", nullable = false)
     private Long breedId;

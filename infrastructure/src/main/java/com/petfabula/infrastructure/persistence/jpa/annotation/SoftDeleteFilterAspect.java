@@ -33,7 +33,7 @@ public class SoftDeleteFilterAspect {
             return joinPoint.proceed();
         }finally {
             // If session was available
-            if ( session != null ) {
+            if (session != null) {
                 // Disable the filter
                 session.disableFilter("activeFilter");
             }

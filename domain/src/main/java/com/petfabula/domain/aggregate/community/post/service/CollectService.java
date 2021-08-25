@@ -2,7 +2,6 @@ package com.petfabula.domain.aggregate.community.post.service;
 
 import com.petfabula.domain.aggregate.community.participator.entity.Participator;
 import com.petfabula.domain.aggregate.community.participator.repository.ParticipatorRepository;
-import com.petfabula.domain.aggregate.community.post.PostMessageKeys;
 import com.petfabula.domain.aggregate.community.post.entity.Post;
 import com.petfabula.domain.aggregate.community.post.entity.valueobject.CollectPost;
 import com.petfabula.domain.aggregate.community.post.repository.CollectPostRepository;
@@ -30,7 +29,7 @@ public class CollectService {
     public CollectPost collect(Long participatorId, Long postId) {
         Post post = postRepository.findById(postId);
         if (post == null) {
-            throw new InvalidOperationException(PostMessageKeys.POST_NOT_FOUND);
+            throw new InvalidOperationException(CommonMessageKeys.NO_DEPEND_ENTITY);
         }
         if (post.getParticipator().getId().equals(participatorId)) {
             throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
@@ -57,7 +56,7 @@ public class CollectService {
     public CollectPost removeCollect(Long participatorId, Long postId) {
         Post post = postRepository.findById(postId);
         if (post == null) {
-            throw new InvalidOperationException(PostMessageKeys.POST_NOT_FOUND);
+            throw new InvalidOperationException(CommonMessageKeys.NO_DEPEND_ENTITY);
         }
         if (post.getParticipator().getId().equals(participatorId)) {
             throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);

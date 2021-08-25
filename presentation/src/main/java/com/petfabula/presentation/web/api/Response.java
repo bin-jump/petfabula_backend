@@ -21,7 +21,7 @@ public class Response<T> {
 
     private T data;
 
-    private Map<String, String> errors = new HashMap<>();
+    private Map<String, Object> errors = new HashMap<>();
 
     static public <T> Response<T> ok() {
         Response<T> res = new Response<>();
@@ -62,6 +62,8 @@ public class Response<T> {
         VALIDATION_FAILED(1001, "validation failed"),
         AUTHENTICATION_FAILED(1002, "authentication failed"),
         BAD_REQUEST(1003, "bad request"),
+        NOT_FOUND(1004, "resource not found"),
+        NO_OPERATION_OBJECT(1005, "operation resource not found"),
 
         LOGIN_REQUIRED(2001, "login required"),
         NO_PERMISSION(2002, "no permission"),

@@ -4,11 +4,11 @@ import com.petfabula.domain.aggregate.community.participator.entity.Participator
 import com.petfabula.domain.aggregate.community.post.entity.Post;
 import com.petfabula.domain.aggregate.community.post.entity.PostComment;
 import com.petfabula.domain.aggregate.community.post.entity.PostCommentReply;
-import com.petfabula.domain.aggregate.community.post.PostMessageKeys;
 import com.petfabula.domain.aggregate.community.participator.repository.ParticipatorRepository;
 import com.petfabula.domain.aggregate.community.post.repository.PostCommentReplyRepository;
 import com.petfabula.domain.aggregate.community.post.repository.PostCommentRepository;
 import com.petfabula.domain.aggregate.community.post.repository.PostRepository;
+import com.petfabula.domain.common.CommonMessageKeys;
 import com.petfabula.domain.exception.InvalidOperationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,12 +34,12 @@ public class PostCommentService {
     public PostComment createPostComment(Long participatorId, Long postId, String content) {
         Participator participator = participatorRepository.findById(participatorId);
         if (participator == null) {
-            throw new InvalidOperationException(PostMessageKeys.CANNOT_CREATE_COMMENT);
+            throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
         }
 
         Post post = postRepository.findById(postId);
         if (post == null) {
-            throw new InvalidOperationException(PostMessageKeys.CANNOT_CREATE_COMMENT);
+            throw new InvalidOperationException(CommonMessageKeys.NO_DEPEND_ENTITY);
         }
 
         post.setCommentCount(post.getCommentCount() + 1);
@@ -52,17 +52,20 @@ public class PostCommentService {
     public PostComment removePostComment(Long participatorId, Long postCommentId) {
 
         PostComment postComment = postCommentRepository.findById(postCommentId);
-        if (postComment == null || !postComment.getParticipator().getId().equals(participatorId)) {
-            throw new InvalidOperationException(PostMessageKeys.CANNOT_REMOVE_POST_COMMENT);
+        if(postComment == null) {
+            return null;
+        }
+
+        if (!postComment.getParticipator().getId().equals(participatorId)) {
+            throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
         }
 
         Post post = postRepository.findById(postComment.getPostId());
         if (post == null) {
-            //throw new InvalidOperationException(PostMessageKeys.POST_COMMENT_NOT_FOUND);
             return null;
         }
 
-        post.setCommentCount(post.getCommentCount() - 1);
+        post.setCommentCount(post.getCommentCount() - 1 - postComment.getReplyCount());
         postCommentRepository.remove(postComment);
         postRepository.save(post);
 
@@ -72,22 +75,22 @@ public class PostCommentService {
     public PostCommentReply createCommentReply(Long participatorId, Long postCommentId, Long replyToId, String content) {
         Participator participator = participatorRepository.findById(participatorId);
         if (participator == null) {
-            throw new InvalidOperationException(PostMessageKeys.CANNOT_CREATE_POST_COMMENT_REPLY);
+            throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
         }
 
         PostComment postComment = postCommentRepository.findById(postCommentId);
         if (postComment == null) {
-            throw new InvalidOperationException(PostMessageKeys.CANNOT_CREATE_POST_COMMENT_REPLY);
+            throw new InvalidOperationException(CommonMessageKeys.NO_DEPEND_ENTITY);
         }
 
         Post post = postRepository.findById(postComment.getPostId());
         if (post == null) {
-            throw new InvalidOperationException(PostMessageKeys.CANNOT_CREATE_POST_COMMENT_REPLY);
+            throw new InvalidOperationException(CommonMessageKeys.NO_DEPEND_ENTITY);
         }
         if (replyToId != null) {
             PostCommentReply replyTarget = postCommentReplyRepository.findById(replyToId);
             if (replyTarget == null) {
-                throw new InvalidOperationException(PostMessageKeys.POST_COMMENT_NOT_FOUND);
+                throw new InvalidOperationException(CommonMessageKeys.NO_DEPEND_ENTITY);
             }
         }
 
@@ -105,7 +108,7 @@ public class PostCommentService {
     public PostCommentReply removeCommentReply(Long participatorId, Long commentReplyId) {
         Participator participator = participatorRepository.findById(participatorId);
         if (participator == null) {
-            throw new InvalidOperationException(PostMessageKeys.CANNOT_CREATE_REMOVE_COMMENT_REPLY);
+            throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
         }
 
         PostCommentReply commentReply = postCommentReplyRepository.findById(commentReplyId);
@@ -114,18 +117,17 @@ public class PostCommentService {
         }
 
         if (!commentReply.getParticipator().getId().equals(participatorId)) {
-            throw new InvalidOperationException(PostMessageKeys.CANNOT_CREATE_REMOVE_COMMENT_REPLY);
+            throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
         }
 
-        PostComment postComment = postCommentRepository
-                .findById(commentReply.getCommentId());
+        PostComment postComment = postCommentRepository.findById(commentReply.getCommentId());
         if (postComment == null) {
-            throw new InvalidOperationException(PostMessageKeys.CANNOT_CREATE_REMOVE_COMMENT_REPLY);
+            return null;
         }
 
         Post post = postRepository.findById(commentReply.getPostId());
         if (post == null) {
-            throw new InvalidOperationException(PostMessageKeys.CANNOT_CREATE_REMOVE_COMMENT_REPLY);
+            return null;
         }
 
         post.setCommentCount(post.getCommentCount() - 1);

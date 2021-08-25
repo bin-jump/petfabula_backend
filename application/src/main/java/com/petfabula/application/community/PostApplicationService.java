@@ -40,6 +40,12 @@ public class PostApplicationService {
     }
 
     @Transactional
+    public Post updatePost(Long participatorId, Long postId, String content, Long relatePetId, Long topicId,
+                           List<ImageFile> images, List<Long> imageIds) {
+        return postService.update(participatorId, postId, content, relatePetId, topicId, images, imageIds);
+    }
+
+    @Transactional
     public Post removePost(Long participatorId, Long postId) {
         return postService.remove(participatorId, postId);
     }

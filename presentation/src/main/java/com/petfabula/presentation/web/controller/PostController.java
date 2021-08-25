@@ -2,6 +2,7 @@ package com.petfabula.presentation.web.controller;
 
 import com.petfabula.application.community.PostApplicationService;
 import com.petfabula.domain.aggregate.community.participator.entity.FollowParticipator;
+import com.petfabula.domain.aggregate.community.participator.entity.ParticipatorPet;
 import com.petfabula.domain.aggregate.community.participator.repository.FollowParticipatorRepository;
 import com.petfabula.domain.aggregate.community.participator.repository.ParticipatorPetRepository;
 import com.petfabula.domain.aggregate.community.post.entity.valueobject.CollectPost;
@@ -16,11 +17,14 @@ import com.petfabula.domain.common.paging.CursorPage;
 import com.petfabula.domain.exception.InvalidOperationException;
 import com.petfabula.domain.exception.NotFoundException;
 import com.petfabula.presentation.facade.assembler.community.*;
+import com.petfabula.presentation.facade.dto.AlreadyDeletedResponse;
+import com.petfabula.presentation.facade.dto.ImageDto;
 import com.petfabula.presentation.facade.dto.community.*;
 import com.petfabula.presentation.web.api.CursorPageData;
 import com.petfabula.presentation.web.api.Response;
 import com.petfabula.presentation.web.security.LoginUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,6 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/post")
@@ -129,7 +134,7 @@ public class PostController {
     public Response<PostDto> getPostDetail(@PathVariable("postId") Long postId) {
         Post post = postRepository.findById(postId);
         if (post == null) {
-            throw new NotFoundException(PostMessageKeys.POST_NOT_FOUND);
+            throw new NotFoundException(postId, PostMessageKeys.POST_NOT_FOUND);
         }
         PostDto res = postAssembler.convertToDto(post);
         Long userId = LoginUtils.currentUserId();
@@ -144,14 +149,21 @@ public class PostController {
                 res.getParticipator().setFollowed(followParticipator != null);
             }
         }
+
         if (post.getRelatePetId() != null) {
-            res.setRelatePet(participtorPetAssembler
-                    .convertToDto(participatorPetRepository.findById(post.getRelatePetId())));
+            ParticipatorPet pet = participatorPetRepository.findById(post.getRelatePetId());
+            if (pet != null) {
+                res.setRelatePet(participtorPetAssembler.convertToDto(pet));
+            }
         }
-        PostTopicRelation postTopicRelation =
-                postTopicRelationRepository.findByPostId(post.getId());
+
+        PostTopicRelation postTopicRelation = postTopicRelationRepository.findByPostId(post.getId());
         if (postTopicRelation != null) {
-            res.setPostTopic(postTopicAssembler.convertToDto(postTopicRelation.getPostTopic()));
+            Long topicId =postTopicRelation.getTopicId();
+            PostTopic topic = postTopicRepository.findById(topicId);
+            if (topic != null) {
+                res.setPostTopic(postTopicAssembler.convertToDto(topic));
+            }
         }
         return Response.ok(res);
     }
@@ -176,11 +188,64 @@ public class PostController {
         return Response.ok(postDto);
     }
 
-    @DeleteMapping("posts/{postId}")
-    public Response<Long> removePost(@PathVariable Long postId) {
+
+    @PutMapping("/posts")
+    public Response<PostDto> updatePost(@RequestPart(name = "post") @Validated PostDto postDto,
+                                        @RequestPart(value = "images", required = false) List<MultipartFile> images) throws IOException {
         Long userId = LoginUtils.currentUserId();
-        postApplicationService.removePost(userId, postId);
-        return Response.ok(postId);
+        List<ImageFile> imageFiles = new ArrayList<>();
+        if (images != null) {
+            for (MultipartFile file : images) {
+                if (file.isEmpty()) {
+                    throw new InvalidOperationException("Empty image file");
+                }
+                imageFiles.add(new ImageFile(file.getOriginalFilename(),
+                        file.getInputStream(), file.getSize()));
+            }
+        }
+        List<Long> imageIds = postDto.getImages().stream().map(ImageDto::getId).collect(Collectors.toList());
+        Post post = postApplicationService
+                .updatePost(userId, postDto.getId(), postDto.getContent(), postDto.getRelatePetId(), postDto.getTopicId(), imageFiles, imageIds);
+        postDto = postAssembler.convertToDto(post);
+
+        LikePost likePost = likePostRepository.find(userId, post.getId());
+        postDto.setLiked(likePost != null);
+        if (!userId.equals(post.getParticipator().getId())) {
+            CollectPost collectPost = collectPostRepository.find(userId, post.getId());
+            postDto.setCollected(collectPost != null);
+            FollowParticipator followParticipator = followParticipatorRepository
+                    .find(userId, post.getParticipator().getId());
+            postDto.getParticipator().setFollowed(followParticipator != null);
+        }
+
+        if (post.getRelatePetId() != null) {
+            ParticipatorPet pet = participatorPetRepository.findById(post.getRelatePetId());
+            if (pet != null) {
+                postDto.setRelatePet(participtorPetAssembler.convertToDto(pet));
+            }
+        }
+
+        PostTopicRelation postTopicRelation = postTopicRelationRepository.findByPostId(post.getId());
+        if (postTopicRelation != null) {
+            Long topicId =postTopicRelation.getTopicId();
+            PostTopic topic = postTopicRepository.findById(topicId);
+            if (topic != null) {
+                postDto.setPostTopic(postTopicAssembler.convertToDto(topic));
+            }
+        }
+
+        return Response.ok(postDto);
+    }
+
+    @DeleteMapping("posts/{postId}")
+    public Response<Object> removePost(@PathVariable Long postId) {
+        Long userId = LoginUtils.currentUserId();
+        Post post = postApplicationService.removePost(userId, postId);
+        if (post == null) {
+            return Response.ok(AlreadyDeletedResponse.of(postId));
+        }
+        PostDto res = postAssembler.convertToDto(post);
+        return Response.ok(res);
     }
 
     @PostMapping("/comments")
@@ -204,10 +269,13 @@ public class PostController {
     }
 
     @DeleteMapping("comments/{commentId}")
-    public Response<Long> removePostComment(@PathVariable Long commentId) {
+    public Response<Object> removePostComment(@PathVariable Long commentId) {
         Long userId = LoginUtils.currentUserId();
-        postApplicationService.removePostComment(userId, commentId);
-        return Response.ok(commentId);
+        PostComment postComment = postApplicationService.removePostComment(userId, commentId);
+        if (postComment == null) {
+            return Response.ok(AlreadyDeletedResponse.of(commentId));
+        }
+        return Response.ok(postCommentAssembler.convertToDto(postComment));
     }
 
     @PostMapping("/replies")
@@ -221,10 +289,13 @@ public class PostController {
     }
 
     @DeleteMapping("replies/{replyId}")
-    public Response<Long> removePostCommentReply(@PathVariable Long replyId) {
+    public Response<Object> removePostCommentReply(@PathVariable Long replyId) {
         Long userId = LoginUtils.currentUserId();
-        postApplicationService.removeCommentReply(userId, replyId);
-        return Response.ok(replyId);
+        PostCommentReply commentReply = postApplicationService.removeCommentReply(userId, replyId);
+        if (commentReply == null) {
+            return Response.ok(AlreadyDeletedResponse.of(replyId));
+        }
+        return Response.ok(postCommentReplyAssembler.convertToDto(commentReply));
     }
 
     @GetMapping("comments/{commentId}/replies")

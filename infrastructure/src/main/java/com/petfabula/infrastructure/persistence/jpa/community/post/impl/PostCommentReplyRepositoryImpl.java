@@ -56,6 +56,8 @@ public class PostCommentReplyRepositoryImpl implements PostCommentReplyRepositor
         return postCommentReplyJpaRepository.findById(id).orElse(null);
     }
 
+    @FilterSoftDelete
+    @Transactional
     @Override
     public List<PostCommentReply> findByIds(List<Long> ids) {
         if (ids.size() == 0) {

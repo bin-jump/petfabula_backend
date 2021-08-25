@@ -22,10 +22,6 @@ public class PostTopic extends GeneralEntity {
     @Column(name = "title", nullable = false, unique = true)
     private String title;
 
-//    @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
-//    @JoinColumn(name = "category_id", foreignKey = @ForeignKey(name = "none"))
-//    private PostTopicCategory topicCategory;
-
     @Column(name = "category_id", nullable = false)
     private Long categoryId;
 }

@@ -13,6 +13,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -22,6 +24,9 @@ import java.util.List;
 
 @Repository
 public class AnswerRepositoryImpl implements AnswerRepository {
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Autowired
     private AnswerJpaRepository answerJpaRepository;
@@ -38,12 +43,14 @@ public class AnswerRepositoryImpl implements AnswerRepository {
         return answerJpaRepository.findById(answerId).orElse(null);
     }
 
+    @FilterSoftDelete
+    @Transactional
     @Override
     public List<Answer> findByIds(List<Long> ids) {
         if (ids.size() == 0) {
             return new ArrayList<>();
         }
-        return answerJpaRepository.findByIdIn(ids);
+        return answerJpaRepository.findByIdInOrderByIdDesc(ids);
     }
 
     @Override
@@ -77,22 +84,41 @@ public class AnswerRepositoryImpl implements AnswerRepository {
     @Transactional
     @Override
     public CursorPage<Answer> findByQuestionId(Long questionId, Long cursor, int size) {
-        Specification<Answer> spec = new Specification<Answer>() {
-            @Override
-            public Predicate toPredicate(Root<Answer> root, CriteriaQuery<?> cq, CriteriaBuilder cb) {
-                cq.orderBy(cb.desc(root.get("id")));
-                Predicate aPred = cb.equal(root.get("questionId"), questionId);
-                if (cursor != null) {
-                    Predicate cPred = cb.lessThan(root.get("id"), cursor);
-                    return cb.and(aPred, cPred);
-                }
-                return aPred;
-            }
-        };
+//        Specification<Answer> spec = new Specification<Answer>() {
+//            @Override
+//            public Predicate toPredicate(Root<Answer> root, CriteriaQuery<?> cq, CriteriaBuilder cb) {
+//                cq.orderBy(cb.desc(root.get("id")));
+//                Predicate aPred = cb.equal(root.get("questionId"), questionId);
+//                if (cursor != null) {
+//                    Predicate cPred = cb.lessThan(root.get("id"), cursor);
+//                    return cb.and(aPred, cPred);
+//                }
+//                return aPred;
+//            }
+//        };
+//
+//        Pageable limit = PageRequest.of(0, size);
+//        Page<Answer> res = answerJpaRepository.findAll(spec, limit);
 
-        Pageable limit = PageRequest.of(0, size);
-        Page<Answer> res = answerJpaRepository.findAll(spec, limit);
-        return CursorPage.of(res.getContent(), res.hasNext(), size);
+        String q = "select a.id from Answer a where (:cursor is null or a.id < :cursor) and a.questionId = :questionId order by a.id desc";
+        List<Long> ids = entityManager.createQuery(q, Long.class)
+                .setParameter("questionId", questionId)
+                .setParameter("cursor", cursor)
+                .setMaxResults(size).getResultList();
+
+        if (ids.size() == 0) {
+            return CursorPage.empty(size);
+        }
+
+        Long nextCursor = ids.get(ids.size() - 1);
+        String cntq = "select count(a) from Answer a where (:cursor is null or a.id < :cursor) and a.questionId = :questionId order by a.id desc";
+        Long cnt =  entityManager.createQuery(cntq, Long.class)
+                .setParameter("questionId", questionId)
+                .setParameter("cursor", nextCursor)
+                .getSingleResult();
+
+        List<Answer> answers = answerJpaRepository.findByIdInOrderByIdDesc(ids);
+        return CursorPage.of(answers, cnt > 0, size);
     }
 
     @FilterSoftDelete

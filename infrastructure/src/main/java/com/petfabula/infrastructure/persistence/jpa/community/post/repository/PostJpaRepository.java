@@ -12,9 +12,15 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.lang.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface PostJpaRepository extends JpaRepository<Post, Long>, JpaSpecificationExecutor {
 
     @EntityGraph(value = "post.all")
-    List<Post> findByIdIn(List<Long> ids);
+    List<Post> findByIdInOrderByIdDesc(List<Long> ids);
+
+    @EntityGraph(value = "post.all")
+    @Query("select p from Post p where p.id = :id")
+    Optional<Post> findById(Long id);
+
 }

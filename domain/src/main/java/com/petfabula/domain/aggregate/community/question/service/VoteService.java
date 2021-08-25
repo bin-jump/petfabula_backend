@@ -46,7 +46,7 @@ public class VoteService {
 
         Question question = questionRepository.findById(questionId);
         if (question == null) {
-            throw new NotFoundException(QuestionMessageKeys.QUESTION_NOT_FOUND);
+            throw new InvalidOperationException(QuestionMessageKeys.QUESTION_NOT_FOUND);
         }
 
         UpvoteQuestion upvoteQuestion = questionVoteRepository
@@ -69,7 +69,7 @@ public class VoteService {
 
         Question question = questionRepository.findById(questionId);
         if (question == null) {
-            throw new NotFoundException(QuestionMessageKeys.QUESTION_NOT_FOUND);
+            throw new InvalidOperationException(QuestionMessageKeys.QUESTION_NOT_FOUND);
         }
 
         UpvoteQuestion upvoteQuestion = questionVoteRepository
@@ -91,7 +91,7 @@ public class VoteService {
 
         Answer answer = answerRepository.findById(answerId);
         if (answer == null) {
-            throw new NotFoundException(QuestionMessageKeys.ANSWER_NOT_FOUND);
+            throw new InvalidOperationException(QuestionMessageKeys.ANSWER_NOT_FOUND);
         }
 
         UpvoteAnswer upvoteAnswer = answerVoteRepository
@@ -114,7 +114,7 @@ public class VoteService {
 
         Answer answer = answerRepository.findById(answerId);
         if (answer == null) {
-            throw new NotFoundException(QuestionMessageKeys.ANSWER_NOT_FOUND);
+            throw new InvalidOperationException(QuestionMessageKeys.ANSWER_NOT_FOUND);
         }
 
         UpvoteAnswer upvoteAnswer = answerVoteRepository

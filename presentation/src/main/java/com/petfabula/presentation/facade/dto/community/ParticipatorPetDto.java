@@ -17,7 +17,7 @@ public class ParticipatorPetDto {
 
     private String photo;
 
-    private String petCategory;
+    private String category;
 
     private Long breedId;
 }

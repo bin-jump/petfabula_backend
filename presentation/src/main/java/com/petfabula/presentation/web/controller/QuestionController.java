@@ -2,6 +2,7 @@ package com.petfabula.presentation.web.controller;
 
 import com.petfabula.application.community.QuestionApplicationService;
 import com.petfabula.domain.aggregate.community.participator.entity.FollowParticipator;
+import com.petfabula.domain.aggregate.community.participator.entity.ParticipatorPet;
 import com.petfabula.domain.aggregate.community.participator.repository.FollowParticipatorRepository;
 import com.petfabula.domain.aggregate.community.participator.repository.ParticipatorPetRepository;
 import com.petfabula.domain.aggregate.community.question.QuestionMessageKeys;
@@ -19,6 +20,8 @@ import com.petfabula.presentation.facade.assembler.community.AnswerAssembler;
 import com.petfabula.presentation.facade.assembler.community.AnswerCommentAssembler;
 import com.petfabula.presentation.facade.assembler.community.ParticiptorPetAssembler;
 import com.petfabula.presentation.facade.assembler.community.QuestionAssembler;
+import com.petfabula.presentation.facade.dto.AlreadyDeletedResponse;
+import com.petfabula.presentation.facade.dto.ImageDto;
 import com.petfabula.presentation.facade.dto.community.*;
 import com.petfabula.presentation.web.api.CursorPageData;
 import com.petfabula.presentation.web.api.Response;
@@ -119,15 +122,6 @@ public class QuestionController {
         return Response.ok(answerDto);
     }
 
-    @GetMapping("recommend/questions")
-    public Response<CursorPageData<QuestionDto>> getRecommandQuestions(@RequestParam(value = "cursor", required = false) Long cursor) {
-        CursorPage<Question> questions = questionRepository.findRecent(cursor, DEAULT_PAGE_SIZE);
-        CursorPageData<QuestionDto> res = CursorPageData
-                .of(questionAssembler.convertToDtos(questions.getResult()), questions.isHasMore(),
-                        questions.getPageSize(), questions.getNextCursor());
-        return Response.ok(res);
-    }
-
     @GetMapping("unanswered-questions")
     public Response<CursorPageData<QuestionDto>> getUnansweredQuestions(@RequestParam(value = "cursor", required = false) Long cursor) {
         CursorPage<Question> questions = questionRepository.findUnanswered(cursor, DEAULT_PAGE_SIZE);
@@ -141,7 +135,7 @@ public class QuestionController {
     public Response<QuestionDto> getQuestionDetail(@PathVariable("questionId") Long questionId) {
         Question question = questionRepository.findById(questionId);
         if (question == null) {
-            throw new NotFoundException(QuestionMessageKeys.QUESTION_NOT_FOUND);
+            throw new NotFoundException(questionId, QuestionMessageKeys.QUESTION_NOT_FOUND);
         }
         QuestionDto res = questionAssembler.convertToDto(question);
         Long userId = LoginUtils.currentUserId();
@@ -156,10 +150,108 @@ public class QuestionController {
         }
 
         if (question.getRelatePetId() != null) {
-            res.setRelatePet(participtorPetAssembler
-                    .convertToDto(participatorPetRepository.findById(question.getRelatePetId())));
+            ParticipatorPet pet = participatorPetRepository.findById(question.getRelatePetId());
+            if (pet != null) {
+                res.setRelatePet(participtorPetAssembler.convertToDto(pet));
+            }
         }
 
+        return Response.ok(res);
+    }
+
+    @PutMapping("questions")
+    public Response<QuestionDto> updateQuestion(@RequestPart(name = "question") @Validated QuestionDto questionDto,
+                                                @RequestPart(value = "images", required = false) List<MultipartFile> images) throws IOException {
+        Long userId = LoginUtils.currentUserId();
+        List<ImageFile> imageFiles = new ArrayList<>();
+        if (images != null) {
+            for (MultipartFile file : images) {
+                if (file.isEmpty()) {
+                    throw new InvalidOperationException("Empty image file");
+                }
+                imageFiles.add(new ImageFile(file.getOriginalFilename(),
+                        file.getInputStream(), file.getSize()));
+            }
+        }
+        List<Long> imageIds = questionDto.getImages().stream().map(ImageDto::getId).collect(Collectors.toList());
+
+        Question question = questionApplicationService
+                .updateQuestion(userId, questionDto.getId(), questionDto.getTitle(), questionDto.getContent(),
+                        questionDto.getRelatePetId(), imageFiles, imageIds);
+        QuestionDto res = questionAssembler.convertToDto(question);
+
+        UpvoteQuestion upvoteQuestion = questionVoteRepository.find(userId, question.getId());
+        res.setUpvoted(upvoteQuestion != null);
+        if (!userId.equals(question.getParticipator().getId())) {
+            FollowParticipator followParticipator = followParticipatorRepository
+                    .find(userId, question.getParticipator().getId());
+            res.getParticipator().setFollowed(followParticipator != null);
+        }
+
+        if (question.getRelatePetId() != null) {
+            ParticipatorPet pet = participatorPetRepository.findById(question.getRelatePetId());
+            if (pet != null) {
+                res.setRelatePet(participtorPetAssembler.convertToDto(pet));
+            }
+        }
+
+        return Response.ok(res);
+    }
+
+
+    @PutMapping("answers")
+    public Response<AnswerDto> updateAnswer(@RequestPart(name = "answer") @Validated AnswerDto answerDto,
+                                            @RequestPart(value = "images", required = false) List<MultipartFile> images) throws IOException {
+        Long userId = LoginUtils.currentUserId();
+        List<ImageFile> imageFiles = new ArrayList<>();
+        if (images != null) {
+            for (MultipartFile file : images) {
+                if (file.isEmpty()) {
+                    throw new InvalidOperationException("Empty image file");
+                }
+                imageFiles.add(new ImageFile(file.getOriginalFilename(),
+                        file.getInputStream(), file.getSize()));
+            }
+        }
+        List<Long> imageIds = answerDto.getImages().stream().map(ImageDto::getId).collect(Collectors.toList());
+
+        Answer answer = questionApplicationService
+                .updateAnswer(userId, answerDto.getId(), answerDto.getContent(), imageFiles, imageIds);
+
+        answerDto = answerAssembler.convertToDto(answer);
+        return Response.ok(answerDto);
+    }
+
+    @DeleteMapping("questions/{questionId}")
+    public Response<Object> removeQuestion(@PathVariable Long questionId) {
+        Long userId = LoginUtils.currentUserId();
+        Question question = questionApplicationService.removeQuestion(userId, questionId);
+        if (question == null) {
+            return Response.ok(AlreadyDeletedResponse.of(questionId));
+        }
+        QuestionDto res = questionAssembler.convertToDto(question);
+        return Response.ok(res);
+    }
+
+    @DeleteMapping("answers/{answerId}")
+    public Response<Object> removeAnswer(@PathVariable Long answerId) {
+        Long userId = LoginUtils.currentUserId();
+        Answer answer = questionApplicationService.removeAnswer(userId, answerId);
+        if (answer == null) {
+            return Response.ok(AlreadyDeletedResponse.of(answerId));
+        }
+        AnswerDto res = answerAssembler.convertToDto(answer);
+        return Response.ok(res);
+    }
+
+    @DeleteMapping("answers/comments/{commentId}")
+    public Response<Object> removeAnswerComment(@PathVariable Long commentId) {
+        Long userId = LoginUtils.currentUserId();
+        AnswerComment comment = questionApplicationService.removeAnswerComment(userId, commentId);
+        if (comment == null) {
+            return Response.ok(AlreadyDeletedResponse.of(commentId));
+        }
+        AnswerCommentDto res = answerCommentAssembler.convertToDto(comment);
         return Response.ok(res);
     }
 

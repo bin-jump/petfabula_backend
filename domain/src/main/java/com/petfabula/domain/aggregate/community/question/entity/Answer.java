@@ -12,6 +12,9 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@NamedEntityGraph(name = "answer.all",
+        attributeNodes = {@NamedAttributeNode("participator"), @NamedAttributeNode("images")}
+)
 @NoArgsConstructor
 @Getter
 @Entity
@@ -52,7 +55,7 @@ public class Answer extends ConcurrentEntity {
     @JoinColumn(name = "participator_id", foreignKey = @ForeignKey(name = "none"))
     private Participator participator;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval=true)
     @JoinColumn(name = "answer_id", foreignKey = @ForeignKey(name = "none"))
     private List<AnswerImage> images = new ArrayList<>();
 
@@ -79,4 +82,9 @@ public class Answer extends ConcurrentEntity {
         }
         images.add(image);
     }
+
+    public void removeImage(Long id) {
+        images.removeIf(x -> x.getId().equals(id));
+    }
+
 }

@@ -20,7 +20,9 @@ public abstract class GeneralEntity extends EntityBase {
     private Instant createdDate = Instant.now();
 
     @Column(name = "delete_at")
-    private Instant deleteAt;
+//    private Instant deleteAt = Instant.EPOCH;
+    private Instant deleteAt = null;
+
 
     public void markDelete() {
         this.deleteAt = Instant.now();

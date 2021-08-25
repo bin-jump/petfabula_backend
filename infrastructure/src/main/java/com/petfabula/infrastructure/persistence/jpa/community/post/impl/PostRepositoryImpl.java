@@ -25,59 +25,72 @@ import java.util.List;
 @Repository
 public class PostRepositoryImpl implements PostRepository {
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
     @Autowired
     private PostJpaRepository postJpaRepository;
 
-    @FilterSoftDelete
     @Transactional
+    @FilterSoftDelete
     @Override
     public CursorPage<Post> findByParticipatorId(Long participatorId, Long cursor, int size) {
-        Specification<Post> spec = new Specification<Post>() {
-            @Override
-            public Predicate toPredicate(Root<Post> root, CriteriaQuery<?> cq, CriteriaBuilder cb) {
-                cq.orderBy(cb.desc(root.get("id")));
-                Predicate aPred = cb.equal(root.get("participator").get("id"), participatorId);
-                if (cursor != null) {
-                    Predicate cPred = cb.lessThan(root.get("id"), cursor);
-                    return cb.and(aPred, cPred);
-                }
-                return aPred;
-            }
-        };
 
-        Pageable limit = PageRequest.of(0, size);
-        Page<Post> res = postJpaRepository.findAll(spec, limit);
+        String q = "select p.id from Post p where (:cursor is null or p.id < :cursor) and p.participator.id = :participatorId order by p.id desc";
+        List<Long> ids = entityManager.createQuery(q, Long.class)
+                .setParameter("participatorId", participatorId)
+                .setParameter("cursor", cursor)
+                .setMaxResults(size).getResultList();
 
-        return CursorPage.of(res.getContent(), res.hasNext(), size);
+        if (ids.size() == 0) {
+            return CursorPage.empty(size);
+        }
+
+        Long nextCursor = ids.get(ids.size() - 1);
+        String cntq = "select count(p) from Post p where (:cursor is null or p.id < :cursor) and p.participator.id = :participatorId order by p.id desc";
+        Long cnt =  entityManager.createQuery(cntq, Long.class)
+                .setParameter("participatorId", participatorId)
+                .setParameter("cursor", nextCursor)
+                .getSingleResult();
+
+        List<Post> posts = postJpaRepository.findByIdInOrderByIdDesc(ids);
+        return CursorPage.of(posts, cnt > 0, size);
     }
 
+    @Transactional
+    @FilterSoftDelete
     @Override
     public CursorPage<Post> findByPetId(Long petId, Long cursor, int size) {
-        Specification<Post> spec = new Specification<Post>() {
-            @Override
-            public Predicate toPredicate(Root<Post> root, CriteriaQuery<?> cq, CriteriaBuilder cb) {
-                cq.orderBy(cb.desc(root.get("id")));
-                Predicate aPred = cb.equal(root.get("relatePetId"), petId);
-                if (cursor != null) {
-                    Predicate cPred = cb.lessThan(root.get("id"), cursor);
-                    return cb.and(aPred, cPred);
-                }
-                return aPred;
-            }
-        };
 
-        Pageable limit = PageRequest.of(0, size);
-        Page<Post> res = postJpaRepository.findAll(spec, limit);
+        String q = "select p.id from Post p where (:cursor is null or p.id < :cursor) and p.relatePetId = :relatePetId order by p.id desc";
+        List<Long> ids = entityManager.createQuery(q, Long.class)
+                .setParameter("relatePetId", petId)
+                .setParameter("cursor", cursor)
+                .setMaxResults(size).getResultList();
 
-        return CursorPage.of(res.getContent(), res.hasNext(), size);
+        if (ids.size() == 0) {
+            return CursorPage.empty(size);
+        }
+
+        Long nextCursor = ids.get(ids.size() - 1);
+        String cntq = "select count(p) from Post p where (:cursor is null or p.id < :cursor) and p.relatePetId = :relatePetId order by p.id desc";
+        Long cnt =  entityManager.createQuery(cntq, Long.class)
+                .setParameter("relatePetId", petId)
+                .setParameter("cursor", nextCursor)
+                .getSingleResult();
+
+        List<Post> posts = postJpaRepository.findByIdInOrderByIdDesc(ids);
+        return CursorPage.of(posts, cnt > 0, size);
     }
 
+    @Transactional
+    @FilterSoftDelete
     @Override
     public List<Post> findByIds(List<Long> ids) {
         if (ids.size() == 0) {
             return new ArrayList<>();
         }
-        return postJpaRepository.findByIdIn(ids);
+        return postJpaRepository.findByIdInOrderByIdDesc(ids);
     }
 
     @Override
@@ -85,8 +98,8 @@ public class PostRepositoryImpl implements PostRepository {
         return postJpaRepository.save(post);
     }
 
-    @FilterSoftDelete
     @Transactional
+    @FilterSoftDelete
     @Override
     public Post findById(Long id) {
         return postJpaRepository.findById(id).orElse(null);

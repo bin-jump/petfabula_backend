@@ -8,10 +8,13 @@ import com.petfabula.domain.common.validation.EntityValidationUtils;
 import com.petfabula.domain.exception.InvalidOperationException;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @NamedEntityGraph(name = "post.all",
         attributeNodes = {@NamedAttributeNode("participator"), @NamedAttributeNode("images")}
@@ -31,10 +34,7 @@ public class Post extends ConcurrentEntity {
         this.collectCount = 0;
         this.viewCount = 0;
         this.showAll = true;
-        if (pet != null) {
-            this.relatePetId = pet.getId();
-            this.petCategory = pet.getPetCategory();
-        }
+        setRelatePet(pet);
     }
 
     @Column(name = "pet_id")
@@ -65,8 +65,8 @@ public class Post extends ConcurrentEntity {
     @JoinColumn(name = "participator_id", foreignKey = @ForeignKey(name = "none"))
     private Participator participator;
 
-    @OneToMany(mappedBy = "post", fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
-    @OrderBy
+    //    @OrderBy
+    @OneToMany(mappedBy = "post", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval=true)
     private List<PostImage> images = new ArrayList<>();
 
     public void setContent(String content) {
@@ -74,8 +74,11 @@ public class Post extends ConcurrentEntity {
         this.content = content;
     }
 
-    public void setRelatePetId(Long relatePetId) {
-        this.relatePetId = relatePetId;
+    public void setRelatePet(ParticipatorPet pet) {
+        if (pet != null) {
+            this.relatePetId = pet.getId();
+            this.petCategory = pet.getCategory();
+        }
     }
 
     public void setLikeCount(Integer likeCount) {
@@ -100,5 +103,15 @@ public class Post extends ConcurrentEntity {
         }
         image.setPost(this);
         images.add(image);
+    }
+
+    public void removeImage(Long id) {
+        PostImage postImage = images.stream().
+                filter(p -> p.getId().equals(id)).
+                findFirst().orElse(null);
+        if (postImage != null) {
+            images.removeIf(x -> x.getId().equals(id));
+            postImage.setPost(null);
+        }
     }
 }

@@ -2,6 +2,7 @@ package com.petfabula.infrastructure.persistence.jpa.community.post.impl;
 
 import com.petfabula.domain.aggregate.community.post.entity.Post;
 import com.petfabula.domain.aggregate.community.post.entity.valueobject.PostTopicRelation;
+import com.petfabula.domain.aggregate.community.post.repository.PostRepository;
 import com.petfabula.domain.aggregate.community.post.repository.PostTopicRelationRepository;
 import com.petfabula.domain.common.paging.CursorPage;
 import com.petfabula.infrastructure.persistence.jpa.community.post.repository.PostTopicRelationJpaRepository;
@@ -25,6 +26,9 @@ public class PostTopicRelationRepositoryImpl implements PostTopicRelationReposit
     @Autowired
     private PostTopicRelationJpaRepository postTopicRelationJpaRepository;
 
+    @Autowired
+    private PostRepository postRepository;
+
     @Override
     public PostTopicRelation save(PostTopicRelation postTopicRelation) {
         return postTopicRelationJpaRepository.save(postTopicRelation);
@@ -33,6 +37,11 @@ public class PostTopicRelationRepositoryImpl implements PostTopicRelationReposit
     @Override
     public PostTopicRelation findByPostId(Long postId) {
         return postTopicRelationJpaRepository.findByPostId(postId);
+    }
+
+    @Override
+    public void remove(PostTopicRelation postTopicRelation) {
+        postTopicRelationJpaRepository.delete(postTopicRelation);
     }
 
     @Override
@@ -53,8 +62,10 @@ public class PostTopicRelationRepositoryImpl implements PostTopicRelationReposit
 
         Pageable limit = PageRequest.of(0, size);
         Page<PostTopicRelation> res = postTopicRelationJpaRepository.findAll(spec, limit);
-        List<Post> posts = res.getContent().stream()
-                .map(PostTopicRelation::getPost).collect(Collectors.toList());
+        List<Long> postIds = res.getContent().stream()
+                .map(PostTopicRelation::getPostId).collect(Collectors.toList());
+
+        List<Post> posts = postRepository.findByIds(postIds);
 
         return CursorPage.of(posts, res.hasNext(), size);
     }
@@ -77,8 +88,10 @@ public class PostTopicRelationRepositoryImpl implements PostTopicRelationReposit
 
         Pageable limit = PageRequest.of(0, size);
         Page<PostTopicRelation> res = postTopicRelationJpaRepository.findAll(spec, limit);
-        List<Post> posts = res.getContent().stream()
-                .map(PostTopicRelation::getPost).collect(Collectors.toList());
+        List<Long> postIds = res.getContent().stream()
+                .map(PostTopicRelation::getPostId).collect(Collectors.toList());
+
+        List<Post> posts = postRepository.findByIds(postIds);
 
         return CursorPage.of(posts, res.hasNext(), size);
     }

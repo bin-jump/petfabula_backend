@@ -21,6 +21,8 @@ import java.util.List;
 @Slf4j
 public class GlobalExceptionTranslator {
 
+    static String NOT_FOUND_KEY = "entityId";
+
     @Autowired
     ResourceBundleMessageSource messageSource;
 
@@ -69,7 +71,8 @@ public class GlobalExceptionTranslator {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Response handleNotFoundException(NotFoundException ex, HttpServletRequest request) {
         log.error(ex.toString());
-        Response res = Response.failed(Response.ResponseCode.BAD_REQUEST);
+        Response res = Response.failed(Response.ResponseCode.NOT_FOUND);
+        res.getErrors().put(NOT_FOUND_KEY, ex.getEntityId());
         res.setMessage(messageSource.getMessage(ex.getMessage(), null, LocaleContextHolder.getLocale()));
 
         return res;

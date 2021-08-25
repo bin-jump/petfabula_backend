@@ -29,11 +29,13 @@ public class ParticipatorRepositoryImpl implements ParticipatorRepository {
         return participatorJpaRepository.findById(id).orElse(null);
     }
 
+    @FilterSoftDelete
+    @Transactional
     @Override
     public List<Participator> findByIds(List<Long> ids) {
         if (ids.size() == 0) {
             return new ArrayList<>();
         }
-        return participatorJpaRepository.findByIdIn(ids);
+        return participatorJpaRepository.findByIdInOrderByIdDesc(ids);
     }
 }

@@ -3,10 +3,10 @@ package com.petfabula.domain.aggregate.community.post.service;
 import com.petfabula.domain.aggregate.community.post.entity.valueobject.LikePost;
 import com.petfabula.domain.aggregate.community.participator.entity.Participator;
 import com.petfabula.domain.aggregate.community.post.entity.Post;
-import com.petfabula.domain.aggregate.community.post.PostMessageKeys;
 import com.petfabula.domain.aggregate.community.post.repository.LikePostRepository;
 import com.petfabula.domain.aggregate.community.participator.repository.ParticipatorRepository;
 import com.petfabula.domain.aggregate.community.post.repository.PostRepository;
+import com.petfabula.domain.common.CommonMessageKeys;
 import com.petfabula.domain.exception.InvalidOperationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,12 +29,12 @@ public class LikeService {
     public LikePost likePost(Long participatorId, Long postId) {
         Participator participator = participatorRepository.findById(participatorId);
         if (participator == null) {
-            throw new InvalidOperationException(PostMessageKeys.CANNOT_LIKE_POST);
+            throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
         }
 
         Post post = postRepository.findById(postId);
         if (post == null) {
-            throw new InvalidOperationException(PostMessageKeys.CANNOT_LIKE_POST);
+            throw new InvalidOperationException(CommonMessageKeys.NO_DEPEND_ENTITY);
         }
 
         LikePost likePost = likePostRepository.find(participatorId, postId);
@@ -49,12 +49,12 @@ public class LikeService {
     public LikePost removelikePost(Long participatorId, Long postId) {
         Participator participator = participatorRepository.findById(participatorId);
         if (participator == null) {
-            throw new InvalidOperationException(PostMessageKeys.CANNOT_REMOVE_LIKE_POST);
+            throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
         }
 
         Post post = postRepository.findById(postId);
         if (post == null) {
-            throw new InvalidOperationException(PostMessageKeys.CANNOT_REMOVE_LIKE_POST);
+            throw new InvalidOperationException(CommonMessageKeys.NO_DEPEND_ENTITY);
         }
 
         LikePost likePost = likePostRepository.find(participatorId, postId);

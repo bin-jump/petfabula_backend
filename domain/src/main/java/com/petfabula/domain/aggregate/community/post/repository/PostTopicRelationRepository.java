@@ -11,6 +11,8 @@ public interface PostTopicRelationRepository {
 
     PostTopicRelation findByPostId(Long postId);
 
+    void remove(PostTopicRelation postTopicRelation);
+
     CursorPage<Post> findPostsByTopic(Long topicId, Long cursor, int size);
 
     CursorPage<Post> findPostsByTopicCategory(Long topicCategoryId, Long cursor, int size);

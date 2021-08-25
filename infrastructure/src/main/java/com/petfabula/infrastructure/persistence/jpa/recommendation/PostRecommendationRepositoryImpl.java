@@ -1,6 +1,7 @@
 package com.petfabula.infrastructure.persistence.jpa.recommendation;
 
 import com.petfabula.domain.aggregate.community.post.entity.Post;
+import com.petfabula.domain.aggregate.community.post.repository.PostRepository;
 import com.petfabula.domain.aggregate.community.recommendation.PostRecommendation;
 import com.petfabula.domain.aggregate.community.recommendation.PostRecommendationRepository;
 import com.petfabula.domain.aggregate.community.recommendation.RecommendationResult;
@@ -15,6 +16,7 @@ import javax.persistence.Query;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -28,7 +30,7 @@ public class PostRecommendationRepositoryImpl implements PostRecommendationRepos
     private PostRecommendationJpaRepository postRecommendationJpaRepository;
 
     @Autowired
-    private PostJpaRepository postJpaRepository;
+    private PostRepository postRepository;
 
     @Override
     public PostRecommendation save(PostRecommendation postRecommendation) {
@@ -37,6 +39,15 @@ public class PostRecommendationRepositoryImpl implements PostRecommendationRepos
 
     @Override
     public RecommendationResult<Post> findRandomRecommend(int page, int size, int seed, Long cursor) {
+        // cursor here is for filtering new created post
+        if(cursor == null) {
+            PostRecommendation postRecommendation = postRecommendationJpaRepository
+                    .findTopByOrderByIdDesc();
+            if (postRecommendation == null) {
+                return new RecommendationResult<>(OffsetPage.ofEmpty(page, size), seed, cursor);
+            }
+            cursor = postRecommendation.getId();
+        }
 
         String q = "select post_id from post_recommendation where (:cursor is null or id <= :cursor) order by rand(:seed)";
         Query selectQuery = entityManager.createNativeQuery(q);
@@ -54,21 +65,25 @@ public class PostRecommendationRepositoryImpl implements PostRecommendationRepos
             return new RecommendationResult<>(OffsetPage.ofEmpty(page, size), seed, cursor);
         }
 
-        if(cursor == null) {
-            PostRecommendation postRecommendation = postRecommendationJpaRepository
-                    .findTopByOrderByIdDesc();
-            cursor = postRecommendation.getId();
-        }
+        String countQ = "select count(*) from post_recommendation where (:cursor is null or id <= :cursor) order by rand(:seed)";
+        Query countQuery = entityManager.createNativeQuery(countQ);
+        countQuery.setParameter("cursor", cursor);
+        countQuery.setParameter("seed", seed);
+        BigInteger cnt = (BigInteger)countQuery.getSingleResult();
+        Long count = cnt.longValue();
+        boolean hasMore = (count - page * size) > 0;
 
-        Map<Long, Post> questionMap = postJpaRepository
-                .findByIdIn(questionIds)
+        Map<Long, Post> questionMap = postRepository
+                .findByIds(questionIds)
                 .stream().collect(Collectors.toMap(Post::getId,
                         Function.identity()));
         List<Post> questions = questionIds.stream()
-                .map(item -> questionMap.get(item)).collect(Collectors.toList());
+                .map(item -> questionMap.get(item))
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toList());
 
         OffsetPage<Post> offsetPage =
-                OffsetPage.of(questions, page, size, questions.size() == size);
+                OffsetPage.of(questions, page, size, hasMore);
 
         return new RecommendationResult<>(offsetPage, seed, cursor);
     }

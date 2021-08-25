@@ -33,10 +33,7 @@ public class Question extends ConcurrentEntity {
         this.answerCount = 0;
         this.upvoteCount = 0;
         this.viewCount = 0;
-        if (pet != null) {
-            this.relatePetId = pet.getId();
-            this.petCategory = pet.getPetCategory();
-        }
+        setRelatePet(pet);
     }
 
     @Column(name = "pet_id")
@@ -60,7 +57,7 @@ public class Question extends ConcurrentEntity {
     @Column(name = "view_count", nullable = false)
     private Integer viewCount;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval=true)
     @JoinColumn(name = "question_id", foreignKey = @ForeignKey(name = "none"))
     @OrderBy
     private List<QuestionImage> images = new ArrayList<>();
@@ -91,10 +88,21 @@ public class Question extends ConcurrentEntity {
         this.viewCount = viewCount;
     }
 
+    public void setRelatePet(ParticipatorPet pet) {
+        if (pet != null) {
+            this.relatePetId = pet.getId();
+            this.petCategory = pet.getCategory();
+        }
+    }
+
     public void addImage(QuestionImage image) {
         if (images.size() == 6) {
             throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
         }
         images.add(image);
+    }
+
+    public void removeImage(Long id) {
+        images.removeIf(x -> x.getId().equals(id));
     }
 }

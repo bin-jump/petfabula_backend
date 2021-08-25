@@ -46,9 +46,9 @@ public class QuestionApplicationService {
     }
 
     @Transactional
-    public Question updateQuestion(Long participatorId, Long questionId,
-                                    String title, String content) {
-        return questionService.update(participatorId, questionId, title, content);
+    public Question updateQuestion(Long participatorId, Long questionId, String title, String content, Long relatePetId,
+                                   List<ImageFile> images, List<Long> imageIds) {
+        return questionService.update(participatorId, questionId, title, content, relatePetId, images, imageIds);
     }
 
     @Transactional
@@ -65,14 +65,15 @@ public class QuestionApplicationService {
     }
 
     @Transactional
-    public Answer updateAnswer(Long participatorId, Long answerId, String content) {
-        Answer answer = answerService.update(participatorId, answerId, content);
+    public Answer updateAnswer(Long participatorId, Long answerId, String content,
+                               List<ImageFile> images, List<Long> imageIds) {
+        Answer answer = answerService.update(participatorId, answerId, content, images, imageIds);
         eventPublisher.publish(new AnswerCreateEvent(answer));
         return answer;
     }
 
     @Transactional
-    public Answer remove(Long participatorId, Long answerId) {
+    public Answer removeAnswer(Long participatorId, Long answerId) {
         return answerService.remove(participatorId, answerId);
     }
 

@@ -13,13 +13,17 @@ import javax.persistence.*;
         indexes = {@Index(name = "post_id_index",  columnList="post_id")})
 public class PostImage extends EntityBase {
 
-    public PostImage(Long id, String uri, Post post, Integer w, Integer h) {
+    public PostImage(Long id, String uri, Post post, Long petId, Integer w, Integer h) {
         setId(id);
+        this.petId = petId;
         this.url = uri;
         this.width = w;
         this.height = h;
         setPost(post);
     }
+
+    @Column(name = "pet_id")
+    private Long petId;
 
     @Column(name = "url", nullable = false)
     private String url;
@@ -36,5 +40,9 @@ public class PostImage extends EntityBase {
 
     public void setPost(Post post) {
         this.post = post;
+    }
+
+    public void setPetId(Long petId) {
+        this.petId = petId;
     }
 }
