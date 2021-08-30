@@ -12,7 +12,9 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-
+@NamedEntityGraph(name = "medicalRecord.all",
+        attributeNodes = {@NamedAttributeNode("images")}
+)
 @NoArgsConstructor
 @Getter
 @Entity

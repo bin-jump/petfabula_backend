@@ -84,21 +84,6 @@ public class AnswerRepositoryImpl implements AnswerRepository {
     @Transactional
     @Override
     public CursorPage<Answer> findByQuestionId(Long questionId, Long cursor, int size) {
-//        Specification<Answer> spec = new Specification<Answer>() {
-//            @Override
-//            public Predicate toPredicate(Root<Answer> root, CriteriaQuery<?> cq, CriteriaBuilder cb) {
-//                cq.orderBy(cb.desc(root.get("id")));
-//                Predicate aPred = cb.equal(root.get("questionId"), questionId);
-//                if (cursor != null) {
-//                    Predicate cPred = cb.lessThan(root.get("id"), cursor);
-//                    return cb.and(aPred, cPred);
-//                }
-//                return aPred;
-//            }
-//        };
-//
-//        Pageable limit = PageRequest.of(0, size);
-//        Page<Answer> res = answerJpaRepository.findAll(spec, limit);
 
         String q = "select a.id from Answer a where (:cursor is null or a.id < :cursor) and a.questionId = :questionId order by a.id desc";
         List<Long> ids = entityManager.createQuery(q, Long.class)
@@ -125,21 +110,26 @@ public class AnswerRepositoryImpl implements AnswerRepository {
     @Transactional
     @Override
     public CursorPage<Answer> findByParticipatorId(Long participatorId, Long cursor, int size) {
-        Specification<Answer> spec = new Specification<Answer>() {
-            @Override
-            public Predicate toPredicate(Root<Answer> root, CriteriaQuery<?> cq, CriteriaBuilder cb) {
-                cq.orderBy(cb.desc(root.get("id")));
-                Predicate aPred = cb.equal(root.get("participator").get("id"), participatorId);
-                if (cursor != null) {
-                    Predicate cPred = cb.lessThan(root.get("id"), cursor);
-                    return cb.and(aPred, cPred);
-                }
-                return aPred;
-            }
-        };
 
-        Pageable limit = PageRequest.of(0, size);
-        Page<Answer> res = answerJpaRepository.findAll(spec, limit);
-        return CursorPage.of(res.getContent(), res.hasNext(), size);
+        String q = "select a.id from Answer a where (:cursor is null or a.id < :cursor) and a.participator.id = :participatorId order by a.id desc";
+        List<Long> ids = entityManager.createQuery(q, Long.class)
+                .setParameter("participatorId", participatorId)
+                .setParameter("cursor", cursor)
+                .setMaxResults(size).getResultList();
+
+        if (ids.size() == 0) {
+            return CursorPage.empty(size);
+        }
+
+        Long nextCursor = ids.get(ids.size() - 1);
+        String cntq = "select count(a) from Answer a where (:cursor is null or a.id < :cursor) and a.participator.id = :participatorId order by a.id desc";
+        Long cnt =  entityManager.createQuery(cntq, Long.class)
+                .setParameter("participatorId", participatorId)
+                .setParameter("cursor", nextCursor)
+                .getSingleResult();
+
+        List<Answer> answers = answerJpaRepository.findByIdInOrderByIdDesc(ids);
+
+        return CursorPage.of(answers, cnt > 0, size);
     }
 }

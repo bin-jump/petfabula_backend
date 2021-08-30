@@ -122,9 +122,9 @@ public class QuestionController {
         return Response.ok(answerDto);
     }
 
-    @GetMapping("unanswered-questions")
-    public Response<CursorPageData<QuestionDto>> getUnansweredQuestions(@RequestParam(value = "cursor", required = false) Long cursor) {
-        CursorPage<Question> questions = questionRepository.findUnanswered(cursor, DEAULT_PAGE_SIZE);
+    @GetMapping("recent-questions")
+    public Response<CursorPageData<QuestionDto>> getRecentQuestions(@RequestParam(value = "cursor", required = false) Long cursor) {
+        CursorPage<Question> questions = questionRepository.findRecent(cursor, DEAULT_PAGE_SIZE);
         CursorPageData<QuestionDto> res = CursorPageData
                 .of(questionAssembler.convertToDtos(questions.getResult()), questions.isHasMore(),
                         questions.getPageSize(), questions.getNextCursor());

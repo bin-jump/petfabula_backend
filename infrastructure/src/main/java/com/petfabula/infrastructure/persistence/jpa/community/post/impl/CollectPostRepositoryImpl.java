@@ -5,6 +5,7 @@ import com.petfabula.domain.aggregate.community.post.entity.valueobject.CollectP
 import com.petfabula.domain.aggregate.community.post.repository.CollectPostRepository;
 import com.petfabula.domain.aggregate.community.post.repository.PostRepository;
 import com.petfabula.domain.common.paging.CursorPage;
+import com.petfabula.infrastructure.persistence.jpa.annotation.FilterSoftDelete;
 import com.petfabula.infrastructure.persistence.jpa.community.post.repository.CollectPostJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,6 +13,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -28,6 +31,8 @@ public class CollectPostRepositoryImpl implements CollectPostRepository {
     @Autowired
     private PostRepository postRepository;
 
+    @FilterSoftDelete
+    @Transactional
     @Override
     public CursorPage<Post> findByParticipatorId(Long participatorId, Long cursor, int size) {
         Specification<CollectPost> spec = new Specification<CollectPost>() {

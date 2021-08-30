@@ -121,8 +121,10 @@ public class ParticipatorController {
                 .stream().collect(Collectors.toMap(Question::getId, item -> item));
         List<AnswerWithQuestionDto> answerWithQuestionDtos = new ArrayList<>();
         answers.getResult().forEach(item -> {
-            answerWithQuestionDtos.add(answerAssembler
-                    .convertToDto(item, questionMap.get(item.getQuestionId())));
+            if (questionMap.containsKey(item.getQuestionId())) {
+                answerWithQuestionDtos.add(answerAssembler
+                        .convertToDto(item, questionMap.get(item.getQuestionId())));
+            }
         });
 
         CursorPageData<AnswerWithQuestionDto> res = CursorPageData

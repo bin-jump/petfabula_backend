@@ -18,6 +18,4 @@ public interface QuestionRepository {
     CursorPage<Question> findByParticipatorId(Long participatorId, Long cursor, int size);
 
     CursorPage<Question> findRecent(Long cursor, int size);
-
-    CursorPage<Question> findUnanswered(Long cursor, int size);
 }

@@ -13,6 +13,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -22,6 +24,9 @@ import java.util.List;
 
 @Repository
 public class QuestionRepositoryImpl implements QuestionRepository {
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Autowired
     private QuestionJpaRepository questionJpaRepository;
@@ -58,64 +63,48 @@ public class QuestionRepositoryImpl implements QuestionRepository {
     @Transactional
     @Override
     public CursorPage<Question> findByParticipatorId(Long participatorId, Long cursor, int size) {
-        Specification<Question> spec = new Specification<Question>() {
-            @Override
-            public Predicate toPredicate(Root<Question> root, CriteriaQuery<?> cq, CriteriaBuilder cb) {
-                cq.orderBy(cb.desc(root.get("id")));
-                Predicate aPred = cb.equal(root.get("participator").get("id"), participatorId);
-                if (cursor != null) {
-                    Predicate cPred = cb.lessThan(root.get("id"), cursor);
-                    return cb.and(aPred, cPred);
-                }
-                return aPred;
-            }
-        };
 
-        Pageable limit = PageRequest.of(0, size);
-        Page<Question> res = questionJpaRepository.findAll(spec, limit);
-        return CursorPage.of(res.getContent(), res.hasNext(), size);
+        String q = "select q.id from Question q where (:cursor is null or q.id < :cursor) and q.participator.id = :participatorId order by q.id desc";
+        List<Long> ids = entityManager.createQuery(q, Long.class)
+                .setParameter("participatorId", participatorId)
+                .setParameter("cursor", cursor)
+                .setMaxResults(size).getResultList();
+
+        if (ids.size() == 0) {
+            return CursorPage.empty(size);
+        }
+
+        Long nextCursor = ids.get(ids.size() - 1);
+        String cntq = "select count(q) from Question q where (:cursor is null or q.id < :cursor) and q.participator.id = :participatorId order by q.id desc";
+        Long cnt =  entityManager.createQuery(cntq, Long.class)
+                .setParameter("participatorId", participatorId)
+                .setParameter("cursor", nextCursor)
+                .getSingleResult();
+
+        List<Question> questions = questionJpaRepository.findByIdInOrderByIdDesc(ids);
+        return CursorPage.of(questions, cnt > 0, size);
     }
 
     @FilterSoftDelete
     @Transactional
     @Override
     public CursorPage<Question> findRecent(Long cursor, int size) {
-        Specification<Question> spec = new Specification<Question>() {
-            @Override
-            public Predicate toPredicate(Root<Question> root, CriteriaQuery<?> cq, CriteriaBuilder cb) {
-                cq.orderBy(cb.desc(root.get("id")));
-                if (cursor != null) {
-                    Predicate cPred = cb.lessThan(root.get("id"), cursor);
-                    return cPred;
-                }
-                return null;
-            }
-        };
+        String q = "select q.id from Question q where (:cursor is null or q.id < :cursor) order by q.id desc";
+        List<Long> ids = entityManager.createQuery(q, Long.class)
+                .setParameter("cursor", cursor)
+                .setMaxResults(size).getResultList();
 
-        Pageable limit = PageRequest.of(0, size);
-        Page<Question> res = questionJpaRepository.findAll(spec, limit);
-        return CursorPage.of(res.getContent(), res.hasNext(), size);
-    }
+        if (ids.size() == 0) {
+            return CursorPage.empty(size);
+        }
 
-    @FilterSoftDelete
-    @Transactional
-    @Override
-    public CursorPage<Question> findUnanswered(Long cursor, int size) {
-        Specification<Question> spec = new Specification<Question>() {
-            @Override
-            public Predicate toPredicate(Root<Question> root, CriteriaQuery<?> cq, CriteriaBuilder cb) {
-                cq.orderBy(cb.desc(root.get("id")));
-                Predicate aPred = cb.equal(root.get("answerCount"), 0);
-                if (cursor != null) {
-                    Predicate cPred = cb.lessThan(root.get("id"), cursor);
-                    return cb.and(aPred, cPred);
-                }
-                return aPred;
-            }
-        };
+        Long nextCursor = ids.get(ids.size() - 1);
+        String cntq = "select count(q) from Question q where (:cursor is null or q.id < :cursor) order by q.id desc";
+        Long cnt =  entityManager.createQuery(cntq, Long.class)
+                .setParameter("cursor", nextCursor)
+                .getSingleResult();
 
-        Pageable limit = PageRequest.of(0, size);
-        Page<Question> res = questionJpaRepository.findAll(spec, limit);
-        return CursorPage.of(res.getContent(), res.hasNext(), size);
+        List<Question> questions = questionJpaRepository.findByIdInOrderByIdDesc(ids);
+        return CursorPage.of(questions, cnt > 0, size);
     }
 }

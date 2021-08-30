@@ -4,6 +4,7 @@ import com.petfabula.domain.aggregate.pet.entity.FeedRecord;
 import com.petfabula.domain.aggregate.pet.respository.FeedRecordRepository;
 import com.petfabula.domain.aggregate.pet.respository.RecordCursor;
 import com.petfabula.domain.common.paging.CursorPage;
+import com.petfabula.infrastructure.persistence.jpa.annotation.FilterSoftDelete;
 import com.petfabula.infrastructure.persistence.jpa.pet.repository.FeedRecordJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -11,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -28,11 +30,15 @@ public class FeedRecordRepositoryImpl implements FeedRecordRepository {
         return feedRecordJpaRepository.save(disorderRecord);
     }
 
+    @Transactional
+    @FilterSoftDelete
     @Override
     public FeedRecord findById(Long id) {
         return feedRecordJpaRepository.findById(id).orElse(null);
     }
 
+    @Transactional
+    @FilterSoftDelete
     @Override
     public CursorPage<FeedRecord> findByPetId(Long petId, Long cursor, int size) {
         Specification<FeedRecord> spec = new Specification<FeedRecord>() {
@@ -55,6 +61,7 @@ public class FeedRecordRepositoryImpl implements FeedRecordRepository {
 
     @Override
     public void remove(FeedRecord disorderRecord) {
-        feedRecordJpaRepository.delete(disorderRecord);
+        disorderRecord.markDelete();
+        feedRecordJpaRepository.save(disorderRecord);
     }
 }
