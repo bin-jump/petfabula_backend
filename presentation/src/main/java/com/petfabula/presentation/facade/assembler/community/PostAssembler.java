@@ -2,9 +2,11 @@ package com.petfabula.presentation.facade.assembler.community;
 
 import com.petfabula.domain.aggregate.community.post.PostSearchItem;
 import com.petfabula.domain.aggregate.community.post.entity.Post;
+import com.petfabula.domain.aggregate.community.post.entity.PostImage;
 import com.petfabula.presentation.facade.assembler.AssemblerHelper;
 import com.petfabula.presentation.facade.dto.ImageDto;
 import com.petfabula.presentation.facade.dto.community.PostDto;
+import com.petfabula.presentation.facade.dto.community.PostImageDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -49,5 +51,15 @@ public class PostAssembler {
 
     public List<PostDto> convertSearchDtos(List<PostSearchItem> postSearchItems) {
         return postSearchItems.stream().map(this::convertSearchDto).collect(Collectors.toList());
+    }
+
+    public PostImageDto convertPostImageDto(PostImage postImages) {
+        PostImageDto postImageDto = modelMapper.map(postImages, PostImageDto.class);
+        postImageDto.setUrl(assemblerHelper.completeImageUrl(postImages.getUrl()));
+        return postImageDto;
+    }
+
+    public List<PostImageDto> convertPostImageDtos(List<PostImage> postImages) {
+        return postImages.stream().map(this::convertPostImageDto).collect(Collectors.toList());
     }
 }

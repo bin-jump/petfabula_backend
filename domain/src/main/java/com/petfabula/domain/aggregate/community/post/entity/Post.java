@@ -66,7 +66,8 @@ public class Post extends ConcurrentEntity {
     private Participator participator;
 
     //    @OrderBy
-    @OneToMany(mappedBy = "post", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval=true)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval=true)
+    @JoinColumn(name = "post_id", foreignKey = @ForeignKey(name = "none"))
     private List<PostImage> images = new ArrayList<>();
 
     public void setContent(String content) {
@@ -101,7 +102,6 @@ public class Post extends ConcurrentEntity {
         if (images.size() == 6) {
             throw new InvalidOperationException(PostMessageKeys.TOO_MANY_POST_IMAGE);
         }
-        image.setPost(this);
         images.add(image);
     }
 
@@ -111,7 +111,6 @@ public class Post extends ConcurrentEntity {
                 findFirst().orElse(null);
         if (postImage != null) {
             images.removeIf(x -> x.getId().equals(id));
-            postImage.setPost(null);
         }
     }
 }

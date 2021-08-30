@@ -67,6 +67,9 @@ public class PostController {
     private PostRepository postRepository;
 
     @Autowired
+    private PostImageRepository postImageRepository;
+
+    @Autowired
     private LikePostRepository likePostRepository;
 
     @Autowired
@@ -110,7 +113,7 @@ public class PostController {
         return Response.ok(res);
     }
 
-    @GetMapping("pet/{petId}/posts")
+    @GetMapping("pets/{petId}/posts")
     public Response<CursorPageData<PostDto>> getPetPosts(@PathVariable("petId") Long petId,
                                                           @RequestParam(value = "cursor", required = false) Long cursor) {
         CursorPage<Post> posts = postRepository.findByPetId(petId, cursor, DEAULT_PAGE_SIZE);
@@ -371,6 +374,16 @@ public class PostController {
                 .participatorId(participatorId)
                 .followed(false)
                 .build();
+        return Response.ok(res);
+    }
+
+    @GetMapping("pets/{petId}/images")
+    public Response<CursorPageData<PostImageDto>> getPetPostImages(@PathVariable("petId") Long petId,
+                                                                 @RequestParam(value = "cursor", required = false) Long cursor) {
+        CursorPage<PostImage> images = postImageRepository.findByPetId(petId, cursor, DEAULT_PAGE_SIZE * 3);
+        CursorPageData<PostImageDto> res = CursorPageData
+                .of(postAssembler.convertPostImageDtos(images.getResult()), images.isHasMore(),
+                        images.getPageSize(), images.getNextCursor());
         return Response.ok(res);
     }
 

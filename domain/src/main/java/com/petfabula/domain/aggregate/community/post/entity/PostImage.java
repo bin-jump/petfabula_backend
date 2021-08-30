@@ -1,6 +1,7 @@
 package com.petfabula.domain.aggregate.community.post.entity;
 
 import com.petfabula.domain.common.domain.EntityBase;
+import com.petfabula.domain.common.domain.GeneralEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -13,13 +14,13 @@ import javax.persistence.*;
         indexes = {@Index(name = "post_id_index",  columnList="post_id")})
 public class PostImage extends EntityBase {
 
-    public PostImage(Long id, String uri, Post post, Long petId, Integer w, Integer h) {
+    public PostImage(Long id, String uri, Long postId, Long petId, Integer w, Integer h) {
         setId(id);
         this.petId = petId;
         this.url = uri;
         this.width = w;
         this.height = h;
-        setPost(post);
+        this.postId = postId;
     }
 
     @Column(name = "pet_id")
@@ -28,19 +29,14 @@ public class PostImage extends EntityBase {
     @Column(name = "url", nullable = false)
     private String url;
 
-    @ManyToOne
-    @JoinColumn(name = "post_id", foreignKey = @ForeignKey(name = "none"))
-    private Post post;
+    @Column(name = "post_id")
+    private Long postId;
 
     @Column(name = "width", nullable = false)
     private Integer width;
 
     @Column(name = "height", nullable = false)
     private Integer height;
-
-    public void setPost(Post post) {
-        this.post = post;
-    }
 
     public void setPetId(Long petId) {
         this.petId = petId;

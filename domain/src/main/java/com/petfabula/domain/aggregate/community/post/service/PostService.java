@@ -41,6 +41,9 @@ public class PostService {
     private PostTopicRelationRepository postTopicRelationRepository;
 
     @Autowired
+    private PostImageRepository postImageRepository;
+
+    @Autowired
     private ImageRepository imageRepository;
 
     @Autowired
@@ -83,7 +86,7 @@ public class PostService {
             String path = imagePathes.get(i);
             ImageDimension dimension = images.get(i).getDimension();
             PostImage postImage =
-                    new PostImage(idGenerator.nextId(), path, post, relatePetId, dimension.getWidth(), dimension.getHeight());
+                    new PostImage(idGenerator.nextId(), path, postId, relatePetId, dimension.getWidth(), dimension.getHeight());
             post.addImage(postImage);
 
         }
@@ -172,7 +175,7 @@ public class PostService {
             String path = imagePathes.get(i);
             ImageDimension dimension = images.get(i).getDimension();
             PostImage postImage =
-                    new PostImage(idGenerator.nextId(), path, post, relatePetId, dimension.getWidth(), dimension.getHeight());
+                    new PostImage(idGenerator.nextId(), path, postId, relatePetId, dimension.getWidth(), dimension.getHeight());
             post.addImage(postImage);
         }
 
@@ -189,6 +192,10 @@ public class PostService {
         Participator participator = post.getParticipator();
         if (!participator.getId().equals(participatorId)) {
             throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
+        }
+
+        for (PostImage img : post.getImages()) {
+            postImageRepository.remove(img);
         }
 
         postRepository.remove(post);
