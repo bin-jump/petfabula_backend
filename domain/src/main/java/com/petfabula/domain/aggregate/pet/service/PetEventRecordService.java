@@ -16,10 +16,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class PetEventRecordService {
+
+    static int IMAGE_LIMIT = 6;
 
     @Autowired
     private PetRepository petRepository;
@@ -67,4 +70,72 @@ public class PetEventRecordService {
 
         return petEventRecordRepository.save(record);
     }
+
+    public PetEventRecord update(Long feederId, Long petId, Long recordId, Instant dateTime, String eventType,
+                                 String content, List<ImageFile> images, List<Long> imageIds) {
+        Pet pet = petRepository.findById(petId);
+        if (pet == null || !pet.getFeederId().equals(feederId)) {
+            throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
+        }
+
+        PetEventRecord record = petEventRecordRepository.findById(recordId);
+        if (record == null) {
+            throw new InvalidOperationException(CommonMessageKeys.NO_OPERATION_ENTITY);
+        }
+        if (!record.getPetId().equals(petId)) {
+            throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
+        }
+
+        PetEventType petEventType = petEventTypeRepository.findByEventType(eventType);
+        if (petEventType == null) {
+            throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
+        }
+
+        record.setContent(content);
+        record.setEventType(eventType);
+        record.setDateTime(dateTime);
+
+        List<Long> removeImageIds = new ArrayList<>();
+        for (PetEventRecordImage image : record.getImages()) {
+            if (!imageIds.contains(image.getId())) {
+                removeImageIds.add(image.getId());
+            }
+        }
+        for (Long id : removeImageIds) {
+            record.removeImage(id);
+        }
+
+        if ((images.size() + record.getImages().size()) > IMAGE_LIMIT) {
+            throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
+        }
+
+        List<String> imagePathes = imageRepository.save(images);
+        for (int i = 0; i < imagePathes.size(); i++) {
+            String path = imagePathes.get(i);
+            ImageDimension dimension = images.get(i).getDimension();
+            PetEventRecordImage image =
+                    new PetEventRecordImage(idGenerator.nextId(), recordId, path, dimension.getWidth(), dimension.getHeight());
+            record.addImage(image);
+        }
+
+        return petEventRecordRepository.save(record);
+    }
+
+    public PetEventRecord remove(Long feederId, Long recordId) {
+        PetEventRecord record = petEventRecordRepository.findById(recordId);
+        if (record == null) {
+            return null;
+        }
+
+        Pet pet = petRepository.findById(record.getPetId());
+        if (pet == null || !pet.getFeederId().equals(feederId)) {
+            throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
+        }
+
+        pet.setEventRecordCount(pet.getEventRecordCount() - 1);
+        petRepository.save(pet);
+        petEventRecordRepository.remove(record);
+        return record;
+    }
+
 }

@@ -19,7 +19,7 @@ import java.time.LocalDate;
 public class Pet extends ConcurrentEntity {
 
     public Pet(Long id, Long feederId, String name, String photo, LocalDate birthday,
-               LocalDate arrivalDay, Gender gender, Double weight,
+               LocalDate arrivalDay, Gender gender, Integer weight,
                Long categoryId, String category, Long breedId, String bio) {
         setId(id);
         this.feederId = feederId;
@@ -38,6 +38,21 @@ public class Pet extends ConcurrentEntity {
         this.eventRecordCount = 0;
         this.weightRecordCount = 0;
         this.medicalRecordCount = 0;
+    }
+
+    public void update(String name, String photo, LocalDate birthday,
+               LocalDate arrivalDay, Gender gender, Integer weight,
+               Long categoryId, String category, Long breedId, String bio) {
+        setName(name);
+        this.photo = photo;
+        setBirthday(birthday);
+        setArrivalDay(arrivalDay);
+        this.gender = gender;
+        this.weight = weight;
+        this.categoryId = categoryId;
+        this.category = category;
+        this.breedId = breedId;
+        setBio(bio);
     }
 
     @Column(name = "feeder_id")
@@ -62,7 +77,7 @@ public class Pet extends ConcurrentEntity {
     private Gender gender;
 
     @Column(name = "weight")
-    private Double weight;
+    private Integer weight;
 
     @Column(name = "category_id")
     private Long categoryId;

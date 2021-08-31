@@ -33,4 +33,6 @@ public class MedicalRecordDto {
 
     @Builder.Default
     private List<ImageDto> images = new ArrayList<>();
+
+    private PetDto pet;
 }

@@ -1,7 +1,9 @@
 package com.petfabula.presentation.facade.assembler.pet;
 
 import com.petfabula.domain.aggregate.pet.entity.Pet;
+import com.petfabula.domain.aggregate.pet.entity.PetBreed;
 import com.petfabula.presentation.facade.assembler.AssemblerHelper;
+import com.petfabula.presentation.facade.dto.pet.PetBreedDto;
 import com.petfabula.presentation.facade.dto.pet.PetDetailDto;
 import com.petfabula.presentation.facade.dto.pet.PetDto;
 import org.modelmapper.ModelMapper;
@@ -45,4 +47,18 @@ public class PetAssembler {
         return pets.stream().map(this::convertToDetailDto).collect(Collectors.toList());
     }
 
+    public PetBreedDto convertToPetBreedDto(PetBreed petBreed) {
+        PetBreedDto breedDto = PetBreedDto.builder()
+                .id(petBreed.getId())
+                .category(petBreed.getCategory())
+                .categoryId(petBreed.getCategoryId())
+                .name(petBreed.getName())
+                .build();
+        return breedDto;
+    }
+
+    public List<PetBreedDto> convertToPetBreedDtos(List<PetBreed> petBreeds) {
+        return petBreeds.stream().map(this::convertToPetBreedDto).collect(Collectors.toList());
+
+    }
 }

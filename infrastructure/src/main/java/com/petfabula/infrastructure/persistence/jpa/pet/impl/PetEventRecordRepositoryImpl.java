@@ -72,6 +72,6 @@ public class PetEventRecordRepositoryImpl implements PetEventRecordRepository {
     @Override
     public void remove(PetEventRecord petEventRecord) {
         petEventRecord.markDelete();
-        petEventRecordJpaRepository.delete(petEventRecord);
+        petEventRecordJpaRepository.save(petEventRecord);
     }
 }

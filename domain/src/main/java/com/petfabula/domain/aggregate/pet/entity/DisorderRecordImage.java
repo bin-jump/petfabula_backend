@@ -25,7 +25,7 @@ public class DisorderRecordImage extends EntityBase {
         this.height = height;
     }
 
-    @Column(name = "disorder_record_id", nullable = false)
+    @Column(name = "disorder_record_id")
     private Long disorderRecordId;
 
     @Column(name = "url", nullable = false)

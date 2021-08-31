@@ -21,6 +21,8 @@ public class ParticipatorDto {
 
     private Integer postCount;
 
+    private Integer questionCount;
+
     private Integer followerCount;
 
     private Integer followedCount;

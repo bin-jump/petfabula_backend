@@ -11,4 +11,6 @@ public interface ParticipatorPetRepository {
     ParticipatorPet findById(Long id);
 
     List<ParticipatorPet> findByParticipatorId(Long participatorId);
+
+    void remove(ParticipatorPet participatorPet);
 }

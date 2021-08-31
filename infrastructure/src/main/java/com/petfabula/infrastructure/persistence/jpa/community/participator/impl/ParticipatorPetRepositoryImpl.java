@@ -34,4 +34,10 @@ public class ParticipatorPetRepositoryImpl implements ParticipatorPetRepository 
     public List<ParticipatorPet> findByParticipatorId(Long participatorId) {
         return participatorPetJpaRepository.findByParticipatorId(participatorId);
     }
+
+    @Override
+    public void remove(ParticipatorPet participatorPet) {
+        participatorPet.markDelete();
+        participatorPetJpaRepository.save(participatorPet);
+    }
 }

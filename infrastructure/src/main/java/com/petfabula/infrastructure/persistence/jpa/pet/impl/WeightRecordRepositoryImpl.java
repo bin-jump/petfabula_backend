@@ -61,6 +61,6 @@ public class WeightRecordRepositoryImpl implements WeightRecordRepository {
     @Override
     public void remove(WeightRecord weightRecord) {
         weightRecord.markDelete();
-        weightRecordJpaRepository.delete(weightRecord);
+        weightRecordJpaRepository.save(weightRecord);
     }
 }

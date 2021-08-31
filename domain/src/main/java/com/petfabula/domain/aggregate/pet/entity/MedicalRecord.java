@@ -55,16 +55,9 @@ public class MedicalRecord extends GeneralEntity {
     @Column(name = "note")
     private String note;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name="medical_record_id")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval=true)
+    @JoinColumn(name="medical_record_id", foreignKey = @ForeignKey(name = "none"))
     private List<MedicalRecordImage> images = new ArrayList<>();
-
-    public void addImage(MedicalRecordImage image) {
-        if (images.size() == 6) {
-            throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
-        }
-        images.add(image);
-    }
 
     public void setHospitalName(String hospitalName) {
         EntityValidationUtils.validStringLength("note", note, 0, 30);
@@ -94,5 +87,21 @@ public class MedicalRecord extends GeneralEntity {
     public void setNote(String note) {
         EntityValidationUtils.validStringLength("note", note, 0, 200);
         this.note = note;
+    }
+
+    public void addImage(MedicalRecordImage image) {
+        if (images.size() == 6) {
+            throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
+        }
+        images.add(image);
+    }
+
+    public void removeImage(Long id) {
+        MedicalRecordImage image = images.stream().
+                filter(p -> p.getId().equals(id)).
+                findFirst().orElse(null);
+        if (image != null) {
+            images.removeIf(x -> x.getId().equals(id));
+        }
     }
 }

@@ -34,7 +34,7 @@ public class PetDetailDto {
     @NotNull
     private Pet.Gender gender;
 
-    private Double weight;
+    private Integer weight;
 
     private Long categoryId;
 
@@ -43,7 +43,7 @@ public class PetDetailDto {
     @NotNull
     private Long breedId;
 
-    private String breed;
+    private PetBreedDto breed;
 
     private String bio;
 

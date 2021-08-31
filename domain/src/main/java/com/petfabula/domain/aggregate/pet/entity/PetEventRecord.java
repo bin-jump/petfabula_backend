@@ -42,9 +42,22 @@ public class PetEventRecord extends GeneralEntity {
     @Column(name = "content", length = 500)
     private String content;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name="pet_event_record_id")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval=true)
+    @JoinColumn(name="pet_event_record_id", foreignKey = @ForeignKey(name = "none"))
     private List<PetEventRecordImage> images = new ArrayList<>();
+
+    public void setEventType(String eventType) {
+        this.eventType = eventType;
+    }
+
+    public void setContent(String content) {
+        EntityValidationUtils.validStringLength("content", content, 0, 240);
+        this.content = content;
+    }
+
+    public void setDateTime(Instant dateTime) {
+        this.dateTime = dateTime;
+    }
 
     public void addImage(PetEventRecordImage image) {
         if (images.size() == 6) {
@@ -53,8 +66,12 @@ public class PetEventRecord extends GeneralEntity {
         images.add(image);
     }
 
-    public void setContent(String content) {
-        EntityValidationUtils.validStringLength("content", content, 0, 240);
-        this.content = content;
+    public void removeImage(Long id) {
+        PetEventRecordImage image = images.stream().
+                filter(p -> p.getId().equals(id)).
+                findFirst().orElse(null);
+        if (image != null) {
+            images.removeIf(x -> x.getId().equals(id));
+        }
     }
 }

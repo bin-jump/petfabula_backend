@@ -12,6 +12,7 @@ import com.petfabula.domain.aggregate.community.post.PostMessageKeys;
 import com.petfabula.domain.aggregate.community.post.entity.PostTopicCategory;
 import com.petfabula.domain.aggregate.community.post.entity.valueobject.PostTopicRelation;
 import com.petfabula.domain.aggregate.community.post.repository.*;
+import com.petfabula.domain.common.CommonMessageKeys;
 import com.petfabula.domain.common.image.ImageFile;
 import com.petfabula.domain.common.paging.CursorPage;
 import com.petfabula.domain.exception.InvalidOperationException;
@@ -137,7 +138,7 @@ public class PostController {
     public Response<PostDto> getPostDetail(@PathVariable("postId") Long postId) {
         Post post = postRepository.findById(postId);
         if (post == null) {
-            throw new NotFoundException(postId, PostMessageKeys.POST_NOT_FOUND);
+            throw new NotFoundException(postId, CommonMessageKeys.POST_NOT_FOUND);
         }
         PostDto res = postAssembler.convertToDto(post);
         Long userId = LoginUtils.currentUserId();

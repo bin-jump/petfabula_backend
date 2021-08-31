@@ -13,4 +13,6 @@ public interface PetRepository {
     Pet findByName(String name);
 
     List<Pet> findByFeederId(Long id);
+
+    void remove(Pet pet);
 }

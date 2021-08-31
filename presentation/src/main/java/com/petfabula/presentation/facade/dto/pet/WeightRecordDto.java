@@ -18,4 +18,6 @@ public class WeightRecordDto {
     private Long dateTime;
 
     private Integer weight;
+
+    private PetDto pet;
 }

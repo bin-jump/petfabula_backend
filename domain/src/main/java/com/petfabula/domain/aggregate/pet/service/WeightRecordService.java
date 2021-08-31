@@ -38,4 +38,43 @@ public class WeightRecordService {
         return weightRecordRepository.save(record);
     }
 
+    public WeightRecord update(Long feederId, Long petId, Long recordId, Instant dateTime, Integer weight) {
+        Pet pet = petRepository.findById(petId);
+        if (pet == null || !pet.getFeederId().equals(feederId)) {
+            throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
+        }
+
+        WeightRecord record = weightRecordRepository.findById(recordId);
+        if (record == null) {
+            throw new InvalidOperationException(CommonMessageKeys.NO_OPERATION_ENTITY);
+        }
+
+        if (!record.getPetId().equals(petId)) {
+            throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
+        }
+
+        record.setDateTime(dateTime);
+        record.setWeight(weight);
+
+        return weightRecordRepository.save(record);
+    }
+
+    public WeightRecord remove(Long feederId, Long recordId) {
+        WeightRecord record = weightRecordRepository.findById(recordId);
+        if (record == null) {
+            return null;
+        }
+
+        Pet pet = petRepository.findById(record.getPetId());
+        if (pet == null || !pet.getFeederId().equals(feederId)) {
+            throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
+        }
+
+        pet.setWeightRecordCount(pet.getWeightRecordCount() - 1);
+        petRepository.save(pet);
+
+        weightRecordRepository.remove(record);
+        return record;
+    }
+
 }

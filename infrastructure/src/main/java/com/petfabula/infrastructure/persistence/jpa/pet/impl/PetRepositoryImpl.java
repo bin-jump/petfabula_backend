@@ -41,4 +41,10 @@ public class PetRepositoryImpl implements PetRepository {
     public List<Pet> findByFeederId(Long id) {
         return petJpaRepository.findByFeederId(id);
     }
+
+    @Override
+    public void remove(Pet pet) {
+        pet.markDelete();
+        petJpaRepository.save(pet);
+    }
 }

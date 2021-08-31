@@ -10,4 +10,7 @@ public final class CommonMessageKeys {
 
     public static String NO_OPERATION_ENTITY = "common.noOperationEntity";
 
+    public static String POST_NOT_FOUND = "common.postNotFound";
+
+    public static String PET_NOT_FOUND = "common.petNotFound";
 }

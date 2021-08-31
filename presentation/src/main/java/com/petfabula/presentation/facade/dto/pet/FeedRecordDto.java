@@ -27,4 +27,6 @@ public class FeedRecordDto {
     private Integer amount;
 
     private String note;
+
+    private PetDto pet;
 }

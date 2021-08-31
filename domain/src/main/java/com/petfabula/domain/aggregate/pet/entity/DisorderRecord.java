@@ -42,8 +42,8 @@ public class DisorderRecord extends GeneralEntity {
     @Column(name = "content", length = 3000)
     private String content;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name="disorder_record_id")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval=true)
+    @JoinColumn(name="disorder_record_id", foreignKey = @ForeignKey(name = "none"))
     private List<DisorderRecordImage> images = new ArrayList<>();
 
     public void addImage(DisorderRecordImage image) {
@@ -51,6 +51,14 @@ public class DisorderRecord extends GeneralEntity {
             throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
         }
         images.add(image);
+    }
+
+    public void setPetId(Long petId) {
+        this.petId = petId;
+    }
+
+    public void setDisorderType(String disorderType) {
+        this.disorderType = disorderType;
     }
 
     public void setContent(String content) {
@@ -61,5 +69,14 @@ public class DisorderRecord extends GeneralEntity {
     public void setDateTime(Instant dateTime) {
         EntityValidationUtils.validRecordDate("dateTime", dateTime);
         this.dateTime = dateTime;
+    }
+
+    public void removeImage(Long id) {
+        DisorderRecordImage image = images.stream().
+                filter(p -> p.getId().equals(id)).
+                findFirst().orElse(null);
+        if (image != null) {
+            images.removeIf(x -> x.getId().equals(id));
+        }
     }
 }

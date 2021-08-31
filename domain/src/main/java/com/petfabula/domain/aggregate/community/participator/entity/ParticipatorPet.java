@@ -50,4 +50,13 @@ public class ParticipatorPet extends ConcurrentEntity {
     public void setPhoto(String photo) {
         this.photo = photo;
     }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public void setBreedId(Long breedId) {
+        this.breedId = breedId;
+    }
+
 }
