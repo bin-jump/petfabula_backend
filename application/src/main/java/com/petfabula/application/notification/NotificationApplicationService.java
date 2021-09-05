@@ -1,6 +1,7 @@
 package com.petfabula.application.notification;
 
 import com.petfabula.domain.aggregate.notification.service.AnswerCommentNotificationService;
+import com.petfabula.domain.aggregate.notification.service.NotificationReceiverService;
 import com.petfabula.domain.aggregate.notification.service.ParticipatorFollowNotificationService;
 import com.petfabula.domain.aggregate.notification.service.VoteNotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,9 @@ public class NotificationApplicationService {
     @Autowired
     private VoteNotificationService voteNotificationService;
 
+    @Autowired
+    private NotificationReceiverService notificationReceiverService;
+
     @Transactional
     public void readAllanswerCommentNotifications(Long receiverId) {
         answerCommentNotificationService.readAll(receiverId);
@@ -32,5 +36,11 @@ public class NotificationApplicationService {
     @Transactional
     public void readAllVoteNotificationServices(Long receiverId) {
         voteNotificationService.readAll(receiverId);
+    }
+
+    @Transactional
+    public void udpateSetting(Long receiverId, boolean receiveAnswerComment, boolean receiveFollow, boolean receiveUpvote) {
+        notificationReceiverService
+                .updateSetting(receiverId, receiveAnswerComment, receiveFollow, receiveUpvote);
     }
 }

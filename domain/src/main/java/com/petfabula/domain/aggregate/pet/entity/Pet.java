@@ -120,7 +120,10 @@ public class Pet extends ConcurrentEntity {
     }
 
     public void setBio(String bio) {
-        EntityValidationUtils.validStringLength("bio", bio, 0, 300);
+        EntityValidationUtils.validStringLength("bio", bio, 0, 140);
+        if (bio == null) {
+            bio = "";
+        }
         this.bio = bio;
     }
 

@@ -3,6 +3,7 @@ package com.petfabula.presentation.web.controller;
 import com.petfabula.application.identity.IdentityApplicationService;
 import com.petfabula.domain.aggregate.identity.entity.UserAccount;
 import com.petfabula.domain.aggregate.identity.repository.UserAccountRepository;
+import com.petfabula.presentation.facade.assembler.AssemblerHelper;
 import com.petfabula.presentation.facade.assembler.identity.UserAccountAssembler;
 import com.petfabula.presentation.facade.dto.identity.*;
 import com.petfabula.presentation.web.api.Response;
@@ -113,4 +114,6 @@ public class IdentityController {
         identityApplicationService.sendEmailCodeLoginCode(request.getEmail());
         return Response.ok(request.getEmail());
     }
+
+
 }

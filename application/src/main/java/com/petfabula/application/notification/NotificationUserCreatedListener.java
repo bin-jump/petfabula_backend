@@ -1,7 +1,7 @@
 package com.petfabula.application.notification;
 
+import com.petfabula.application.event.AccountCreatedEvent;
 import com.petfabula.domain.aggregate.notification.service.NotificationReceiverService;
-import com.petfabula.domain.common.event.UserCreated;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -13,7 +13,7 @@ public class NotificationUserCreatedListener {
     private NotificationReceiverService notificationReceiverService;
 
     @EventListener
-    public void handle(UserCreated event) {
+    public void handle(AccountCreatedEvent event) {
         notificationReceiverService
                 .create(event.getId());
     }

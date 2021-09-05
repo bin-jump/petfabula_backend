@@ -48,4 +48,15 @@ public class NotificationReceiver extends ConcurrentEntity {
     @Column(name = "receive_upvote", nullable = false)
     private boolean receiveUpvote;
 
+    public void setReceiveAnswerComment(boolean receiveAnswerComment) {
+        this.receiveAnswerComment = receiveAnswerComment;
+    }
+
+    public void setReceiveFollow(boolean receiveFollow) {
+        this.receiveFollow = receiveFollow;
+    }
+
+    public void setReceiveUpvote(boolean receiveUpvote) {
+        this.receiveUpvote = receiveUpvote;
+    }
 }

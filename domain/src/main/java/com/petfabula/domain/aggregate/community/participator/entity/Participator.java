@@ -20,6 +20,8 @@ public class Participator extends ConcurrentEntity {
         setId(id);
         setName(name);
         setPhoto(photo);
+        setBio("");
+        setGender(null);
         petCount = 0;
         postCount = 0;
         followerCount = 0;
@@ -37,6 +39,9 @@ public class Participator extends ConcurrentEntity {
 
     @Column(name = "bio", length = 500)
     private String bio;
+
+    @Column(name = "gender", length = 16)
+    private String gender;
 
     @Column(name = "pet_count", nullable = false)
     private Integer petCount;
@@ -65,6 +70,14 @@ public class Participator extends ConcurrentEntity {
 
     public void setPhoto(String photo) {
         this.photo = photo;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 
     public void setPetCount(Integer petCount) {

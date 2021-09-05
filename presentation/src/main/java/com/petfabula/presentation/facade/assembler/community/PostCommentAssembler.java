@@ -1,6 +1,8 @@
 package com.petfabula.presentation.facade.assembler.community;
 
 import com.petfabula.domain.aggregate.community.post.entity.PostComment;
+import com.petfabula.presentation.facade.assembler.AssemblerHelper;
+import com.petfabula.presentation.facade.dto.community.ParticipatorDto;
 import com.petfabula.presentation.facade.dto.community.PostCommentDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +17,13 @@ public class PostCommentAssembler {
     @Autowired
     private ModelMapper modelMapper;
 
+    @Autowired
+    private AssemblerHelper assemblerHelper;
+
     public PostCommentDto convertToDto(PostComment postComment) {
         PostCommentDto postCommentDto =  modelMapper.map(postComment, PostCommentDto.class);
+        ParticipatorDto participatorDto = postCommentDto.getParticipator();
+        participatorDto.setPhoto(assemblerHelper.completeImageUrl(participatorDto.getPhoto()));
         return postCommentDto;
     }
 

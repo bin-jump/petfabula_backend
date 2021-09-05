@@ -23,6 +23,7 @@ public class UserAccount extends ConcurrentEntity {
         this.status = UserStatus.REGISTED;
         this.registerEntry = registerEntry;
         gender = null;
+        setBio("");
     }
 
     @Column(name = "name", unique = true, nullable = false, length = 32)
@@ -31,7 +32,7 @@ public class UserAccount extends ConcurrentEntity {
     @Column(name = "photo", unique = true)
     private String photo;
 
-    @Column(name = "email", unique = true, length = 128)
+    @Column(name = "email", unique = true, length = 255)
     private String email;
 
     @Column(name = "birthday")
@@ -42,6 +43,9 @@ public class UserAccount extends ConcurrentEntity {
 
     @Column(name = "bio", length = 255)
     private String bio;
+
+    @Column(name = "city_id")
+    private Long cityId;
 
     @Column(name = "status", nullable = false)
     private UserStatus status;
@@ -55,7 +59,32 @@ public class UserAccount extends ConcurrentEntity {
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<UserRole> roles = new HashSet<>();
 
-    private void setName(String name) {
+    public void setBio(String bio) {
+        EntityValidationUtils.validStringLength("bio", bio, 0, 140);
+        if (bio == null) {
+            bio = "";
+        }
+        this.bio = bio;
+    }
+
+    public void setBirthday(LocalDate birthday) {
+        EntityValidationUtils.validBirthday("birthday", birthday);
+        this.birthday = birthday;
+    }
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
+    }
+
+    public void setPhoto(String photo) {
+        this.photo = photo;
+    }
+
+    public void setCityId(Long cityId) {
+        this.cityId = cityId;
+    }
+
+    public void setName(String name) {
         EntityValidationUtils.validUserName("name", name);
         this.name = name;
     }

@@ -91,6 +91,30 @@ public class ParticipatorController {
         return Response.ok(participatorDto);
     }
 
+    @GetMapping("my-posts")
+    public Response<CursorPageData<PostDto>> getMyPosts(@RequestParam(value = "cursor", required = false) Long cursor) {
+        Long userId = LoginUtils.currentUserId();
+        return getUserPosts(userId, cursor);
+    }
+
+    @GetMapping("my-questions")
+    public Response<CursorPageData<QuestionDto>> getMyQuestions(@RequestParam(value = "cursor", required = false) Long cursor) {
+        Long userId = LoginUtils.currentUserId();
+        return getUserQuestions(userId, cursor);
+    }
+
+    @GetMapping("my-answers")
+    public Response<CursorPageData<AnswerWithQuestionDto>> getMyAnswers(@RequestParam(value = "cursor", required = false) Long cursor) {
+        Long userId = LoginUtils.currentUserId();
+        return getUserAnswers(userId, cursor);
+    }
+
+    @GetMapping("my-favorite-posts")
+    public Response<CursorPageData<PostDto>> getMyFavoritePosts(@RequestParam(value = "cursor", required = false) Long cursor) {
+        Long userId = LoginUtils.currentUserId();
+        return getUserFavoritePosts(userId, cursor);
+    }
+
     @GetMapping("{userId}/posts")
     public Response<CursorPageData<PostDto>> getUserPosts(@PathVariable("userId") Long userId,
                                                           @RequestParam(value = "cursor", required = false) Long cursor) {
@@ -133,8 +157,8 @@ public class ParticipatorController {
         return Response.ok(res);
     }
 
-    @GetMapping("{userId}/collected-posts")
-    public Response<CursorPageData<PostDto>> getUserCollectedPosts(@PathVariable("userId") Long userId,
+    @GetMapping("{userId}/favorite-posts")
+    public Response<CursorPageData<PostDto>> getUserFavoritePosts(@PathVariable("userId") Long userId,
                                                                   @RequestParam(value = "cursor", required = false) Long cursor) {
         CursorPage<Post> posts = collectPostRepository.findByParticipatorId(userId, cursor, DEAULT_PAGE_SIZE);
         CursorPageData<PostDto> res = CursorPageData

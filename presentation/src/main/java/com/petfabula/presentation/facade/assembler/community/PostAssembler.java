@@ -5,6 +5,7 @@ import com.petfabula.domain.aggregate.community.post.entity.Post;
 import com.petfabula.domain.aggregate.community.post.entity.PostImage;
 import com.petfabula.presentation.facade.assembler.AssemblerHelper;
 import com.petfabula.presentation.facade.dto.ImageDto;
+import com.petfabula.presentation.facade.dto.community.ParticipatorDto;
 import com.petfabula.presentation.facade.dto.community.PostDto;
 import com.petfabula.presentation.facade.dto.community.PostImageDto;
 import org.modelmapper.ModelMapper;
@@ -30,6 +31,8 @@ public class PostAssembler {
                 .add(new ImageDto(item.getId(), assemblerHelper
                         .completeImageUrl(item.getUrl()), item.getWidth(), item.getHeight())));
 
+        ParticipatorDto participatorDto = postDto.getParticipator();
+        participatorDto.setPhoto(assemblerHelper.completeImageUrl(participatorDto.getPhoto()));
         return postDto;
     }
 

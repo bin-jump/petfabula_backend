@@ -36,7 +36,7 @@ public abstract class EntityValidationUtils {
     }
 
     public static void validUserName(String fieldName, String value) {
-        if (StringUtils.length(value) < 3 || StringUtils.length(value) > 20) {
+        if (StringUtils.length(value) < 3 || StringUtils.length(value) > 16) {
             throw new InvalidValueException(fieldName, MessageKey.INVALID_USER_NAME_LENGTH);
         }
         if (!userNameValidator.isValid(value)) {
@@ -45,7 +45,7 @@ public abstract class EntityValidationUtils {
     }
 
     public static void validPetName(String fieldName, String value) {
-        if (StringUtils.length(value) < 1 || StringUtils.length(value) > 16) {
+        if (StringUtils.length(value) < 1 || StringUtils.length(value) > 12) {
             throw new InvalidValueException(fieldName, MessageKey.INVALID_PET_NAME_LENGTH);
         }
         if (!petNameValidator.isValid(value)) {

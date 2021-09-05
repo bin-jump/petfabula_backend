@@ -2,7 +2,6 @@ package com.petfabula.infrastructure.persistence.jpa.pet.impl;
 
 import com.petfabula.domain.aggregate.pet.entity.FeedRecord;
 import com.petfabula.domain.aggregate.pet.respository.FeedRecordRepository;
-import com.petfabula.domain.aggregate.pet.respository.RecordCursor;
 import com.petfabula.domain.common.paging.CursorPage;
 import com.petfabula.infrastructure.persistence.jpa.annotation.FilterSoftDelete;
 import com.petfabula.infrastructure.persistence.jpa.pet.repository.FeedRecordJpaRepository;

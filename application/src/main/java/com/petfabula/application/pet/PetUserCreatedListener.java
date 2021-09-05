@@ -1,7 +1,7 @@
 package com.petfabula.application.pet;
 
+import com.petfabula.application.event.AccountCreatedEvent;
 import com.petfabula.domain.aggregate.pet.service.FeederService;
-import com.petfabula.domain.common.event.UserCreated;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -13,7 +13,7 @@ public class PetUserCreatedListener {
     private FeederService feederService;
 
     @EventListener
-    public void handle(UserCreated event) {
+    public void handle(AccountCreatedEvent event) {
         feederService
                 .create(event.getId(), event.getName(), event.getPhoto());
     }

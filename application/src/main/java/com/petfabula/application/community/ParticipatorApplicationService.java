@@ -18,4 +18,8 @@ public class ParticipatorApplicationService {
         return participatorService.createParticipator(id, name, photo);
     }
 
+    @Transactional
+    public Participator updateParticipator(Long id, String name, String photo, String bio, String gender) {
+        return participatorService.updateParticipator(id, name, photo, bio, gender);
+    }
 }

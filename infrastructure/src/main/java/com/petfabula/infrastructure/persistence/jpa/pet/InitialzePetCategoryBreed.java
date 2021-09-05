@@ -5,6 +5,7 @@ import com.petfabula.domain.aggregate.pet.entity.PetCategory;
 import com.petfabula.domain.aggregate.pet.respository.PetBreedRepository;
 import com.petfabula.domain.aggregate.pet.respository.PetCategoryRepository;
 import com.petfabula.domain.aggregate.pet.service.PetIdGenerator;
+import com.petfabula.infrastructure.tool.CsvHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,8 +44,8 @@ public class InitialzePetCategoryBreed implements ApplicationRunner {
         Map<String, Set<String>> categoryBreedMap = new HashMap<>();
         for (Object l : arr) {
             String[] parts = ((String)l).split(",");
-            String category = parts[0].trim();
-            String breed = parts[1].trim();
+            String category = CsvHelper.cleanCell(parts[0]);
+            String breed = CsvHelper.cleanCell(parts[1]);
 
             if (!categoryBreedMap.containsKey(category)) {
                 categoryBreedMap.put(category, new HashSet<>());
@@ -70,7 +71,6 @@ public class InitialzePetCategoryBreed implements ApplicationRunner {
                     petBreedRepository.save(petBreed);
                 }
             }
-
         }
     }
 }

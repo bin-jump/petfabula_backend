@@ -9,14 +9,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UserAccountDto {
+public class CityDto {
 
     private Long id;
 
     private String name;
 
-    private String photo;
+    private String prefectureName;
 
-    private String bio;
-
+    private Long prefectureId;
 }

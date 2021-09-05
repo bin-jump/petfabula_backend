@@ -1,15 +1,15 @@
-package com.petfabula.presentation.facade.dto.identity;
+package com.petfabula.application.event;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 @Builder
-public class UserAccountDto {
+public class AccountUpdateEvent {
 
     private Long id;
 
@@ -17,6 +17,11 @@ public class UserAccountDto {
 
     private String photo;
 
+    private String gender;
+
     private String bio;
 
+    private LocalDate birthday;
+
+    private Long cityId;
 }

@@ -1,27 +1,30 @@
 package com.petfabula.application.identity;
 
+import com.petfabula.application.event.AccountCreatedEvent;
+import com.petfabula.application.event.AccountUpdateEvent;
+import com.petfabula.application.event.IntegratedEventPublisher;
 import com.petfabula.domain.aggregate.identity.entity.EmailCodeAuthentication;
 import com.petfabula.domain.aggregate.identity.entity.UserAccount;
 import com.petfabula.domain.aggregate.identity.repository.EmailCodeAuthenticationRepository;
 import com.petfabula.domain.aggregate.identity.repository.UserAccountRepository;
-import com.petfabula.domain.aggregate.identity.service.AuthenticateService;
-import com.petfabula.domain.aggregate.identity.service.MessageKey;
-import com.petfabula.domain.aggregate.identity.service.RegisterService;
-import com.petfabula.domain.aggregate.identity.service.VerificationCodeService;
-import com.petfabula.domain.common.domain.DomainEventPublisher;
-import com.petfabula.domain.common.event.UserCreated;
+import com.petfabula.domain.aggregate.identity.service.*;
+import com.petfabula.domain.common.image.ImageFile;
 import com.petfabula.domain.common.validation.EntityValidationUtils;
 import com.petfabula.domain.exception.InvalidValueException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDate;
 
 @Service
 public class IdentityApplicationService {
 
     @Autowired
     private VerificationCodeService verificationCodeService;
+
+    @Autowired
+    private AccountService accountService;
 
     @Autowired
     private RegisterService registerService;
@@ -35,9 +38,8 @@ public class IdentityApplicationService {
     @Autowired
     private EmailCodeAuthenticationRepository emailCodeAuthenticationRepository;
 
-    //for now just use domain event cross different domains
     @Autowired
-    private DomainEventPublisher domainEventPublisher;
+    private IntegratedEventPublisher eventPublisher;
 
     public void examineEmailCodeRegisterContentAndSendCode(String name, String email) {
         EntityValidationUtils.validUserName("name", name);
@@ -59,8 +61,8 @@ public class IdentityApplicationService {
     public UserAccount registerByEmailCode(String name, String email, String code) {
         UserAccount userAccount =
                 registerService.registerByEmailCode(name, email, code);
-        domainEventPublisher
-                .publish(new UserCreated(userAccount.getId(), userAccount.getName(), userAccount.getPhoto()));
+        eventPublisher
+                .publish(new AccountCreatedEvent(userAccount.getId(), userAccount.getName(), userAccount.getPhoto()));
         return userAccount;
     }
 
@@ -68,8 +70,8 @@ public class IdentityApplicationService {
     public UserAccount registerOrAuthenticateByOauth(String serverName, String code) {
         UserAccount userAccount =
                 registerService.registerOrAuthenticateByOauth(serverName, code);
-        domainEventPublisher
-                .publish(new UserCreated(userAccount.getId(), userAccount.getName(), userAccount.getPhoto()));
+        eventPublisher
+                .publish(new AccountCreatedEvent(userAccount.getId(), userAccount.getName(), userAccount.getPhoto()));
         return userAccount;
     }
 
@@ -81,4 +83,24 @@ public class IdentityApplicationService {
     public UserAccount authenticateByEmailCode(String email, String code) {
         return authenticateService.authenticateByEmailCode(email, code);
     }
+
+    @Transactional
+    public UserAccount updateAccount(Long accountId, LocalDate birthday, UserAccount.Gender gender,
+                                     String bio, Long cityId, ImageFile imageFile) {
+        UserAccount account = accountService.update(accountId, birthday, gender,
+                bio, cityId, imageFile);
+        AccountUpdateEvent event = AccountUpdateEvent.builder()
+                .id(accountId)
+                .name(account.getName())
+                .photo(account.getPhoto())
+                .bio(account.getBio())
+                .birthday(account.getBirthday())
+                .gender(account.getGender().toString())
+                .cityId(account.getCityId())
+                .build();
+        eventPublisher
+                .publish(event);
+        return account;
+    }
+
 }

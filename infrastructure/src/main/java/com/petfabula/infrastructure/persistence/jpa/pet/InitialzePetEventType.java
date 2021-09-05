@@ -3,6 +3,7 @@ package com.petfabula.infrastructure.persistence.jpa.pet;
 import com.petfabula.domain.aggregate.pet.entity.PetEventType;
 import com.petfabula.domain.aggregate.pet.respository.PetEventTypeRepository;
 import com.petfabula.domain.aggregate.pet.service.PetIdGenerator;
+import com.petfabula.infrastructure.tool.CsvHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,8 +38,8 @@ public class InitialzePetEventType implements ApplicationRunner {
 
         for (Object l : arr) {
             String[] parts = ((String)l).split(",");
-            String category = parts[0].trim();
-            String eventType = parts[1].trim();
+            String category = CsvHelper.cleanCell(parts[0]);
+            String eventType = CsvHelper.cleanCell(parts[1]);
             if (category.length() == 0) {
                 category = null;
             }

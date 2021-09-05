@@ -6,6 +6,7 @@ import com.petfabula.presentation.facade.assembler.AssemblerHelper;
 import com.petfabula.presentation.facade.dto.ImageDto;
 import com.petfabula.presentation.facade.dto.community.AnswerDto;
 import com.petfabula.presentation.facade.dto.community.AnswerWithQuestionDto;
+import com.petfabula.presentation.facade.dto.community.ParticipatorDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -28,7 +29,8 @@ public class AnswerAssembler {
         answer.getImages().forEach(item -> answerDto.getImages()
                 .add(new ImageDto(item.getId(), assemblerHelper
                         .completeImageUrl(item.getUrl()), item.getWidth(), item.getHeight())));
-
+        ParticipatorDto participatorDto = answerDto.getParticipator();
+        participatorDto.setPhoto(assemblerHelper.completeImageUrl(participatorDto.getPhoto()));
         return answerDto;
     }
 

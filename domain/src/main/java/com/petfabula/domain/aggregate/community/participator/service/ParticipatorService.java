@@ -27,6 +27,19 @@ public class ParticipatorService {
         return participatorRepository.save(participator);
     }
 
+    public Participator updateParticipator(Long id, String name, String photo, String bio, String gender) {
+        Participator participator = participatorRepository.findById(id);
+        if (participator == null) {
+            throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
+        }
+
+        participator.setName(name);
+        participator.setPhoto(photo);
+        participator.setBio(bio);
+        participator.setGender(gender);
+        return participatorRepository.save(participator);
+    }
+
     public ParticipatorPet addParticipatorPet(Long petId, Long participatorId, String name, String photo,
                                               String petCategory, Long breedId) {
         Participator participator = participatorRepository.findById(participatorId);

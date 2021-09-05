@@ -334,8 +334,8 @@ public class PostController {
         return Response.ok(res);
     }
 
-    @PostMapping("posts/{postId}/collect")
-    public Response<CollectPostResult> collectPost(@PathVariable("postId") Long postId) {
+    @PostMapping("posts/{postId}/favorites")
+    public Response<CollectPostResult> favoritePost(@PathVariable("postId") Long postId) {
         Long userId = LoginUtils.currentUserId();
         postApplicationService.collectPost(userId, postId);
         CollectPostResult res = CollectPostResult.builder()
@@ -345,8 +345,8 @@ public class PostController {
         return Response.ok(res);
     }
 
-    @DeleteMapping("posts/{postId}/collect")
-    public Response<CollectPostResult> removeCollectPost(@PathVariable("postId") Long postId) {
+    @DeleteMapping("posts/{postId}/favorites")
+    public Response<CollectPostResult> removeFavoritePost(@PathVariable("postId") Long postId) {
         Long userId = LoginUtils.currentUserId();
         postApplicationService.removeCollectPost(userId, postId);
         CollectPostResult res = CollectPostResult.builder()

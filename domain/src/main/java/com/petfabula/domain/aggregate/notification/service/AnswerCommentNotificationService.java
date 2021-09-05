@@ -4,6 +4,8 @@ import com.petfabula.domain.aggregate.notification.entity.AnswerCommentNotificat
 import com.petfabula.domain.aggregate.notification.entity.NotificationReceiver;
 import com.petfabula.domain.aggregate.notification.respository.AnswerCommentNotificationRepository;
 import com.petfabula.domain.aggregate.notification.respository.NotificationReceiverRepository;
+import com.petfabula.domain.common.CommonMessageKeys;
+import com.petfabula.domain.exception.InvalidOperationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +26,14 @@ public class AnswerCommentNotificationService {
                                                         Long targetEntityId,
                                                         AnswerCommentNotification.EntityType targetEntityType,
                                                         AnswerCommentNotification.ActionType actionType) {
+
+        NotificationReceiver receiver = notificationReceiverRepository.findById(ownerId);
+        if (receiver == null) {
+            throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
+        }
+        if (!receiver.isReceiveUpvote()) {
+            return null;
+        }
 
         AnswerCommentNotification answerCommentNotification =
                 answerCommentNotificationRepository.findByAction(entityId, entityType, targetEntityId, targetEntityType);
