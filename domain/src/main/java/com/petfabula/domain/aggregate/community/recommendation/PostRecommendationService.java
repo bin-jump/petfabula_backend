@@ -34,8 +34,23 @@ public class PostRecommendationService {
     }
 
     public void addNewPost(Post post) {
+        PostRecommendation postRecommendation = postRecommendationRepository
+                .findByPostId(post.getId());
+        if (postRecommendation != null) {
+            return;
+        }
+
         Long id = recommendationIdGenerator.nextId();
-        PostRecommendation postRecommendation = new PostRecommendation(id, post.getId());
+        postRecommendation = new PostRecommendation(id, post.getId());
         postRecommendationRepository.save(postRecommendation);
     }
+
+    public void remove(Long postId) {
+        PostRecommendation postRecommendation = postRecommendationRepository.findByPostId(postId);
+        if (postRecommendation != null) {
+            postRecommendationRepository.remove(postRecommendation);
+        }
+
+    }
+
 }

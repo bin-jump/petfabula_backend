@@ -7,11 +7,20 @@ import com.petfabula.domain.aggregate.community.question.QuestionAnswerSearchSer
 import com.petfabula.domain.common.search.SearchAfterResult;
 import com.petfabula.domain.common.search.SearchQueryRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.lucene.search.TermQuery;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.TermQueryBuilder;
+import org.elasticsearch.index.reindex.DeleteByQueryRequest;
+import org.elasticsearch.index.reindex.UpdateByQueryAction;
+import org.elasticsearch.index.reindex.UpdateByQueryRequest;
+import org.elasticsearch.index.reindex.UpdateByQueryRequestBuilder;
+import org.elasticsearch.script.Script;
+import org.elasticsearch.script.ScriptType;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.modelmapper.ModelMapper;
@@ -21,12 +30,15 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 public class QuestionAnswerSearchServiceImpl implements QuestionAnswerSearchService {
+
+    static String INDICE_NAME = "question_answer";
 
     private ModelMapper modelMapper = new ModelMapper();
 
@@ -48,7 +60,7 @@ public class QuestionAnswerSearchServiceImpl implements QuestionAnswerSearchServ
     @Override
     public SearchAfterResult<QuestionAnswerSearchItem, Long> search(SearchQueryRequest searchQueryRequest) {
         try {
-            SearchRequest searchRequest = new SearchRequest("question_answer");
+            SearchRequest searchRequest = new SearchRequest(INDICE_NAME);
             SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
             sourceBuilder
                     .query(QueryBuilders.multiMatchQuery(searchQueryRequest.getQuery(),
@@ -91,7 +103,70 @@ public class QuestionAnswerSearchServiceImpl implements QuestionAnswerSearchServ
     }
 
     @Override
-    public void remove(Long id) {
-        questionAnswerSearchRepository.deleteById(id);
+    public void updateAnswerQuestionTitle(Long questionId, String title) {
+        UpdateByQueryRequest request = new UpdateByQueryRequest(INDICE_NAME);
+        TermQueryBuilder qidQuery = QueryBuilders.termQuery("questionId", questionId);
+        request.setConflicts("proceed");
+        request.setQuery(qidQuery);
+        request.setScript(new Script(ScriptType.INLINE, "painless","ctx._source.title = '" + title + "'",
+                Collections.emptyMap()));
+        request.setRefresh(true);
+        try {
+            client.updateByQuery(request, RequestOptions.DEFAULT);
+        } catch (IOException e) {
+            log.error("update failed " + e);
+            throw new RuntimeException("update failed");
+        }
+    }
+
+    @Override
+    public void removeByQuestionId(Long questionId) {
+        DeleteByQueryRequest request = new DeleteByQueryRequest(INDICE_NAME);
+        TermQueryBuilder qidQuery = QueryBuilders.termQuery("questionId", questionId);
+        request.setConflicts("proceed");
+        request.setQuery(qidQuery);
+        request.setRefresh(true);
+        try {
+            client.deleteByQuery(request, RequestOptions.DEFAULT);
+        } catch (IOException e) {
+            log.error("remove failed " + e);
+            throw new RuntimeException("remove failed");
+        }
+    }
+
+    @Override
+    public void removeAnswerByAnswerId(Long answerId) {
+        DeleteByQueryRequest request = new DeleteByQueryRequest(INDICE_NAME);
+        TermQueryBuilder aidQuery = QueryBuilders.termQuery("answerId", answerId);
+        request.setConflicts("proceed");
+        request.setQuery(aidQuery);
+        request.setRefresh(true);
+        try {
+            client.deleteByQuery(request, RequestOptions.DEFAULT);
+        } catch (IOException e) {
+            log.error("remove failed " + e);
+            throw new RuntimeException("remove failed");
+        }
+    }
+
+    @Override
+    public void removeQuestionByQuestionId(Long questionId) {
+        DeleteByQueryRequest request = new DeleteByQueryRequest(INDICE_NAME);
+        TermQueryBuilder qidQuery = QueryBuilders.termQuery("questionId", questionId);
+        TermQueryBuilder typeQuery = QueryBuilders
+                .termQuery("category", QuestionAnswerSearchItem.ItemType.QUESTION.toString());
+        QueryBuilder qQuery = QueryBuilders
+                .boolQuery()
+                .must(qidQuery)
+                .must(typeQuery);
+        request.setConflicts("proceed");
+        request.setQuery(qQuery);
+        request.setRefresh(true);
+        try {
+            client.deleteByQuery(request, RequestOptions.DEFAULT);
+        } catch (IOException e) {
+            log.error("remove failed " + e);
+            throw new RuntimeException("remove failed");
+        }
     }
 }

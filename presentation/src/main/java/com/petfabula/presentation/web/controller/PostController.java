@@ -187,7 +187,8 @@ public class PostController {
             }
         }
         Post post = postApplicationService
-                .createPost(userId, postDto.getContent(), postDto.getRelatePetId(), postDto.getTopicId(), imageFiles);
+                .createPost(userId, postDto.getContent(),
+                        postDto.getRelatePetId(), postDto.getTopicId(), imageFiles);
         postDto = postAssembler.convertToDto(post);
         return Response.ok(postDto);
     }
@@ -209,7 +210,8 @@ public class PostController {
         }
         List<Long> imageIds = postDto.getImages().stream().map(ImageDto::getId).collect(Collectors.toList());
         Post post = postApplicationService
-                .updatePost(userId, postDto.getId(), postDto.getContent(), postDto.getRelatePetId(), postDto.getTopicId(), imageFiles, imageIds);
+                .updatePost(userId, postDto.getId(), postDto.getContent(),
+                        postDto.getRelatePetId(), postDto.getTopicId(), imageFiles, imageIds);
         postDto = postAssembler.convertToDto(post);
 
         LikePost likePost = likePostRepository.find(userId, post.getId());

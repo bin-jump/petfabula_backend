@@ -6,20 +6,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 @Component
-public class PostCreateListener {
+public class PostRemoveListener {
 
     @Autowired
     private PostSearchService searchService;
 
     @Async
     @TransactionalEventListener
-    public void handle(PostCreated postCreated) {
-        if (postCreated.getPost().isPrivatePost()) {
-            return;
-        }
-        PostSearchItem searchItem = PostSearchItem.of(postCreated.getPost());
-        searchService.index(searchItem);
+    public void handle(PostRemoved postRemoved) {
+        searchService.remove(postRemoved.getPost().getId());
     }
-
-
 }

@@ -2,7 +2,9 @@ package com.petfabula.domain.aggregate.community.question.service;
 
 import com.petfabula.domain.aggregate.community.participator.entity.Participator;
 import com.petfabula.domain.aggregate.community.participator.repository.ParticipatorRepository;
+import com.petfabula.domain.aggregate.community.question.AnswerRemoved;
 import com.petfabula.domain.aggregate.community.question.QuestionAnswerCreated;
+import com.petfabula.domain.aggregate.community.question.QuestionAnswerUpdated;
 import com.petfabula.domain.aggregate.community.question.entity.Answer;
 import com.petfabula.domain.aggregate.community.question.entity.AnswerImage;
 import com.petfabula.domain.aggregate.community.question.entity.Question;
@@ -113,6 +115,11 @@ public class AnswerService {
             answer.addImage(answerImage);
         }
 
+        Question question = questionRepository.findById(answer.getQuestionId());
+        if (question != null) {
+            domainEventPublisher.publish(new QuestionAnswerUpdated(answer, question));
+
+        }
         return answerRepository.save(answer);
     }
 
@@ -143,6 +150,8 @@ public class AnswerService {
         participatorRepository.save(participator);
 
         answerRepository.remove(answer);
+
+        domainEventPublisher.publish(new AnswerRemoved(answer));
         return answer;
     }
 }

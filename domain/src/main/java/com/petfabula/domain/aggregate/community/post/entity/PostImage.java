@@ -21,6 +21,7 @@ public class PostImage extends EntityBase {
         this.width = w;
         this.height = h;
         this.postId = postId;
+        this.privateImage = false;
     }
 
     @Column(name = "pet_id")
@@ -31,6 +32,9 @@ public class PostImage extends EntityBase {
 
     @Column(name = "post_id")
     private Long postId;
+
+    @Column(name = "private_image")
+    private boolean privateImage;
 
     @Column(name = "width", nullable = false)
     private Integer width;

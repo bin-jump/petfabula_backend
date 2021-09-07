@@ -5,7 +5,9 @@ import com.petfabula.domain.aggregate.community.participator.entity.Participator
 import com.petfabula.domain.aggregate.community.participator.repository.ParticipatorPetRepository;
 import com.petfabula.domain.aggregate.community.participator.repository.ParticipatorRepository;
 import com.petfabula.domain.aggregate.community.question.QuestionAnswerCreated;
+import com.petfabula.domain.aggregate.community.question.QuestionAnswerUpdated;
 import com.petfabula.domain.aggregate.community.question.QuestionCreated;
+import com.petfabula.domain.aggregate.community.question.QuestionRemoved;
 import com.petfabula.domain.aggregate.community.question.entity.Question;
 import com.petfabula.domain.aggregate.community.question.entity.QuestionImage;
 import com.petfabula.domain.aggregate.community.question.repository.QuestionRepository;
@@ -126,6 +128,7 @@ public class QuestionService {
             question.addImage(postImage);
         }
 
+        domainEventPublisher.publish(new QuestionAnswerUpdated(question));
         return questionRepository.save(question);
     }
 
@@ -144,6 +147,8 @@ public class QuestionService {
         participatorRepository.save(participator);
 
         questionRepository.remove(question);
+
+        domainEventPublisher.publish(new QuestionRemoved(question));
         return question;
     }
 

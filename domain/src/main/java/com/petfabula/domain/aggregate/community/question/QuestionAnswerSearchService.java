@@ -9,5 +9,13 @@ public interface QuestionAnswerSearchService {
 
     SearchAfterResult<QuestionAnswerSearchItem, Long> search(SearchQueryRequest searchQueryRequest);
 
-    void remove(Long id);
+    void updateAnswerQuestionTitle(Long questionId, String title);
+
+
+    void removeByQuestionId(Long questionId);
+
+    void removeAnswerByAnswerId(Long answerId);
+
+    void removeQuestionByQuestionId(Long questionId);
+
 }

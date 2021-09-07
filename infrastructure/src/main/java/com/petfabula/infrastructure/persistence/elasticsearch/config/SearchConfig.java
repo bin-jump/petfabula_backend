@@ -1,6 +1,7 @@
 package com.petfabula.infrastructure.persistence.elasticsearch.config;
 
 import lombok.extern.slf4j.Slf4j;
+import org.elasticsearch.client.Client;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

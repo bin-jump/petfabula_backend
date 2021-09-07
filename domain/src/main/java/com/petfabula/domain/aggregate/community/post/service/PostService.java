@@ -4,6 +4,8 @@ import com.petfabula.domain.aggregate.community.participator.entity.Participator
 import com.petfabula.domain.aggregate.community.participator.entity.ParticipatorPet;
 import com.petfabula.domain.aggregate.community.participator.repository.ParticipatorPetRepository;
 import com.petfabula.domain.aggregate.community.participator.repository.ParticipatorRepository;
+import com.petfabula.domain.aggregate.community.post.PostRemoved;
+import com.petfabula.domain.aggregate.community.post.PostUpdated;
 import com.petfabula.domain.aggregate.community.post.PostCreated;
 import com.petfabula.domain.aggregate.community.post.entity.*;
 import com.petfabula.domain.aggregate.community.post.entity.valueobject.PostTopicRelation;
@@ -71,7 +73,7 @@ public class PostService {
         }
 
         Long postId = idGenerator.nextId();
-        Post post = new Post(postId, participator, content, participatorPet);
+        Post post = new Post(postId, participator, content, false, participatorPet);
 //        for (ImageFile image : images) {
 //            String p = imageRepository.save(image);
 //            PostImage postImage = new PostImage(p);
@@ -179,6 +181,7 @@ public class PostService {
             post.addImage(postImage);
         }
 
+        domainEventPublisher.publish(new PostUpdated(post));
         return postRepository.save(post);
     }
 
@@ -201,6 +204,8 @@ public class PostService {
         postRepository.remove(post);
         participator.setPostCount(participator.getPostCount() - 1);
         participatorRepository.save(participator);
+
+        domainEventPublisher.publish(new PostRemoved(post));
         return post;
     }
 }

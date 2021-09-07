@@ -25,7 +25,7 @@ import java.util.Optional;
 @Table(name = "post")
 public class Post extends ConcurrentEntity {
 
-    public Post(Long id, Participator participator, String content, ParticipatorPet pet) {
+    public Post(Long id, Participator participator, String content, boolean privatePost, ParticipatorPet pet) {
         setId(id);
         setContent(content);
         this.participator = participator;
@@ -33,7 +33,7 @@ public class Post extends ConcurrentEntity {
         this.commentCount = 0;
         this.collectCount = 0;
         this.viewCount = 0;
-        this.showAll = true;
+        this.privatePost = privatePost;
         setRelatePet(pet);
     }
 
@@ -55,8 +55,8 @@ public class Post extends ConcurrentEntity {
     @Column(name = "view_count", nullable = false)
     private Integer viewCount;
 
-    @Column(name = "show_all", nullable = false)
-    private Boolean showAll;
+    @Column(name = "private_post", nullable = false)
+    private boolean privatePost;
 
     @Column(name = "pet_category")
     private String petCategory;

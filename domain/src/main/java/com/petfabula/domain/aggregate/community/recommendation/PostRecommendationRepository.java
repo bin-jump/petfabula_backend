@@ -6,5 +6,9 @@ public interface PostRecommendationRepository {
 
     PostRecommendation save(PostRecommendation postRecommendation);
 
+    PostRecommendation findByPostId(Long postId);
+
     RecommendationResult<Post> findRandomRecommend(int page, int size, int seed, Long cursor);
+
+    void remove(PostRecommendation postRecommendation);
 }

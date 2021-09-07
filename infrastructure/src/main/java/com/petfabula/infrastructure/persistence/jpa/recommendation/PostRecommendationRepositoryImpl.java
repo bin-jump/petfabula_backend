@@ -38,6 +38,11 @@ public class PostRecommendationRepositoryImpl implements PostRecommendationRepos
     }
 
     @Override
+    public PostRecommendation findByPostId(Long postId) {
+        return postRecommendationJpaRepository.findByPostId(postId);
+    }
+
+    @Override
     public RecommendationResult<Post> findRandomRecommend(int page, int size, int seed, Long cursor) {
         // cursor here is for filtering new created post
         if(cursor == null) {
@@ -86,5 +91,10 @@ public class PostRecommendationRepositoryImpl implements PostRecommendationRepos
                 OffsetPage.of(questions, page, size, hasMore);
 
         return new RecommendationResult<>(offsetPage, seed, cursor);
+    }
+
+    @Override
+    public void remove(PostRecommendation postRecommendation) {
+        postRecommendationJpaRepository.delete(postRecommendation);
     }
 }

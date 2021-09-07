@@ -8,4 +8,7 @@ public interface PostRecommendationJpaRepository extends JpaRepository<PostRecom
 
     @EntityGraph(value = "postRecommendation.bare")
     PostRecommendation findTopByOrderByIdDesc();
+
+    @EntityGraph(value = "postRecommendation.bare")
+    PostRecommendation findByPostId(Long postId);
 }
