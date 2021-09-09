@@ -8,8 +8,6 @@ import com.petfabula.domain.aggregate.community.participator.repository.Particip
 import com.petfabula.domain.aggregate.community.post.entity.valueobject.CollectPost;
 import com.petfabula.domain.aggregate.community.post.entity.valueobject.LikePost;
 import com.petfabula.domain.aggregate.community.post.entity.*;
-import com.petfabula.domain.aggregate.community.post.PostMessageKeys;
-import com.petfabula.domain.aggregate.community.post.entity.PostTopicCategory;
 import com.petfabula.domain.aggregate.community.post.entity.valueobject.PostTopicRelation;
 import com.petfabula.domain.aggregate.community.post.repository.*;
 import com.petfabula.domain.common.CommonMessageKeys;
@@ -25,7 +23,6 @@ import com.petfabula.presentation.web.api.CursorPageData;
 import com.petfabula.presentation.web.api.Response;
 import com.petfabula.presentation.web.security.LoginUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -68,9 +65,6 @@ public class PostController {
     private PostRepository postRepository;
 
     @Autowired
-    private PostImageRepository postImageRepository;
-
-    @Autowired
     private LikePostRepository likePostRepository;
 
     @Autowired
@@ -98,36 +92,6 @@ public class PostController {
     public Response<CursorPageData<PostDto>> geTimelinePosts(@RequestParam(value = "cursor", required = false) Long cursor) {
         Long userId = LoginUtils.currentUserId();
         CursorPage<Post> posts = timeLineRepository.findFollowedByParticipatorId(userId, cursor, DEAULT_PAGE_SIZE);
-        CursorPageData<PostDto> res = CursorPageData
-                .of(postAssembler.convertToDtos(posts.getResult()), posts.isHasMore(),
-                        posts.getPageSize(), posts.getNextCursor());
-        return Response.ok(res);
-    }
-
-    @GetMapping("user/{userId}/posts")
-    public Response<CursorPageData<PostDto>> getUserPosts(@PathVariable("userId") Long userId,
-                                                          @RequestParam(value = "cursor", required = false) Long cursor) {
-        CursorPage<Post> posts = postRepository.findByParticipatorId(userId, cursor, DEAULT_PAGE_SIZE);
-        CursorPageData<PostDto> res = CursorPageData
-                .of(postAssembler.convertToDtos(posts.getResult()), posts.isHasMore(),
-                        posts.getPageSize(), posts.getNextCursor());
-        return Response.ok(res);
-    }
-
-    @GetMapping("pets/{petId}/posts")
-    public Response<CursorPageData<PostDto>> getPetPosts(@PathVariable("petId") Long petId,
-                                                          @RequestParam(value = "cursor", required = false) Long cursor) {
-        CursorPage<Post> posts = postRepository.findByPetId(petId, cursor, DEAULT_PAGE_SIZE);
-        CursorPageData<PostDto> res = CursorPageData
-                .of(postAssembler.convertToDtos(posts.getResult()), posts.isHasMore(),
-                        posts.getPageSize(), posts.getNextCursor());
-        return Response.ok(res);
-    }
-
-    @GetMapping("posts")
-    public Response<CursorPageData<PostDto>> getMyPosts(@RequestParam(value = "cursor", required = false) Long cursor) {
-        Long userId = LoginUtils.currentUserId();
-        CursorPage<Post> posts = postRepository.findByParticipatorId(userId, cursor, DEAULT_PAGE_SIZE);
         CursorPageData<PostDto> res = CursorPageData
                 .of(postAssembler.convertToDtos(posts.getResult()), posts.isHasMore(),
                         posts.getPageSize(), posts.getNextCursor());
@@ -164,7 +128,7 @@ public class PostController {
         PostTopicRelation postTopicRelation = postTopicRelationRepository.findByPostId(post.getId());
         if (postTopicRelation != null) {
             Long topicId =postTopicRelation.getTopicId();
-            PostTopic topic = postTopicRepository.findById(topicId);
+            PostTopic topic = postTopicRepository.findTopicById(topicId);
             if (topic != null) {
                 res.setPostTopic(postTopicAssembler.convertToDto(topic));
             }
@@ -234,7 +198,7 @@ public class PostController {
         PostTopicRelation postTopicRelation = postTopicRelationRepository.findByPostId(post.getId());
         if (postTopicRelation != null) {
             Long topicId =postTopicRelation.getTopicId();
-            PostTopic topic = postTopicRepository.findById(topicId);
+            PostTopic topic = postTopicRepository.findTopicById(topicId);
             if (topic != null) {
                 postDto.setPostTopic(postTopicAssembler.convertToDto(topic));
             }
@@ -380,21 +344,22 @@ public class PostController {
         return Response.ok(res);
     }
 
-    @GetMapping("pets/{petId}/images")
-    public Response<CursorPageData<PostImageDto>> getPetPostImages(@PathVariable("petId") Long petId,
-                                                                 @RequestParam(value = "cursor", required = false) Long cursor) {
-        CursorPage<PostImage> images = postImageRepository.findByPetId(petId, cursor, DEAULT_PAGE_SIZE * 3);
-        CursorPageData<PostImageDto> res = CursorPageData
-                .of(postAssembler.convertPostImageDtos(images.getResult()), images.isHasMore(),
-                        images.getPageSize(), images.getNextCursor());
+    @GetMapping("topics")
+    public Response<List<PostTopicDto>> getAllTopics() {
+        List<PostTopic> topics = postTopicRepository.findAllTopics();
+        List<PostTopicDto> res = postTopicAssembler
+                .convertToTopicDtos(topics);
         return Response.ok(res);
     }
 
-    @GetMapping("topics")
-    public Response<List<PostTopicCategoryDto>> getAllTopics() {
-        List<PostTopicCategory> postTopicCategories = postTopicRepository.findAll();
-        List<PostTopicCategoryDto> res = postTopicAssembler
-                .convertToDtos(postTopicCategories);
+    @GetMapping("topic/{topicId}/posts")
+    public Response<CursorPageData<PostDto>> getTopicPosts(@PathVariable("topicId") Long topicId,
+                                                        @RequestParam(value = "cursor", required = false) Long cursor) {
+
+        CursorPage<Post> posts = postTopicRelationRepository.findPostsByTopic(topicId, cursor, DEAULT_PAGE_SIZE);
+        CursorPageData<PostDto> res = CursorPageData
+                .of(postAssembler.convertToDtos(posts.getResult()), posts.isHasMore(),
+                        posts.getPageSize(), posts.getNextCursor());
         return Response.ok(res);
     }
 }

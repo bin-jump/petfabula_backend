@@ -11,9 +11,12 @@ public interface PostTopicRepository {
 
     PostTopic save(PostTopic postTopic);
 
-    List<PostTopicCategory> findAll();
+    List<PostTopic> findAllTopics();
 
-    PostTopic findById(Long id);
+    PostTopic findTopicById(Long id);
 
-    PostTopicCategory findByTitle(String title);
+    PostTopicCategory findCategoryByTitle(String title);
+
+    PostTopic findTopicByTitle(String title);
+
 }

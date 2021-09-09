@@ -13,15 +13,23 @@ import javax.persistence.*;
 @Table(name = "post_topic")
 public class PostTopic extends GeneralEntity {
 
-    public PostTopic(Long id, String title, Long topicCategoryId) {
+    public PostTopic(Long id, String title, Long topicCategoryId, String category) {
         setId(id);
         this.title = title;
-        this.categoryId = topicCategoryId;
+        this.topicCategoryId = topicCategoryId;
+        this.topicCategoryTitle = category;
+        this.petCategory = "";
     }
 
     @Column(name = "title", nullable = false, unique = true)
     private String title;
 
-    @Column(name = "category_id", nullable = false)
-    private Long categoryId;
+    @Column(name = "topic_category_id", nullable = false)
+    private Long topicCategoryId;
+
+    @Column(name = "topic_category_title", nullable = false)
+    private String topicCategoryTitle;
+
+    @Column(name = "pet_category", nullable = false)
+    private String petCategory;
 }

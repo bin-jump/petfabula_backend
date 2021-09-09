@@ -6,7 +6,9 @@ import com.petfabula.domain.aggregate.community.participator.repository.FollowPa
 import com.petfabula.domain.aggregate.community.participator.repository.ParticipatorPetRepository;
 import com.petfabula.domain.aggregate.community.participator.repository.ParticipatorRepository;
 import com.petfabula.domain.aggregate.community.post.entity.Post;
+import com.petfabula.domain.aggregate.community.post.entity.PostImage;
 import com.petfabula.domain.aggregate.community.post.repository.CollectPostRepository;
+import com.petfabula.domain.aggregate.community.post.repository.PostImageRepository;
 import com.petfabula.domain.aggregate.community.post.repository.PostRepository;
 import com.petfabula.domain.aggregate.community.question.entity.Answer;
 import com.petfabula.domain.aggregate.community.question.entity.Question;
@@ -50,7 +52,7 @@ public class ParticipatorController {
     private AnswerAssembler answerAssembler;
 
     @Autowired
-    private ParticipatorPetRepository participatorPetRepository;
+    private PostImageRepository postImageRepository;
 
     @Autowired
     private PostRepository postRepository;
@@ -164,6 +166,27 @@ public class ParticipatorController {
         CursorPageData<PostDto> res = CursorPageData
                 .of(postAssembler.convertToDtos(posts.getResult()), posts.isHasMore(),
                         posts.getPageSize(), posts.getNextCursor());
+        return Response.ok(res);
+    }
+
+
+    @GetMapping("pets/{petId}/posts")
+    public Response<CursorPageData<PostDto>> getPetPosts(@PathVariable("petId") Long petId,
+                                                         @RequestParam(value = "cursor", required = false) Long cursor) {
+        CursorPage<Post> posts = postRepository.findByPetId(petId, cursor, DEAULT_PAGE_SIZE);
+        CursorPageData<PostDto> res = CursorPageData
+                .of(postAssembler.convertToDtos(posts.getResult()), posts.isHasMore(),
+                        posts.getPageSize(), posts.getNextCursor());
+        return Response.ok(res);
+    }
+
+    @GetMapping("pets/{petId}/images")
+    public Response<CursorPageData<PostImageDto>> getPetPostImages(@PathVariable("petId") Long petId,
+                                                                   @RequestParam(value = "cursor", required = false) Long cursor) {
+        CursorPage<PostImage> images = postImageRepository.findByPetId(petId, cursor, DEAULT_PAGE_SIZE * 3);
+        CursorPageData<PostImageDto> res = CursorPageData
+                .of(postAssembler.convertPostImageDtos(images.getResult()), images.isHasMore(),
+                        images.getPageSize(), images.getNextCursor());
         return Response.ok(res);
     }
 

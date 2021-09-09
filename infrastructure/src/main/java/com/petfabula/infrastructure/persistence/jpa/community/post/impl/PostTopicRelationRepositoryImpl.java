@@ -49,11 +49,11 @@ public class PostTopicRelationRepositoryImpl implements PostTopicRelationReposit
         Specification<PostTopicRelation> spec = new Specification<PostTopicRelation>() {
             @Override
             public Predicate toPredicate(Root<PostTopicRelation> root, CriteriaQuery<?> cq, CriteriaBuilder cb) {
-                cq.orderBy(cb.desc(root.get("post").get("id")));
+                cq.orderBy(cb.desc(root.get("postId")));
 
-                Predicate pPred = cb.equal(root.get("postTopic").get("id"), topicId);
+                Predicate pPred = cb.equal(root.get("topicId"), topicId);
                 if (cursor != null) {
-                    Predicate cPred = cb.lessThan(root.get("post").get("id"), cursor);
+                    Predicate cPred = cb.lessThan(root.get("postId"), cursor);
                     return cb.and(pPred, cPred);
                 }
                 return pPred;
@@ -66,7 +66,6 @@ public class PostTopicRelationRepositoryImpl implements PostTopicRelationReposit
                 .map(PostTopicRelation::getPostId).collect(Collectors.toList());
 
         List<Post> posts = postRepository.findByIds(postIds);
-
         return CursorPage.of(posts, res.hasNext(), size);
     }
 
@@ -75,11 +74,11 @@ public class PostTopicRelationRepositoryImpl implements PostTopicRelationReposit
         Specification<PostTopicRelation> spec = new Specification<PostTopicRelation>() {
             @Override
             public Predicate toPredicate(Root<PostTopicRelation> root, CriteriaQuery<?> cq, CriteriaBuilder cb) {
-                cq.orderBy(cb.desc(root.get("post").get("id")));
+                cq.orderBy(cb.desc(root.get("postId")));
 
                 Predicate pPred = cb.equal(root.get("topicCategoryId"), topicCategoryId);
                 if (cursor != null) {
-                    Predicate cPred = cb.lessThan(root.get("post").get("id"), cursor);
+                    Predicate cPred = cb.lessThan(root.get("postId"), cursor);
                     return cb.and(pPred, cPred);
                 }
                 return pPred;

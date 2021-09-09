@@ -32,7 +32,7 @@ public class InitialzePetCategoryBreed implements ApplicationRunner {
     @Autowired
     private PetIdGenerator idGenerator;
 
-    @Value("classpath:data/pets.csv")
+    @Value("classpath:data/pet_breeds.csv")
     private Resource resource;
 
     @Override

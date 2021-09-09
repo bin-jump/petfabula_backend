@@ -14,4 +14,8 @@ public class PostTopicDto {
     private Long id;
 
     private String title;
+
+    private Long topicCategoryId;
+
+    private String topicCategoryTitle;
 }

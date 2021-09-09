@@ -10,11 +10,6 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@NamedEntityGraphs({
-        @NamedEntityGraph(name = "postTopicCategory.all",
-                attributeNodes = {@NamedAttributeNode("topics")}),
-        @NamedEntityGraph(name = "postTopicCategory.bare")
-})
 @NoArgsConstructor
 @Getter
 @Entity
@@ -24,15 +19,12 @@ public class PostTopicCategory extends GeneralEntity {
     public PostTopicCategory(Long id, String title) {
         setId(id);
         this.title = title;
+        this.petCategory = "";
     }
 
     @Column(name = "title", nullable = false, unique = true)
     private String title;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<PostTopic> topics = new ArrayList<>();
-
-    public void addTopic(PostTopic postTopic) {
-        topics.add(postTopic);
-    }
+    @Column(name = "pet_category", nullable = false)
+    private String petCategory;
 }

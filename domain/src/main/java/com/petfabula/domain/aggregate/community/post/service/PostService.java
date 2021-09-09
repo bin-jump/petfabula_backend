@@ -95,12 +95,12 @@ public class PostService {
         Post savedPost = postRepository.save(post);
 
         if (topicId != null) {
-            PostTopic postTopic = postTopicRepository.findById(topicId);
+            PostTopic postTopic = postTopicRepository.findTopicById(topicId);
             if (postTopic == null) {
                 throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
             }
             PostTopicRelation postTopicRelation =
-                    new PostTopicRelation(idGenerator.nextId(), post.getId(), topicId, postTopic.getCategoryId());
+                    new PostTopicRelation(idGenerator.nextId(), post.getId(), topicId, postTopic.getTopicCategoryId());
             postTopicRelationRepository.save(postTopicRelation);
         }
 
@@ -136,7 +136,7 @@ public class PostService {
                 postTopicRelationRepository.remove(topicRelation);
             }
         } else {
-            PostTopic postTopic = postTopicRepository.findById(topicId);
+            PostTopic postTopic = postTopicRepository.findTopicById(topicId);
             if (postTopic == null) {
                 throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
             }
@@ -146,7 +146,8 @@ public class PostService {
 //            }
 
             if (topicRelation == null) {
-                topicRelation = new PostTopicRelation(idGenerator.nextId(), post.getId(), topicId, postTopic.getCategoryId());
+                topicRelation = new PostTopicRelation(idGenerator.nextId(), post.getId(),
+                        topicId, postTopic.getTopicCategoryId());
                 postTopicRelationRepository.save(topicRelation);
             } else if (!topicRelation.getTopicCategoryId().equals(topicId)) {
                 topicRelation.setTopicId(topicId);
@@ -188,7 +189,6 @@ public class PostService {
     public Post remove(Long participatorId, Long postId) {
         Post post = postRepository.findById(postId);
         if (post == null) {
-//            throw new NotFoundException(PostMessageKeys.POST_NOT_FOUND);
             return null;
         }
 
@@ -199,6 +199,11 @@ public class PostService {
 
         for (PostImage img : post.getImages()) {
             postImageRepository.remove(img);
+        }
+
+        PostTopicRelation topicRelation = postTopicRelationRepository.findByPostId(post.getId());
+        if (topicRelation != null) {
+            postTopicRelationRepository.remove(topicRelation);
         }
 
         postRepository.remove(post);

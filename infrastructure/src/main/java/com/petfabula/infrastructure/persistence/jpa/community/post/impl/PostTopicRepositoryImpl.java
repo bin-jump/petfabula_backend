@@ -30,17 +30,22 @@ public class PostTopicRepositoryImpl implements PostTopicRepository {
     }
 
     @Override
-    public List<PostTopicCategory> findAll() {
-        return postTopicCategoryJpaRepository.findAll();
+    public List<PostTopic> findAllTopics() {
+        return postTopicJpaRepository.findAll();
     }
 
     @Override
-    public PostTopic findById(Long id) {
+    public PostTopic findTopicById(Long id) {
         return postTopicJpaRepository.findById(id).orElse(null);
     }
 
     @Override
-    public PostTopicCategory findByTitle(String title) {
+    public PostTopicCategory findCategoryByTitle(String title) {
         return postTopicCategoryJpaRepository.findByTitle(title);
+    }
+
+    @Override
+    public PostTopic findTopicByTitle(String title) {
+        return postTopicJpaRepository.findByTitle(title);
     }
 }
