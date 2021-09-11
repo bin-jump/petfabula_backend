@@ -55,9 +55,9 @@ public class UserAccount extends ConcurrentEntity {
 
     @ManyToMany(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
     @JoinTable(name = "user_role",
-            joinColumns = @JoinColumn(name = "role_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id"))
-    private Set<UserRole> roles = new HashSet<>();
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"), foreignKey = @ForeignKey(name = "none"))
+    private Set<Role> roles = new HashSet<>();
 
     public void setBio(String bio) {
         EntityValidationUtils.validStringLength("bio", bio, 0, 140);
@@ -66,6 +66,11 @@ public class UserAccount extends ConcurrentEntity {
         }
         this.bio = bio;
     }
+
+    public void addRole(Role role) {
+        roles.add(role);
+    }
+
 
     public void setBirthday(LocalDate birthday) {
         EntityValidationUtils.validBirthday("birthday", birthday);
@@ -98,6 +103,6 @@ public class UserAccount extends ConcurrentEntity {
     }
 
     public enum RegisterEntry {
-        EMAIL_PASSWORD, EMAIL_CODE, OAUTH, PHONE
+        EMAIL_PASSWORD, EMAIL_CODE, OAUTH, PHONE, OTHER
     }
 }

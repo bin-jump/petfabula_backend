@@ -57,10 +57,6 @@ public class PostController {
     @Autowired
     private PostApplicationService postApplicationService;
 
-
-    @Autowired
-    private TimelineRepository timeLineRepository;
-
     @Autowired
     private PostRepository postRepository;
 
@@ -87,16 +83,6 @@ public class PostController {
 
     @Autowired
     private PostTopicRepository postTopicRepository;
-
-    @GetMapping("followed")
-    public Response<CursorPageData<PostDto>> geTimelinePosts(@RequestParam(value = "cursor", required = false) Long cursor) {
-        Long userId = LoginUtils.currentUserId();
-        CursorPage<Post> posts = timeLineRepository.findFollowedByParticipatorId(userId, cursor, DEAULT_PAGE_SIZE);
-        CursorPageData<PostDto> res = CursorPageData
-                .of(postAssembler.convertToDtos(posts.getResult()), posts.isHasMore(),
-                        posts.getPageSize(), posts.getNextCursor());
-        return Response.ok(res);
-    }
 
     @GetMapping("posts/{postId}")
     public Response<PostDto> getPostDetail(@PathVariable("postId") Long postId) {

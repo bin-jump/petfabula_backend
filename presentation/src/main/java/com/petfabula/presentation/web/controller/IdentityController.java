@@ -93,6 +93,17 @@ public class IdentityController {
         return Response.ok(userDto);
     }
 
+    @PostMapping("signin-email-password")
+    public Response<UserAccountDto> loginByEmailPassword(@Validated @RequestBody EmailPasswordLoginRequest request,
+                                                     HttpServletRequest req, HttpServletResponse response) {
+        UserAccount userAccount = identityApplicationService
+                .authenticateByEmailPassword(request.getEmail(), request.getPassword());
+        UserAccountDto userDto = userAccountAssembler.convertToDto(userAccount);
+        authenticationHelper.signin(userAccount, req);
+
+        return Response.ok(userDto);
+    }
+
     @PostMapping("register-signin-email-code")
     public Response<UserAccountDto> registerAndloginByEmailCode(@Validated @RequestBody EmailCodeRegisterRequest request,
                                                                 HttpServletRequest req, HttpServletResponse response) {
@@ -114,6 +125,4 @@ public class IdentityController {
         identityApplicationService.sendEmailCodeLoginCode(request.getEmail());
         return Response.ok(request.getEmail());
     }
-
-
 }

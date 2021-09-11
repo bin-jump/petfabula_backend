@@ -1,6 +1,7 @@
 package com.petfabula.domain.aggregate.notification.entity;
 
 import com.petfabula.domain.common.domain.EntityBase;
+import com.petfabula.domain.common.domain.GeneralEntity;
 import com.petfabula.domain.common.validation.EntityValidationUtils;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +16,7 @@ import java.time.Instant;
 @Entity
 @NoArgsConstructor
 @Table(name = "notification_system")
-public class SystemNotification extends EntityBase {
+public class SystemNotification extends GeneralEntity {
 
     public SystemNotification(Long id, Long senderId, String title, String content) {
         setId(id);
@@ -32,10 +33,6 @@ public class SystemNotification extends EntityBase {
 
     @Column(name = "content", nullable = false)
     private String content;
-
-    @CreatedDate
-    @Column(name = "created_date", nullable = false, updatable = false)
-    private Instant createdDate = Instant.now();
 
     public void setTitle(String title) {
         EntityValidationUtils.validStringLength("title", content, 0, 50);

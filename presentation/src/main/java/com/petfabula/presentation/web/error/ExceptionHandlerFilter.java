@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -36,7 +37,16 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().write(objectMapper.writeValueAsString(res));
 
+        } catch (AccessDeniedException ex) {
+            Response res = Response.failed(Response.ResponseCode.AUTHORIZATION_FAILED);
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.getWriter().write(objectMapper.writeValueAsString(res));
         } catch (RuntimeException ex) {
+            ex.printStackTrace();
+            Response res = Response.failedInternal();
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().write(objectMapper.writeValueAsString(res));
+        } catch (Exception ex) {
             ex.printStackTrace();
             Response res = Response.failedInternal();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

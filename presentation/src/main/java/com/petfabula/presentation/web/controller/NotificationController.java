@@ -15,10 +15,7 @@ import com.petfabula.domain.aggregate.community.question.entity.Question;
 import com.petfabula.domain.aggregate.community.question.repository.AnswerCommentRepository;
 import com.petfabula.domain.aggregate.community.question.repository.AnswerRepository;
 import com.petfabula.domain.aggregate.community.question.repository.QuestionRepository;
-import com.petfabula.domain.aggregate.notification.entity.AnswerCommentNotification;
-import com.petfabula.domain.aggregate.notification.entity.NotificationReceiver;
-import com.petfabula.domain.aggregate.notification.entity.ParticipatorFollowNotification;
-import com.petfabula.domain.aggregate.notification.entity.UpvoteNotification;
+import com.petfabula.domain.aggregate.notification.entity.*;
 import com.petfabula.domain.aggregate.notification.respository.AnswerCommentNotificationRepository;
 import com.petfabula.domain.aggregate.notification.respository.NotificationReceiverRepository;
 import com.petfabula.domain.aggregate.notification.respository.ParticipatorFollowNotificationRepository;
@@ -109,6 +106,8 @@ public class NotificationController {
         Long userId = LoginUtils.currentUserId();
         NotificationReceiver receiver =
                 notificationReceiverRepository.findById(userId);
+        SystemNotification systemNotification =
+                notificationApplicationService.getSystemUnreadNotification(userId);
 
         NotificationCheckResult res =
                 NotificationCheckResult.builder()
@@ -116,6 +115,7 @@ public class NotificationController {
                         .answerCommentCount(receiver.getAnswerCommentUnreadCount())
                         .followCount(receiver.getParticipatorFollowUnreadCount())
                         .voteCount(receiver.getUpvoteUnreadCount())
+                        .hasSystemNotificationUnread(systemNotification != null)
                         .build();
 
         return Response.ok(res);

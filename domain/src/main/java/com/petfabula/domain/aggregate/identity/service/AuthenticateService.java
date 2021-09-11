@@ -1,5 +1,6 @@
 package com.petfabula.domain.aggregate.identity.service;
 
+import com.petfabula.domain.aggregate.identity.MessageKey;
 import com.petfabula.domain.aggregate.identity.entity.EmailCodeAuthentication;
 import com.petfabula.domain.aggregate.identity.entity.EmailPasswordAuthentication;
 import com.petfabula.domain.aggregate.identity.entity.UserAccount;
@@ -15,8 +16,8 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class AuthenticateService {
 
-//    @Autowired
-//    private PasswordEncoderService passwordEncoderService;
+    @Autowired
+    private PasswordEncoderService passwordEncoderService;
 
     @Autowired
     private VerificationCodeService verificationCodeService;
@@ -30,18 +31,18 @@ public class AuthenticateService {
     @Autowired
     private EmailCodeAuthenticationRepository emailCodeAuthenticationRepository;
 
-//    public UserAccount authenticateByEmailPassword(String email, String password) {
-//        EmailPasswordAuthentication emailPasswordAuthentication =
-//                emailAuthenticationRepository.findByEmail(email);
-//        if (emailPasswordAuthentication == null) {
-//            throw new DomainAuthenticationException("email", MessageKey.WRONG_EMAIL_OR_PASSWORD);
-//        }
-//        if (!passwordEncoderService.check(emailPasswordAuthentication.getPassword(), password)) {
-//            throw new DomainAuthenticationException("password", MessageKey.WRONG_EMAIL_OR_PASSWORD);
-//        }
-//
-//        return userAccountRepository.findById(emailPasswordAuthentication.getId());
-//    }
+    public UserAccount authenticateByEmailPassword(String email, String password) {
+        EmailPasswordAuthentication emailPasswordAuthentication =
+                emailAuthenticationRepository.findByEmail(email);
+        if (emailPasswordAuthentication == null) {
+            throw new DomainAuthenticationException("email", MessageKey.WRONG_EMAIL_OR_PASSWORD);
+        }
+        if (!passwordEncoderService.check(emailPasswordAuthentication.getPassword(), password)) {
+            throw new DomainAuthenticationException("password", MessageKey.WRONG_EMAIL_OR_PASSWORD);
+        }
+
+        return userAccountRepository.findById(emailPasswordAuthentication.getId());
+    }
 
     public void generateAndNotifyEmailCodeLoginCode(String email) {
         EmailCodeAuthentication emailCodeAuthentication =

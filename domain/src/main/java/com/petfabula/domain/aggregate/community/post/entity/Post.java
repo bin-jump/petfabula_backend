@@ -79,6 +79,9 @@ public class Post extends ConcurrentEntity {
         if (pet != null) {
             this.relatePetId = pet.getId();
             this.petCategory = pet.getCategory();
+        } else {
+            this.relatePetId = null;
+            this.petCategory = null;
         }
     }
 

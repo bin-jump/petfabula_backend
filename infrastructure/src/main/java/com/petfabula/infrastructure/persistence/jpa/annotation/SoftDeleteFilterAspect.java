@@ -28,6 +28,7 @@ public class SoftDeleteFilterAspect {
         // Get the Session from the entityManager in current persistence context
         session = entityManager.unwrap(Session.class);
         Filter filter = session.enableFilter("activeFilter");
+        filter.setParameter("delete_time", Instant.EPOCH);
 
         try {
             return joinPoint.proceed();

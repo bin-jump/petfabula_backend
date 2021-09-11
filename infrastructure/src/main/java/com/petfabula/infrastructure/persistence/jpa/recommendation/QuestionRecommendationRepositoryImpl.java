@@ -47,10 +47,10 @@ public class QuestionRecommendationRepositoryImpl implements QuestionRecommendat
         if(cursor == null) {
             QuestionRecommendation questionRecommendation =
                     questionRecommendationJpaRepository.findTopByOrderByIdDesc();
-            cursor =  questionRecommendation.getId();
             if (questionRecommendation == null) {
                 return new RecommendationResult<>(OffsetPage.ofEmpty(page, size), seed, cursor);
             }
+            cursor =  questionRecommendation.getId();
         }
 
 //        String q = "select q from QuestionRecommendation q where q.id < :cursor order by rand(42)";

@@ -128,6 +128,8 @@ public class PostService {
                 throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
             }
             post.setRelatePet(participatorPet);
+        } else {
+            post.setRelatePet(null);
         }
 
         PostTopicRelation topicRelation = postTopicRelationRepository.findByPostId(postId);

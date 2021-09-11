@@ -37,7 +37,6 @@ public class EmailPasswordAuthentication extends EntityBase {
 
     public void setPassword(String password) {
         EntityValidationUtils.validPassword("password", password);
-
         this.password = PasswordEncoderService.newInstance().encode(password);
     }
 }

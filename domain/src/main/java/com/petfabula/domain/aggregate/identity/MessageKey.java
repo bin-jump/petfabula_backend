@@ -1,4 +1,4 @@
-package com.petfabula.domain.aggregate.identity.service;
+package com.petfabula.domain.aggregate.identity;
 
 public final class MessageKey {
 
@@ -13,4 +13,6 @@ public final class MessageKey {
     public static final String WRONG_EMAIL_OR_PASSWORD = PREFIX + "wrongEmailOrPassword";
 
     public static final String EMAIL_NOT_REGISTERED = PREFIX + "emailNotRegister";
+
+    public static final String ROLE_NOT_EXISTS = PREFIX + "roleNotExists";
 }

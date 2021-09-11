@@ -16,7 +16,7 @@ public abstract class EntityValidationUtils {
 
     private static final RegexValidator userNameValidator = new RegexValidator("^[\\.\\w\\-ぁ-んァ-ヶ一-龠々ー]{3,20}$");
 
-    private static final RegexValidator passwordValidator = new RegexValidator("^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]){8,16}$");
+    private static final RegexValidator passwordValidator = new RegexValidator("^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(.{8,16})$");
 
     private static final RegexValidator petNameValidator = new RegexValidator("^[\\.\\w\\-ぁ-んァ-ヶ一-龠々ー]{1,16}$");
 

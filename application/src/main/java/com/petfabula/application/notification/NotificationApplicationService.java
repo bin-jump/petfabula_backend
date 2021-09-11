@@ -1,9 +1,9 @@
 package com.petfabula.application.notification;
 
-import com.petfabula.domain.aggregate.notification.service.AnswerCommentNotificationService;
-import com.petfabula.domain.aggregate.notification.service.NotificationReceiverService;
-import com.petfabula.domain.aggregate.notification.service.ParticipatorFollowNotificationService;
-import com.petfabula.domain.aggregate.notification.service.VoteNotificationService;
+import com.petfabula.domain.aggregate.notification.entity.NotificationReceiver;
+import com.petfabula.domain.aggregate.notification.entity.SystemNotification;
+import com.petfabula.domain.aggregate.notification.respository.NotificationReceiverRepository;
+import com.petfabula.domain.aggregate.notification.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +22,16 @@ public class NotificationApplicationService {
 
     @Autowired
     private NotificationReceiverService notificationReceiverService;
+
+    @Autowired
+    private SystemNotificationService systemNotificationService;
+
+    @Autowired
+    private NotificationReceiverRepository notificationReceiverRepository;
+
+    public SystemNotification getSystemUnreadNotification(Long receiverId) {
+        return systemNotificationService.getUnreadNotification(receiverId);
+    }
 
     @Transactional
     public void readAllanswerCommentNotifications(Long receiverId) {
@@ -42,5 +52,10 @@ public class NotificationApplicationService {
     public void udpateSetting(Long receiverId, boolean receiveAnswerComment, boolean receiveFollow, boolean receiveUpvote) {
         notificationReceiverService
                 .updateSetting(receiverId, receiveAnswerComment, receiveFollow, receiveUpvote);
+    }
+
+    @Transactional
+    public void readNotification(Long receiverId) {
+        systemNotificationService.readNotification(receiverId);
     }
 }

@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 
-
+@Service
 public class SystemNotificationService {
 
     @Autowired
@@ -31,7 +31,33 @@ public class SystemNotificationService {
         return systemNotificationRepository.save(systemNotification);
     }
 
-    public boolean hasUnreadNotification(Long receiverId) {
+    public SystemNotification update(Long notificationId, String title, String content) {
+        SystemNotification systemNotification =
+                systemNotificationRepository.findById(notificationId);
+
+        if (systemNotification == null) {
+            throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
+        }
+
+        systemNotification.setTitle(title);
+        systemNotification.setContent(content);
+
+        return systemNotificationRepository.save(systemNotification);
+    }
+
+    public SystemNotification remove(Long notificationId) {
+        SystemNotification systemNotification =
+                systemNotificationRepository.findById(notificationId);
+
+        if (systemNotification == null) {
+            return null;
+        }
+
+        systemNotificationRepository.remove(systemNotification);
+        return systemNotification;
+    }
+
+    public SystemNotification getUnreadNotification(Long receiverId) {
         NotificationReceiver receiver = notificationReceiverRepository.findById(receiverId);
         if (receiver == null) {
             throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
@@ -40,9 +66,9 @@ public class SystemNotificationService {
         SystemNotification systemNotification = systemNotificationRepository.findLatest();
         if (systemNotification != null && systemNotification.getCreatedDate()
                 .isAfter(receiver.getSystemLastReadTime())) {
-            return true;
+            return systemNotification;
         }
-        return false;
+        return null;
     }
 
     public void readNotification(Long receiverId) {

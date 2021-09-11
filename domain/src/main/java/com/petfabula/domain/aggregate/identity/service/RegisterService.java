@@ -1,14 +1,12 @@
 package com.petfabula.domain.aggregate.identity.service;
 
 import com.petfabula.domain.aggregate.identity.IdentityCreated;
+import com.petfabula.domain.aggregate.identity.MessageKey;
 import com.petfabula.domain.aggregate.identity.entity.EmailCodeAuthentication;
 import com.petfabula.domain.aggregate.identity.entity.EmailPasswordAuthentication;
 import com.petfabula.domain.aggregate.identity.entity.OauthAuthentication;
 import com.petfabula.domain.aggregate.identity.entity.UserAccount;
-import com.petfabula.domain.aggregate.identity.repository.EmailCodeAuthenticationRepository;
-import com.petfabula.domain.aggregate.identity.repository.EmailPasswordAuthenticationRepository;
-import com.petfabula.domain.aggregate.identity.repository.OauthAuthenticationRepository;
-import com.petfabula.domain.aggregate.identity.repository.UserAccountRepository;
+import com.petfabula.domain.aggregate.identity.repository.*;
 import com.petfabula.domain.aggregate.identity.service.oauth.OauthResponse;
 import com.petfabula.domain.aggregate.identity.service.oauth.OauthService;
 import com.petfabula.domain.common.domain.DomainEventPublisher;
@@ -17,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -47,7 +45,6 @@ public class RegisterService {
     @Autowired
     private DomainEventPublisher domainEventPublisher;
 
-//    @Transactional
 //    public UserAccount registerByEmailPassword(String name, String email, String password, String verificationCode) {
 //        verificationCodeService.checkEmailPasswordRegisterCode(email, verificationCode);
 //
@@ -65,6 +62,20 @@ public class RegisterService {
 //
 //        return userAccount;
 //    }
+
+    public UserAccount createByEmailPasswordUntrustedEmailWithRoles(String name, String email, String password, List<String> roleNames) {
+        EmailPasswordAuthentication emailPasswordAuthentication =
+                emailPasswordAuthenticationRepository.findByEmail(email);
+        if (emailPasswordAuthentication != null) {
+            throw new InvalidValueException("email", MessageKey.EMAIL_ALREADY_REGISTERED);
+        }
+        UserAccount userAccount = accountService.createUser(name, UserAccount.RegisterEntry.OTHER, roleNames);
+        emailPasswordAuthentication =
+                new EmailPasswordAuthentication(userAccount.getId(), email, password);
+
+        emailPasswordAuthenticationRepository.save(emailPasswordAuthentication);
+        return userAccount;
+    }
 
     public UserAccount registerByEmailCode(String name, String email, String code) {
         verificationCodeService.checkEmailCodeRegisterCode(email, code);

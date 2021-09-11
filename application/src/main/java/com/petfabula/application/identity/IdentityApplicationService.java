@@ -3,6 +3,7 @@ package com.petfabula.application.identity;
 import com.petfabula.application.event.AccountCreatedEvent;
 import com.petfabula.application.event.AccountUpdateEvent;
 import com.petfabula.application.event.IntegratedEventPublisher;
+import com.petfabula.domain.aggregate.identity.MessageKey;
 import com.petfabula.domain.aggregate.identity.entity.EmailCodeAuthentication;
 import com.petfabula.domain.aggregate.identity.entity.UserAccount;
 import com.petfabula.domain.aggregate.identity.repository.EmailCodeAuthenticationRepository;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class IdentityApplicationService {
@@ -57,6 +59,16 @@ public class IdentityApplicationService {
         verificationCodeService.generateAndNotifyWithEmailCodeRegister(email);
     }
 
+
+    @Transactional
+    public UserAccount createByEmailPasswordUntrustedEmailWithRoles(String name, String email, String password, List<String> roleNames) {
+        UserAccount userAccount =
+                registerService.createByEmailPasswordUntrustedEmailWithRoles(name, email, password, roleNames);
+        eventPublisher
+                .publish(new AccountCreatedEvent(userAccount.getId(), userAccount.getName(), userAccount.getPhoto()));
+        return userAccount;
+    }
+
     @Transactional
     public UserAccount registerByEmailCode(String name, String email, String code) {
         UserAccount userAccount =
@@ -79,9 +91,14 @@ public class IdentityApplicationService {
         authenticateService.generateAndNotifyEmailCodeLoginCode(email);
     }
 
-//    @Transactional
+    @Transactional
     public UserAccount authenticateByEmailCode(String email, String code) {
         return authenticateService.authenticateByEmailCode(email, code);
+    }
+
+    @Transactional
+    public UserAccount authenticateByEmailPassword(String email, String password) {
+        return authenticateService.authenticateByEmailPassword(email, password);
     }
 
     @Transactional

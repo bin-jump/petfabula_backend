@@ -100,6 +100,8 @@ public class QuestionService {
                 throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
             }
             question.setRelatePet(participatorPet);
+        } else {
+            question.setRelatePet(null);
         }
 
         question.setTitle(title);

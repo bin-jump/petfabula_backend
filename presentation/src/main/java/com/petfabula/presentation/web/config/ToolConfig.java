@@ -2,6 +2,7 @@ package com.petfabula.presentation.web.config;
 
 import com.petfabula.presentation.facade.assembler.AssemblerHelper;
 import org.modelmapper.*;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -44,6 +45,8 @@ public class ToolConfig {
 
         modelmapper.typeMap(Instant.class, Long.class)
                 .setConverter(ctx -> ctx.getSource().toEpochMilli());
+
+        modelmapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
         return modelmapper;
     }

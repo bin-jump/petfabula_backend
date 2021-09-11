@@ -1,5 +1,6 @@
 package com.petfabula.domain.aggregate.identity.service;
 
+import com.petfabula.domain.aggregate.identity.MessageKey;
 import com.petfabula.domain.aggregate.identity.repository.VerificationCodeRepository;
 import com.petfabula.domain.aggregate.identity.service.email.EmailSender;
 import com.petfabula.domain.aggregate.identity.service.email.SendEmailRequest;

@@ -10,6 +10,7 @@ import com.petfabula.domain.aggregate.community.post.entity.PostImage;
 import com.petfabula.domain.aggregate.community.post.repository.CollectPostRepository;
 import com.petfabula.domain.aggregate.community.post.repository.PostImageRepository;
 import com.petfabula.domain.aggregate.community.post.repository.PostRepository;
+import com.petfabula.domain.aggregate.community.post.repository.TimelineRepository;
 import com.petfabula.domain.aggregate.community.question.entity.Answer;
 import com.petfabula.domain.aggregate.community.question.entity.Question;
 import com.petfabula.domain.aggregate.community.question.repository.AnswerRepository;
@@ -21,6 +22,7 @@ import com.petfabula.presentation.web.api.CursorPageData;
 import com.petfabula.presentation.web.api.Response;
 import com.petfabula.presentation.web.security.LoginUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,6 +52,9 @@ public class ParticipatorController {
 
     @Autowired
     private AnswerAssembler answerAssembler;
+
+    @Autowired
+    private TimelineRepository timeLineRepository;
 
     @Autowired
     private PostImageRepository postImageRepository;
@@ -169,6 +174,15 @@ public class ParticipatorController {
         return Response.ok(res);
     }
 
+    @GetMapping("followed-posts")
+    public Response<CursorPageData<PostDto>> geTimelinePosts(@RequestParam(value = "cursor", required = false) Long cursor) {
+        Long userId = LoginUtils.currentUserId();
+        CursorPage<Post> posts = timeLineRepository.findFollowedByParticipatorId(userId, cursor, DEAULT_PAGE_SIZE);
+        CursorPageData<PostDto> res = CursorPageData
+                .of(postAssembler.convertToDtos(posts.getResult()), posts.isHasMore(),
+                        posts.getPageSize(), posts.getNextCursor());
+        return Response.ok(res);
+    }
 
     @GetMapping("pets/{petId}/posts")
     public Response<CursorPageData<PostDto>> getPetPosts(@PathVariable("petId") Long petId,

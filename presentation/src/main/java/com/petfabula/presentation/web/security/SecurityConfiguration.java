@@ -1,9 +1,11 @@
 package com.petfabula.presentation.web.security;
 
 import com.petfabula.domain.aggregate.identity.service.PasswordEncoderService;
-import com.petfabula.presentation.web.security.filter.JwtAuthorizationFilter;
 import com.petfabula.presentation.web.security.filter.UnauthenticatedRequestHandler;
 import com.petfabula.presentation.web.security.filter.UnauthorizedRequestHandler;
+import org.apache.tomcat.util.http.Rfc6265CookieProcessor;
+import org.apache.tomcat.util.http.SameSiteCookies;
+import org.springframework.boot.web.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,13 +13,10 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.access.AccessDeniedHandler;
-import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;

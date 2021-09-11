@@ -64,6 +64,8 @@ public class Response<T> {
         BAD_REQUEST(1003, "bad request"),
         NOT_FOUND(1004, "resource not found"),
         NO_OPERATION_OBJECT(1005, "operation resource not found"),
+        AUTHORIZATION_FAILED(1006, "authorization failed"),
+
 
         LOGIN_REQUIRED(2001, "login required"),
         NO_PERMISSION(2002, "no permission"),
