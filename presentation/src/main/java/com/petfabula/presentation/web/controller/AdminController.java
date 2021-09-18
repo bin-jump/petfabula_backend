@@ -1,6 +1,7 @@
 package com.petfabula.presentation.web.controller;
 
 import com.petfabula.application.administration.AdministrationApplicationService;
+import com.petfabula.application.document.DocumentApplicationService;
 import com.petfabula.domain.aggregate.administration.entity.Feedback;
 import com.petfabula.domain.aggregate.administration.entity.Report;
 import com.petfabula.domain.aggregate.administration.repository.FeedbackRepository;
@@ -13,6 +14,7 @@ import com.petfabula.domain.aggregate.community.question.entity.Answer;
 import com.petfabula.domain.aggregate.community.question.entity.Question;
 import com.petfabula.domain.aggregate.community.question.repository.AnswerRepository;
 import com.petfabula.domain.aggregate.community.question.repository.QuestionRepository;
+import com.petfabula.domain.aggregate.document.entity.ApplicationDocument;
 import com.petfabula.domain.aggregate.notification.entity.SystemNotification;
 import com.petfabula.domain.aggregate.notification.respository.SystemNotificationRepository;
 import com.petfabula.domain.common.paging.JumpableOffsetPage;
@@ -23,6 +25,7 @@ import com.petfabula.presentation.facade.assembler.community.AnswerAssembler;
 import com.petfabula.presentation.facade.assembler.community.ParticiptorAssembler;
 import com.petfabula.presentation.facade.assembler.community.PostAssembler;
 import com.petfabula.presentation.facade.assembler.community.QuestionAssembler;
+import com.petfabula.presentation.facade.assembler.document.ApplicationDocumentAssembler;
 import com.petfabula.presentation.facade.assembler.notification.SystemNotificationAssembler;
 import com.petfabula.presentation.facade.dto.AlreadyDeletedResponse;
 import com.petfabula.presentation.facade.dto.administration.FeedbackDto;
@@ -32,6 +35,7 @@ import com.petfabula.presentation.facade.dto.community.AnswerDto;
 import com.petfabula.presentation.facade.dto.community.ParticipatorDto;
 import com.petfabula.presentation.facade.dto.community.PostDto;
 import com.petfabula.presentation.facade.dto.community.QuestionDto;
+import com.petfabula.presentation.facade.dto.document.ApplicationDocumentDto;
 import com.petfabula.presentation.facade.dto.notification.SystemNotificationDto;
 import com.petfabula.presentation.web.api.OffsetPageData;
 import com.petfabula.presentation.web.api.Response;
@@ -42,7 +46,6 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.websocket.server.PathParam;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -77,6 +80,9 @@ public class AdminController {
     private AnswerAssembler answerAssembler;
 
     @Autowired
+    private ApplicationDocumentAssembler documentAssembler;
+
+    @Autowired
     private ParticipatorRepository participatorRepository;
 
     @Autowired
@@ -90,6 +96,9 @@ public class AdminController {
 
     @Autowired
     private AdministrationApplicationService administrationApplicationService;
+
+    @Autowired
+    private DocumentApplicationService documentApplicationService;
 
     @Autowired
     private ReportRepository reportRepository;
@@ -106,7 +115,7 @@ public class AdminController {
         JumpableOffsetPage<Report> reportPage = reportRepository.find(page, size);
         List<ReportDto> reportDtoList = reportAssembler.convertToDtos(reportPage.getResult());
 
-        List<Long> userIds = reportDtoList.stream().map(ReportDto::getRecentReporterId)
+        List<Long> userIds = reportDtoList.stream().map(ReportDto::getLastReporterId)
                 .collect(Collectors.toList());
         Map<Long, Participator> participatorMap = participatorRepository.findByIds(userIds)
                 .stream()
@@ -114,11 +123,11 @@ public class AdminController {
 
         reportDtoList = reportDtoList.stream()
             .map(item -> {
-            Long userId = item.getRecentReporterId();
+            Long userId = item.getLastReporterId();
             if (participatorMap.containsKey(userId)) {
                 ParticipatorDto participatorDto =
                         participtorAssembler.convertToDto(participatorMap.get(userId));
-                item.setRecentReporter(participatorDto);
+                item.setLastReporter(participatorDto);
                 return item;
             }
             return null;
@@ -135,9 +144,9 @@ public class AdminController {
     @PutMapping("report/status")
     public Response<ReportDto> updateReportStatus(@RequestBody @Validated UpdateReportStatusRequest request) {
         Report report = administrationApplicationService.updateState(request.getId(), request.getStatus());
-        Participator participator = participatorRepository.findById(report.getRecentReporterId());
+        Participator participator = participatorRepository.findById(report.getLastReporterId());
         ReportDto res = reportAssembler.convertToDto(report);
-        res.setRecentReporter(participtorAssembler.convertToDto(participator));
+        res.setLastReporter(participtorAssembler.convertToDto(participator));
         return Response.ok(res);
     }
 
@@ -179,13 +188,13 @@ public class AdminController {
         if (report == null) {
             throw new NotFoundException(reportId, "not found");
         }
-        Participator participator = participatorRepository.findById(report.getRecentReporterId());
+        Participator participator = participatorRepository.findById(report.getLastReporterId());
         if (participator == null) {
             throw new NotFoundException(reportId, "not found");
         }
 
         ReportDto res = reportAssembler.convertToDto(report);
-        res.setRecentReporter(participtorAssembler.convertToDto(participator));
+        res.setLastReporter(participtorAssembler.convertToDto(participator));
 
         Object entity = null;
         if (report.getEntityType().equals(Report.ReportType.POST.toString())) {
@@ -282,5 +291,14 @@ public class AdminController {
             return Response.ok(AlreadyDeletedResponse.of(notificationId));
         }
         return Response.ok(systemNotificationAssembler.convertToDto(notification));
+    }
+
+    @PutMapping("document")
+    public Response<ApplicationDocumentDto> updateDocument(@RequestBody @Validated ApplicationDocumentDto documentDto) {
+        ApplicationDocument document = documentApplicationService
+                .updateDocument(documentDto.getDocumentKey(), documentDto.getContent());
+
+        documentDto = documentAssembler.convertToDto(document);
+        return Response.ok(documentDto);
     }
 }

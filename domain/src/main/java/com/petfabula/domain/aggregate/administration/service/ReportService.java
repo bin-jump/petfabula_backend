@@ -86,8 +86,8 @@ public class ReportService {
             }
 
             report.setReportCount(report.getReportCount() + 1);
-            report.setRecentReporterId(reporterId);
-            report.setRecentReason(reason);
+            report.setLastReporterId(reporterId);
+            report.setLastReason(reason);
 
             Long reasonId = idGenerator.nextId();
             reportReason = new ReportReason(reasonId, report.getId(), reporterId, reason);

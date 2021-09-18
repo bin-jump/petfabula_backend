@@ -17,14 +17,14 @@ import javax.persistence.UniqueConstraint;
 public class Report extends ConcurrentEntity {
 
     public Report(Long id, String entityType, Long entityId,
-                  Long recentReporterId, String recentReason) {
+                  Long lastReporterId, String lastReason) {
         setId(id);
         this.entityId = entityId;
         this.entityType = entityType;
         this.status = ReportStatus.CREATED;
         this.reportCount = 1;
-        this.recentReporterId = recentReporterId;
-        this.recentReason = recentReason;
+        this.lastReporterId = lastReporterId;
+        this.lastReason = lastReason;
         this.memo = "";
     }
 
@@ -40,11 +40,11 @@ public class Report extends ConcurrentEntity {
     @Column(name = "report_count", nullable = false)
     private Integer reportCount;
 
-    @Column(name = "recent_reporter_id", nullable = false)
-    private Long recentReporterId;
+    @Column(name = "last_reporter_id", nullable = false)
+    private Long lastReporterId;
 
-    @Column(name = "recent_reason", nullable = false)
-    private String recentReason;
+    @Column(name = "last_reason", nullable = false)
+    private String lastReason;
 
     @Column(name = "memo")
     private String memo;
@@ -57,12 +57,12 @@ public class Report extends ConcurrentEntity {
         this.status = status;
     }
 
-    public void setRecentReporterId(Long recentReporterId) {
-        this.recentReporterId = recentReporterId;
+    public void setLastReporterId(Long lastReporterId) {
+        this.lastReporterId = lastReporterId;
     }
 
-    public void setRecentReason(String recentReason) {
-        this.recentReason = recentReason;
+    public void setLastReason(String lastReason) {
+        this.lastReason = lastReason;
     }
 
     public void setMemo(String memo) {

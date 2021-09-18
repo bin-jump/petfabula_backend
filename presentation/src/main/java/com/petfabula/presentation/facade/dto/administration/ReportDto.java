@@ -23,11 +23,11 @@ public class ReportDto {
 
     private Integer reportCount;
 
-    private Long recentReporterId;
+    private Long lastReporterId;
 
-    private String recentReason;
+    private String lastReason;
 
-    private ParticipatorDto recentReporter;
+    private ParticipatorDto lastReporter;
 
     private Object entity;
 }

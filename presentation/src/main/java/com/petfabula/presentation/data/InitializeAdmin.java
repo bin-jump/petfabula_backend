@@ -21,7 +21,7 @@ import java.util.List;
 
 @Component
 @Slf4j
-public class InitialzeAdmin implements ApplicationRunner {
+public class InitializeAdmin implements ApplicationRunner {
 
 
     @Autowired

@@ -10,6 +10,9 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
+@NamedEntityGraph(name = "userAccount.all",
+        attributeNodes = {@NamedAttributeNode("roles")}
+)
 @NoArgsConstructor
 @Getter
 @Entity

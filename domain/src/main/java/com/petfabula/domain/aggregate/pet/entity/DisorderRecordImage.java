@@ -12,7 +12,7 @@ import javax.persistence.Table;
 @NoArgsConstructor
 @Getter
 @Entity
-@Table(name = "disorder_record_image",
+@Table(name = "pet_disorder_record_image",
         indexes = {@Index(name = "disorder_record_id_index",  columnList="disorder_record_id")})
 public class DisorderRecordImage extends EntityBase {
 
