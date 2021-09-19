@@ -76,6 +76,9 @@ public class UserAccount extends ConcurrentEntity {
 
 
     public void setBirthday(LocalDate birthday) {
+        if (birthday == null) {
+            return;
+        }
         EntityValidationUtils.validBirthday("birthday", birthday);
         this.birthday = birthday;
     }

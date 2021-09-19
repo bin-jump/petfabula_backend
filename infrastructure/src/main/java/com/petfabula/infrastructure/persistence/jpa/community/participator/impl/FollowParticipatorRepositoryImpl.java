@@ -35,8 +35,7 @@ public class FollowParticipatorRepositoryImpl implements FollowParticipatorRepos
             @Override
             public Predicate toPredicate(Root<FollowParticipator> root, CriteriaQuery<?> cq, CriteriaBuilder cb) {
                 cq.orderBy(cb.desc(root.get("id")));
-
-                Predicate aPred = cb.equal(root.get("followerId").get("id"), participtorId);
+                Predicate aPred = cb.equal(root.get("followerId"), participtorId);
                 if (cursor != null) {
                     Predicate cPred = cb.lessThan(root.get("id"), cursor);
                     return cb.and(aPred, cPred);
@@ -48,12 +47,48 @@ public class FollowParticipatorRepositoryImpl implements FollowParticipatorRepos
         Pageable limit = PageRequest.of(0, size);
         Page<FollowParticipator> followParticipators = followParticipatorJpaRepository.findAll(spec, limit);
 
+        Long nextCursor = null;
+        if (followParticipators.hasNext()) {
+            nextCursor = followParticipators.getContent()
+                    .get(followParticipators.getContent().size() - 1).getId();
+        }
+
         List<Long> ids = followParticipators.getContent().stream()
                 .map(FollowParticipator::getFollowedId).collect(Collectors.toList());
-
         List<Participator> participators = participatorRepository.findByIds(ids);
 
-        return CursorPage.of(participators, followParticipators.hasNext(), size);
+        return CursorPage.of(participators, nextCursor, size);
+    }
+
+    @Override
+    public CursorPage<Participator> findFollower(Long participatorId, Long cursor, int size) {
+        Specification<FollowParticipator> spec = new Specification<FollowParticipator>() {
+            @Override
+            public Predicate toPredicate(Root<FollowParticipator> root, CriteriaQuery<?> cq, CriteriaBuilder cb) {
+                cq.orderBy(cb.desc(root.get("id")));
+                Predicate aPred = cb.equal(root.get("followedId"), participatorId);
+                if (cursor != null) {
+                    Predicate cPred = cb.lessThan(root.get("id"), cursor);
+                    return cb.and(aPred, cPred);
+                }
+                return aPred;
+            }
+        };
+
+        Pageable limit = PageRequest.of(0, size);
+        Page<FollowParticipator> followParticipators = followParticipatorJpaRepository.findAll(spec, limit);
+
+        Long nextCursor = null;
+        if (followParticipators.hasNext()) {
+            nextCursor = followParticipators.getContent()
+                    .get(followParticipators.getContent().size() - 1).getId();
+        }
+
+        List<Long> ids = followParticipators.getContent().stream()
+                .map(FollowParticipator::getFollowerId).collect(Collectors.toList());
+        List<Participator> participators = participatorRepository.findByIds(ids);
+
+        return CursorPage.of(participators, nextCursor, size);
     }
 
     @Override

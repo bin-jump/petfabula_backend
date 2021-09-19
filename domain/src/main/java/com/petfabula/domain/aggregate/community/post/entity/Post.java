@@ -65,7 +65,7 @@ public class Post extends ConcurrentEntity {
     @JoinColumn(name = "participator_id", foreignKey = @ForeignKey(name = "none"))
     private Participator participator;
 
-    //    @OrderBy
+    @OrderBy
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval=true)
     @JoinColumn(name = "post_id", foreignKey = @ForeignKey(name = "none"))
     private List<PostImage> images = new ArrayList<>();

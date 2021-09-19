@@ -16,12 +16,10 @@ import com.petfabula.domain.aggregate.community.question.repository.AnswerCommen
 import com.petfabula.domain.aggregate.community.question.repository.AnswerRepository;
 import com.petfabula.domain.aggregate.community.question.repository.QuestionRepository;
 import com.petfabula.domain.aggregate.notification.entity.*;
-import com.petfabula.domain.aggregate.notification.respository.AnswerCommentNotificationRepository;
-import com.petfabula.domain.aggregate.notification.respository.NotificationReceiverRepository;
-import com.petfabula.domain.aggregate.notification.respository.ParticipatorFollowNotificationRepository;
-import com.petfabula.domain.aggregate.notification.respository.UpvoteNotificationRepository;
+import com.petfabula.domain.aggregate.notification.respository.*;
 import com.petfabula.domain.common.paging.CursorPage;
 import com.petfabula.presentation.facade.assembler.community.*;
+import com.petfabula.presentation.facade.assembler.notification.SystemNotificationAssembler;
 import com.petfabula.presentation.facade.dto.community.ParticipatorDto;
 import com.petfabula.presentation.facade.dto.notification.*;
 import com.petfabula.presentation.web.api.CursorPageData;
@@ -65,6 +63,9 @@ public class NotificationController {
     private ParticiptorAssembler participtorAssembler;
 
     @Autowired
+    private SystemNotificationAssembler systemNotificationAssembler;
+
+    @Autowired
     private NotificationApplicationService notificationApplicationService;
 
     @Autowired
@@ -99,6 +100,9 @@ public class NotificationController {
 
     @Autowired
     private ParticipatorRepository participatorRepository;
+
+    @Autowired
+    private SystemNotificationRepository systemNotificationRepository;
 
 
     @GetMapping("notifications")
@@ -310,6 +314,17 @@ public class NotificationController {
         return Response.ok(res);
     }
 
+    @GetMapping("system-notifications")
+    public Response<CursorPageData<SystemNotificationDto>> getSystemNotifications(
+            @RequestParam(value = "cursor", required = false) Long cursor) {
+        CursorPage<SystemNotification> notifications = systemNotificationRepository
+                .findAll(cursor, DEAULT_PAGE_SIZE);
+        CursorPageData<SystemNotificationDto> res = CursorPageData
+                .of(systemNotificationAssembler.convertToDtos(notifications.getResult()), notifications.isHasMore(),
+                        notifications.getPageSize(), notifications.getNextCursor());
+        return Response.ok(res);
+    }
+
     @PutMapping("answer-comment-notifications")
     public Response<ReadNotificationResult> readAllAnswerCommentNotification() {
         Long userId = LoginUtils.currentUserId();
@@ -337,7 +352,19 @@ public class NotificationController {
     @PutMapping("vote-notifications")
     public Response<ReadNotificationResult> readAllVotewNotification() {
         Long userId = LoginUtils.currentUserId();
-        notificationApplicationService.readAllVoteNotificationServices(userId);
+        notificationApplicationService.readAllVoteNotifications(userId);
+
+        ReadNotificationResult res =
+                ReadNotificationResult.builder()
+                        .receiverId(userId)
+                        .build();
+        return Response.ok(res);
+    }
+
+    @PutMapping("system-notifications")
+    public Response<ReadNotificationResult> readAllSystemNotification() {
+        Long userId = LoginUtils.currentUserId();
+        notificationApplicationService.readAllSystemNotification(userId);
 
         ReadNotificationResult res =
                 ReadNotificationResult.builder()

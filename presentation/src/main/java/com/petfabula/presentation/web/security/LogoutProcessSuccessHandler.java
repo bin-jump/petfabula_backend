@@ -16,6 +16,8 @@ public class LogoutProcessSuccessHandler implements LogoutSuccessHandler {
 
     @Override
     public void onLogoutSuccess(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Authentication authentication) throws IOException, ServletException {
+        httpServletResponse.setHeader("remove-token", "true");
+
         Response res = Response.ok();
         httpServletResponse.getOutputStream()
                 .println(objectMapper.writeValueAsString(res));

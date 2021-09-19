@@ -55,6 +55,7 @@ public class Answer extends ConcurrentEntity {
     @JoinColumn(name = "participator_id", foreignKey = @ForeignKey(name = "none"))
     private Participator participator;
 
+    @OrderBy
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval=true)
     @JoinColumn(name = "answer_id", foreignKey = @ForeignKey(name = "none"))
     private List<AnswerImage> images = new ArrayList<>();

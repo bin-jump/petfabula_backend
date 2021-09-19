@@ -204,10 +204,25 @@ public class ParticipatorController {
         return Response.ok(res);
     }
 
-//    @GetMapping("{userId}/pets")
-//    public Response<List<ParticipatorPetDto>> getUserPets(@PathVariable("userId") Long userId) {
-//        List<ParticipatorPet> pets = participatorPetRepository.findByParticipatorId(userId);
-//        List<ParticipatorPetDto> res = participtorPetAssembler.convertToDtos(pets);
-//        return Response.ok(res);
-//    }
+    @GetMapping("participators/{participatorId}/followers")
+    public Response<CursorPageData<ParticipatorDto>> getParticipatorFollowers(@PathVariable("participatorId") Long participatorId,
+                                                                      @RequestParam(value = "cursor", required = false) Long cursor) {
+        CursorPage<Participator> participators = followParticipatorRepository
+                .findFollower(participatorId, cursor, DEAULT_PAGE_SIZE);
+        CursorPageData<ParticipatorDto> res = CursorPageData
+                .of(participtorAssembler.convertToDtos(participators.getResult()), participators.isHasMore(),
+                        participators.getPageSize(), participators.getNextCursor());
+        return Response.ok(res);
+    }
+
+    @GetMapping("participators/{participatorId}/followeds")
+    public Response<CursorPageData<ParticipatorDto>> getParticipatorFolloweds(@PathVariable("participatorId") Long participatorId,
+                                                                              @RequestParam(value = "cursor", required = false) Long cursor) {
+        CursorPage<Participator> participators = followParticipatorRepository
+                .findFollowed(participatorId, cursor, DEAULT_PAGE_SIZE);
+        CursorPageData<ParticipatorDto> res = CursorPageData
+                .of(participtorAssembler.convertToDtos(participators.getResult()), participators.isHasMore(),
+                        participators.getPageSize(), participators.getNextCursor());
+        return Response.ok(res);
+    }
 }

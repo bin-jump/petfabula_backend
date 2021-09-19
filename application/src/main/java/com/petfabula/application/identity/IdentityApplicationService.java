@@ -106,13 +106,14 @@ public class IdentityApplicationService {
                                      String bio, Long cityId, ImageFile imageFile) {
         UserAccount account = accountService.update(accountId, birthday, gender,
                 bio, cityId, imageFile);
+        String genderStr = account.getGender() != null ? account.getGender().toString() : null;
         AccountUpdateEvent event = AccountUpdateEvent.builder()
                 .id(accountId)
                 .name(account.getName())
                 .photo(account.getPhoto())
                 .bio(account.getBio())
                 .birthday(account.getBirthday())
-                .gender(account.getGender().toString())
+                .gender(genderStr)
                 .cityId(account.getCityId())
                 .build();
         eventPublisher

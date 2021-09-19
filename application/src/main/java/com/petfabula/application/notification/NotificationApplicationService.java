@@ -44,7 +44,7 @@ public class NotificationApplicationService {
     }
 
     @Transactional
-    public void readAllVoteNotificationServices(Long receiverId) {
+    public void readAllVoteNotifications(Long receiverId) {
         voteNotificationService.readAll(receiverId);
     }
 
@@ -55,7 +55,7 @@ public class NotificationApplicationService {
     }
 
     @Transactional
-    public void readNotification(Long receiverId) {
+    public void readAllSystemNotification(Long receiverId) {
         systemNotificationService.readNotification(receiverId);
     }
 }

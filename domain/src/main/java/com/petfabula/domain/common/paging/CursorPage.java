@@ -10,12 +10,15 @@ import java.util.List;
 public class CursorPage<T extends EntityBase> {
 
     public static <T extends EntityBase> CursorPage<T> of (List<T> res, boolean hasMore, int pageSize) {
-
         return new CursorPage(res, hasMore, pageSize);
     }
 
-    public static <T extends EntityBase> CursorPage<T> empty (int pageSize) {
+    public static <T extends EntityBase> CursorPage<T> of (List<T> res, Long nextCursor, int pageSize) {
+        return new CursorPage(res, nextCursor, pageSize);
+    }
 
+
+    public static <T extends EntityBase> CursorPage<T> empty (int pageSize) {
         return new CursorPage(new ArrayList(), false, pageSize);
     }
 
@@ -27,6 +30,17 @@ public class CursorPage<T extends EntityBase> {
 
         if (hasMore && result.size() > 0) {
             nextCursor = result.get(result.size() - 1).getId();
+        }
+    }
+
+    private CursorPage(List<T> result, Long nextCursor, int pageSize) {
+
+        this.result = result;
+        this.nextCursor = nextCursor;
+        this.pageSize = pageSize;
+
+        if (nextCursor != null) {
+            this.hasMore = true;
         }
     }
 
