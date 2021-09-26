@@ -4,6 +4,7 @@ import com.petfabula.domain.aggregate.identity.MessageKey;
 import com.petfabula.domain.aggregate.identity.repository.VerificationCodeRepository;
 import com.petfabula.domain.aggregate.identity.service.email.EmailSender;
 import com.petfabula.domain.aggregate.identity.service.email.SendEmailRequest;
+import com.petfabula.domain.exception.DomainAuthenticationException;
 import com.petfabula.domain.exception.InvalidValueException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -15,7 +16,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class VerificationCodeService {
 
-    public static final int REGISTER_CODE_VALID_LIMIT_MINUTE = 20;
+    public static final int REGISTER_CODE_VALID_LIMIT_MINUTE = 10;
 
     @Autowired
     private EmailSender emailSender;
@@ -68,14 +69,14 @@ public class VerificationCodeService {
     public void checkEmailLoginCode(String email, String code) {
         String saved = verificationCodeRepository.getCode(emailCodeLoginkey(email));
         if (StringUtils.compare(code, saved) != 0) {
-            throw new InvalidValueException("code", MessageKey.INVALID_VERIFICATION_CODE);
+            throw new DomainAuthenticationException("code", MessageKey.INVALID_VERIFICATION_CODE);
         }
     }
 
     public void checkEmailCodeRegisterCode(String email, String code) {
         String saved = verificationCodeRepository.getCode(emailCodeReigsterkey(email));
         if (StringUtils.compare(code, saved) != 0) {
-            throw new InvalidValueException("code", MessageKey.INVALID_VERIFICATION_CODE);
+            throw new DomainAuthenticationException("code", MessageKey.INVALID_VERIFICATION_CODE);
         }
 
     }

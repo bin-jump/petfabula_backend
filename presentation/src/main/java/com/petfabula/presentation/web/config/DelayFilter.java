@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * for development only
  */
-@Component
+//@Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @Slf4j
 public class DelayFilter implements Filter {

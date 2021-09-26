@@ -1,11 +1,9 @@
 package com.petfabula.presentation.web.security;
 
 import com.petfabula.domain.aggregate.identity.service.PasswordEncoderService;
-import com.petfabula.presentation.web.security.filter.UnauthenticatedRequestHandler;
-import com.petfabula.presentation.web.security.filter.UnauthorizedRequestHandler;
-import org.apache.tomcat.util.http.Rfc6265CookieProcessor;
-import org.apache.tomcat.util.http.SameSiteCookies;
-import org.springframework.boot.web.embedded.tomcat.TomcatContextCustomizer;
+import com.petfabula.presentation.web.security.authencate.*;
+import com.petfabula.presentation.web.security.filter.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,9 +13,12 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
-import org.springframework.security.web.session.HttpSessionEventPublisher;
+import org.springframework.security.web.authentication.session.ConcurrentSessionControlAuthenticationStrategy;
+import org.springframework.session.FindByIndexNameSessionRepository;
+import org.springframework.session.security.SpringSessionBackedSessionRegistry;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -27,10 +28,10 @@ import java.util.Arrays;
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder authManager) {
-        // empty body for preventing default password generation
-    }
+//    @Override
+//    protected void configure(AuthenticationManagerBuilder authManager) {
+//        // empty body for preventing default password generation
+//    }
 
     @Bean
     public AuthenticationManager authenticationManagerBean() throws Exception {
@@ -41,6 +42,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .cors().and()
+                .addFilterBefore(oauthAuthenticationFilter(),
+                        UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(emailCodeRegisterAuthenticationFilter(),
+                        UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(emailCodeAuthenticationFilter(),
+                        UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
                 .antMatchers(HttpMethod.GET,"/api/identity/**").permitAll()
                 .antMatchers(HttpMethod.GET,"/api/identity/oauth-redirect").permitAll()
@@ -83,15 +90,79 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 //.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .csrf()
                 .disable();
-
-        httpSecurity.sessionManagement().maximumSessions(1);
+//
+//        httpSecurity.sessionManagement()
+//                .maximumSessions(1)
+//                .maxSessionsPreventsLogin(false)
+//        .sessionRegistry(sessionRegistry());
 
     }
 
+    @Autowired
+    private FindByIndexNameSessionRepository sessionRepository;
+
+    @Autowired
+    private EmailCodeAuthenticationProvider emailCodeAuthenticationProvider;
+
+    @Autowired
+    private OauthAuthenticationProvider oauthAuthenticationProvider;
+
+    @Autowired
+    private EmailCodeRegisterAuthenticationProvider emailCodeRegisterAuthenticationProvider;
+
+    @Autowired
+    private LoginFailureHandler loginFailureHandler;
+
+    @Autowired
+    private LoginSuccessHandler loginSuccessHandler;
+
+    public EmailCodeAuthenticationFilter emailCodeAuthenticationFilter() throws Exception {
+        EmailCodeAuthenticationFilter filter = new EmailCodeAuthenticationFilter();
+        filter.setAuthenticationManager(authenticationManagerBean());
+        filter.setAuthenticationFailureHandler(loginFailureHandler);
+        filter.setAuthenticationSuccessHandler(loginSuccessHandler);
+        filter.setSessionAuthenticationStrategy(authStrategy());
+        return filter;
+    }
+
+    public EmailCodeRegisterAndAuthenticationFilter emailCodeRegisterAuthenticationFilter() throws Exception {
+        EmailCodeRegisterAndAuthenticationFilter filter = new EmailCodeRegisterAndAuthenticationFilter();
+        filter.setAuthenticationManager(authenticationManagerBean());
+        filter.setAuthenticationFailureHandler(loginFailureHandler);
+        filter.setAuthenticationSuccessHandler(loginSuccessHandler);
+        filter.setSessionAuthenticationStrategy(authStrategy());
+        return filter;
+    }
+
+    public OauthAuthenticationFilter oauthAuthenticationFilter() throws Exception {
+        OauthAuthenticationFilter filter = new OauthAuthenticationFilter();
+        filter.setAuthenticationManager(authenticationManagerBean());
+        filter.setAuthenticationFailureHandler(loginFailureHandler);
+        filter.setAuthenticationSuccessHandler(loginSuccessHandler);
+        filter.setSessionAuthenticationStrategy(authStrategy());
+        return filter;
+    }
+
+    private ConcurrentSessionControlAuthenticationStrategy authStrategy() {
+        ConcurrentSessionControlAuthenticationStrategy result = new ConcurrentSessionControlAuthenticationStrategy(
+                this.sessionRegistry());
+        result.setMaximumSessions(2);
+        result.setExceptionIfMaximumExceeded(true);
+        return result;
+    }
+
+    @Override
+    protected void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
+       authenticationManagerBuilder
+                .authenticationProvider(emailCodeAuthenticationProvider)
+                .authenticationProvider(oauthAuthenticationProvider)
+                .authenticationProvider(emailCodeRegisterAuthenticationProvider);
+                // I'm using ActiveDirectory, but whatever you want to use here should work.
+    }
+
     @Bean
-    public HttpSessionEventPublisher httpSessionEventPublisher()
-    {
-        return new HttpSessionEventPublisher();
+    public SpringSessionBackedSessionRegistry sessionRegistry() {
+        return new SpringSessionBackedSessionRegistry(this.sessionRepository);
     }
 
 //    @Bean

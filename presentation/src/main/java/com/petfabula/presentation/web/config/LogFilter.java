@@ -9,6 +9,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * for development only
@@ -19,6 +22,9 @@ public class LogFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        Map<String, String> headers = Collections.list(request.getHeaderNames())
+                .stream()
+                .collect(Collectors.toMap(h -> h, request::getHeader));
 
         filterChain.doFilter(request, response);
     }

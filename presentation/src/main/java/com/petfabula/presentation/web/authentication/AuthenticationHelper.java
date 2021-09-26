@@ -6,11 +6,15 @@ import com.petfabula.presentation.web.authentication.jwt.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.session.ConcurrentSessionControlAuthenticationStrategy;
+import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Component;
 
@@ -24,10 +28,12 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-@Component
 public class AuthenticationHelper {
 
     public static final int LOGIN_DURATION_DAY = 60;
+
+    @Autowired
+    private AuthenticationManager authManager;
 
     @Autowired
     private AuthenticationProps authenticationProps;
@@ -43,7 +49,6 @@ public class AuthenticationHelper {
     public void signin(UserAccount userAccount, HttpServletRequest req) {
 
         Set<Role> roles = userAccount.getRoles();
-        Object[] roleNames = roles.stream().map(Role::getName).collect(Collectors.toList()).toArray();
 //        String[] names = Arrays.stream(roleNames).toArray(String[]::new);
 
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
@@ -51,11 +56,11 @@ public class AuthenticationHelper {
                 authorities.add(new SimpleGrantedAuthority("ROLE_" + item.getName())));
         Authentication authentication = new UsernamePasswordAuthenticationToken(LoginUser.newInstance(userAccount), null,
                 authorities);
+//        authentication.setAuthenticated(true);
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        HttpSession session = req.getSession(true);
-        session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext());
-
+//        HttpSession session = req.getSession(true);
+//        session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext());
     }
 
 //    public void logout(HttpServletResponse response) {

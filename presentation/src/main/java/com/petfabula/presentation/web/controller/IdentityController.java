@@ -35,8 +35,8 @@ public class IdentityController {
     @Autowired
     private UserAccountRepository userAccountRepository;
 
-    @Autowired
-    private AuthenticationHelper authenticationHelper;
+//    @Autowired
+//    private AuthenticationHelper authenticationHelper;
 
     @Autowired
     private AuthenticationProps authenticationProps;
@@ -71,48 +71,48 @@ public class IdentityController {
         response.sendRedirect(String.format("%s%s", redirectPrefix, q));
     }
 
-    @PostMapping("register-signin-oauth")
-    public Response<UserAccountDto> registerAndLoginByOauth(@Validated @RequestBody OauthRequest request,
-                                                            HttpServletRequest req, HttpServletResponse response) {
-        UserAccount userAccount = identityApplicationService
-                .registerOrAuthenticateByOauth(request.getServerName(), request.getCode());
-        UserAccountDto userAccountDto = userAccountAssembler.convertToDto(userAccount);
-        authenticationHelper.signin(userAccount, req);
+//    @PostMapping("register-signin-oauth")
+//    public Response<UserAccountDto> registerAndLoginByOauth(@Validated @RequestBody OauthRequest request,
+//                                                            HttpServletRequest req, HttpServletResponse response) {
+//        UserAccount userAccount = identityApplicationService
+//                .registerOrAuthenticateByOauth(request.getServerName(), request.getCode());
+//        UserAccountDto userAccountDto = userAccountAssembler.convertToDto(userAccount);
+//        authenticationHelper.signin(userAccount, req);
+//
+//        return Response.ok(userAccountDto);
+//    }
 
-        return Response.ok(userAccountDto);
-    }
+//    @PostMapping("signin-email-code")
+//    public Response<UserAccountDto> loginByEmailCode(@Validated @RequestBody EmailCodeLoginRequest request,
+//                                                     HttpServletRequest req, HttpServletResponse response) {
+//        UserAccount userAccount = identityApplicationService
+//                .authenticateByEmailCode(request.getEmail(), request.getCode());
+//        UserAccountDto userDto = userAccountAssembler.convertToDto(userAccount);
+//        authenticationHelper.signin(userAccount, req);
+//
+//        return Response.ok(userDto);
+//    }
 
-    @PostMapping("signin-email-code")
-    public Response<UserAccountDto> loginByEmailCode(@Validated @RequestBody EmailCodeLoginRequest request,
-                                                     HttpServletRequest req, HttpServletResponse response) {
-        UserAccount userAccount = identityApplicationService
-                .authenticateByEmailCode(request.getEmail(), request.getCode());
-        UserAccountDto userDto = userAccountAssembler.convertToDto(userAccount);
-        authenticationHelper.signin(userAccount, req);
+//    @PostMapping("signin-email-password")
+//    public Response<UserAccountDto> loginByEmailPassword(@Validated @RequestBody EmailPasswordLoginRequest request,
+//                                                     HttpServletRequest req, HttpServletResponse response) {
+//        UserAccount userAccount = identityApplicationService
+//                .authenticateByEmailPassword(request.getEmail(), request.getPassword());
+//        UserAccountDto userDto = userAccountAssembler.convertToDto(userAccount);
+//        authenticationHelper.signin(userAccount, req);
+//
+//        return Response.ok(userDto);
+//    }
 
-        return Response.ok(userDto);
-    }
-
-    @PostMapping("signin-email-password")
-    public Response<UserAccountDto> loginByEmailPassword(@Validated @RequestBody EmailPasswordLoginRequest request,
-                                                     HttpServletRequest req, HttpServletResponse response) {
-        UserAccount userAccount = identityApplicationService
-                .authenticateByEmailPassword(request.getEmail(), request.getPassword());
-        UserAccountDto userDto = userAccountAssembler.convertToDto(userAccount);
-        authenticationHelper.signin(userAccount, req);
-
-        return Response.ok(userDto);
-    }
-
-    @PostMapping("register-signin-email-code")
-    public Response<UserAccountDto> registerAndloginByEmailCode(@Validated @RequestBody EmailCodeRegisterRequest request,
-                                                                HttpServletRequest req, HttpServletResponse response) {
-        UserAccount userAccount = identityApplicationService
-                .registerByEmailCode(request.getName(), request.getEmail(), request.getCode());
-        UserAccountDto userAccountDto = userAccountAssembler.convertToDto(userAccount);
-        authenticationHelper.signin(userAccount, req);
-        return Response.ok(userAccountDto);
-    }
+//    @PostMapping("register-signin-email-code")
+//    public Response<UserAccountDto> registerAndloginByEmailCode(@Validated @RequestBody EmailCodeRegisterRequest request,
+//                                                                HttpServletRequest req, HttpServletResponse response) {
+//        UserAccount userAccount = identityApplicationService
+//                .registerByEmailCode(request.getName(), request.getEmail(), request.getCode());
+//        UserAccountDto userAccountDto = userAccountAssembler.convertToDto(userAccount);
+//        authenticationHelper.signin(userAccount, req);
+//        return Response.ok(userAccountDto);
+//    }
 
     @PostMapping("register-send-code")
     public Response emailCodeRegisterVerificationCode(@Validated @RequestBody ExamineEmailRegisterAndSendCodeRequest request) {

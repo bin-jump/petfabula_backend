@@ -28,7 +28,8 @@ public class QuestionAssembler {
         question.getImages().forEach(item -> questionDto.getImages()
                 .add(new ImageDto(item.getId(), assemblerHelper
                         .completeImageUrl(item.getUrl()), item.getWidth(), item.getHeight())));
-
+        questionDto.getParticipator()
+                .setPhoto(assemblerHelper.completeImageUrl(questionDto.getParticipator().getPhoto()));
         return questionDto;
     }
 
