@@ -49,6 +49,9 @@ public class PostAssembler {
                     postSearchItem.getCoverImage().getHeight());
             postDto.getImages().add(coverImage);
         }
+
+        postDto.getParticipator()
+                .setPhoto(assemblerHelper.completeImageUrl(postDto.getParticipator().getPhoto()));
         return postDto;
     }
 

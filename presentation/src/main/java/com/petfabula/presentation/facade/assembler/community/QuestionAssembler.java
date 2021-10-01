@@ -47,6 +47,8 @@ public class QuestionAssembler {
                     item.getWidth(), item.getHeight());
             questionAnswerSearchDto.getImages().add(img);
         });
+        questionAnswerSearchDto.getParticipator()
+                .setPhoto(assemblerHelper.completeImageUrl(questionAnswerSearchDto.getParticipator().getPhoto()));
 
         return questionAnswerSearchDto;
     }

@@ -45,6 +45,8 @@ public class AnswerAssembler {
                 .add(new ImageDto(item.getId(), assemblerHelper
                         .completeImageUrl(item.getUrl()), item.getWidth(), item.getHeight())));
         answerWithQuestionDto.setQuestionTitle(question.getTitle());
+        ParticipatorDto participatorDto = answerWithQuestionDto.getParticipator();
+        participatorDto.setPhoto(assemblerHelper.completeImageUrl(participatorDto.getPhoto()));
         return answerWithQuestionDto;
     }
 }

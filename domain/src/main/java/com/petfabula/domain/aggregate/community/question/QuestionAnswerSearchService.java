@@ -11,6 +11,7 @@ public interface QuestionAnswerSearchService {
 
     void updateAnswerQuestionTitle(Long questionId, String title);
 
+    void updateParticipatorInfo(Long participatorId, String photo);
 
     void removeByQuestionId(Long questionId);
 

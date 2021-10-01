@@ -9,5 +9,7 @@ public interface PostSearchService {
 
     SearchAfterResult<PostSearchItem, Long> search(SearchQueryRequest searchQueryRequest);
 
+    void updateParticipatorInfo(Long participatorId, String photo);
+
     void remove(Long id);
 }

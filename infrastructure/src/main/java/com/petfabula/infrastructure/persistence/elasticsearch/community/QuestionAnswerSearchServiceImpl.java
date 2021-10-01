@@ -8,6 +8,7 @@ import com.petfabula.domain.common.search.SearchAfterResult;
 import com.petfabula.domain.common.search.SearchQueryRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -109,6 +110,26 @@ public class QuestionAnswerSearchServiceImpl implements QuestionAnswerSearchServ
         request.setConflicts("proceed");
         request.setQuery(qidQuery);
         request.setScript(new Script(ScriptType.INLINE, "painless","ctx._source.title = '" + title + "'",
+                Collections.emptyMap()));
+        request.setRefresh(true);
+        try {
+            client.updateByQuery(request, RequestOptions.DEFAULT);
+        } catch (IOException e) {
+            log.error("update failed " + e);
+            throw new RuntimeException("update failed");
+        }
+    }
+
+    @Override
+    public void updateParticipatorInfo(Long participatorId, String photo) {
+        UpdateByQueryRequest request = new UpdateByQueryRequest(INDICE_NAME);
+
+        QueryBuilder pidQuery = QueryBuilders.nestedQuery("participator",
+                QueryBuilders.termQuery("participator.id", participatorId), ScoreMode.None);
+        request.setConflicts("proceed");
+        request.setQuery(pidQuery);
+        request.setScript(new Script(ScriptType.INLINE, "painless","ctx._source.participator.photo = '"
+                + photo + "'",
                 Collections.emptyMap()));
         request.setRefresh(true);
         try {
