@@ -1,13 +1,11 @@
 package com.petfabula.presentation.web.authentication;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
-import org.springframework.session.web.http.CookieSerializer;
-import org.springframework.session.web.http.DefaultCookieSerializer;
-import org.springframework.session.web.http.HeaderHttpSessionIdResolver;
-import org.springframework.session.web.http.HttpSessionIdResolver;
+import org.springframework.session.web.http.*;
 
 @Configuration
 public class SessionConfig {
@@ -23,19 +21,27 @@ public class SessionConfig {
         serializer.setCookieName("JSESSIONID");
         serializer.setCookiePath("/");
         serializer.setDomainNamePattern("^.+?\\.(\\w+\\.[a-z]+)$");
+        serializer.setSameSite("none");
         return serializer;
     }
 
+//    @Bean
+//    public HttpSessionIdResolver httpSessionStrategy() {
+//        return HeaderHttpSessionIdResolver.xAuthToken();
+//    }
+
     @Bean
     public HttpSessionIdResolver httpSessionStrategy() {
-        return HeaderHttpSessionIdResolver.xAuthToken();
-    }
+        CookieHttpSessionIdResolver cookieHttpSessionIdResolver = new CookieHttpSessionIdResolver();
+        cookieHttpSessionIdResolver.setCookieSerializer(cookieSerializer());
 
+        return new HeaderAndCookieHttpSessionIdResolver(HeaderHttpSessionIdResolver.xAuthToken(),
+                cookieHttpSessionIdResolver);
+    }
 
     @Bean
     public HttpSessionEventPublisher httpSessionEventPublisher()
     {
         return new HttpSessionEventPublisher();
     }
-
 }

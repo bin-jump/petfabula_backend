@@ -8,7 +8,6 @@ import org.springframework.context.event.EventListener;
 import org.springframework.session.web.http.DefaultCookieSerializer;
 import org.springframework.stereotype.Component;
 
-@Component
 @AllArgsConstructor
 @Slf4j
 public class SameSiteInjector {

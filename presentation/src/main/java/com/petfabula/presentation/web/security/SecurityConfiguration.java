@@ -41,13 +41,17 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-                .cors().and()
+                .cors()
+                .and()
                 .addFilterBefore(oauthAuthenticationFilter(),
                         UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(emailCodeRegisterAuthenticationFilter(),
                         UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(emailCodeAuthenticationFilter(),
                         UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(emailPasswordAuthenticationFilter(),
+                        UsernamePasswordAuthenticationFilter.class)
+
                 .authorizeRequests()
                 .antMatchers(HttpMethod.GET,"/api/identity/**").permitAll()
                 .antMatchers(HttpMethod.GET,"/api/identity/oauth-redirect").permitAll()
@@ -111,6 +115,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private EmailCodeRegisterAuthenticationProvider emailCodeRegisterAuthenticationProvider;
 
     @Autowired
+    private EmailPasswordAuthenticationProvider emailPasswordAuthenticationProvider;
+
+    @Autowired
     private LoginFailureHandler loginFailureHandler;
 
     @Autowired
@@ -127,6 +134,15 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     public EmailCodeRegisterAndAuthenticationFilter emailCodeRegisterAuthenticationFilter() throws Exception {
         EmailCodeRegisterAndAuthenticationFilter filter = new EmailCodeRegisterAndAuthenticationFilter();
+        filter.setAuthenticationManager(authenticationManagerBean());
+        filter.setAuthenticationFailureHandler(loginFailureHandler);
+        filter.setAuthenticationSuccessHandler(loginSuccessHandler);
+        filter.setSessionAuthenticationStrategy(authStrategy());
+        return filter;
+    }
+
+    public EmailPasswordAuthenticationFilter emailPasswordAuthenticationFilter() throws Exception {
+        EmailPasswordAuthenticationFilter filter = new EmailPasswordAuthenticationFilter();
         filter.setAuthenticationManager(authenticationManagerBean());
         filter.setAuthenticationFailureHandler(loginFailureHandler);
         filter.setAuthenticationSuccessHandler(loginSuccessHandler);
@@ -156,7 +172,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
        authenticationManagerBuilder
                 .authenticationProvider(emailCodeAuthenticationProvider)
                 .authenticationProvider(oauthAuthenticationProvider)
-                .authenticationProvider(emailCodeRegisterAuthenticationProvider);
+                .authenticationProvider(emailCodeRegisterAuthenticationProvider)
+               .authenticationProvider(emailPasswordAuthenticationProvider);
                 // I'm using ActiveDirectory, but whatever you want to use here should work.
     }
 
