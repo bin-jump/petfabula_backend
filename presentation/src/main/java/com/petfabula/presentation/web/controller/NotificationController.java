@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RestController
@@ -194,28 +195,35 @@ public class NotificationController {
                 .stream().forEach(item -> {
             ParticipatorDto actor = actorMap.get(item.getActorId());
             if (item.getTargetEntityType() == AnswerCommentNotification.EntityType.QUESTION) {
-                Question question = questionMap.get(item.getTargetEntityId());
-                notificationDtos.add(AnswerCommentNotificationDto.of(item, questionAssembler.convertToDto(question), actor));
-
+                if (questionMap.containsKey(item.getTargetEntityId())) {
+                    Question question = questionMap.get(item.getTargetEntityId());
+                    notificationDtos.add(AnswerCommentNotificationDto.of(item, questionAssembler.convertToDto(question), actor));
+                }
             } else if (item.getTargetEntityType() == AnswerCommentNotification.EntityType.POST) {
-                Post post = postMap.get(item.getTargetEntityId());
-                notificationDtos.add(AnswerCommentNotificationDto.of(item, postAssembler.convertToDto(post), actor));
-
+                if (postMap.containsKey(item.getTargetEntityId())) {
+                    Post post = postMap.get(item.getTargetEntityId());
+                    notificationDtos.add(AnswerCommentNotificationDto.of(item, postAssembler.convertToDto(post), actor));
+                }
             } else if (item.getTargetEntityType() == AnswerCommentNotification.EntityType.ANSWER) {
-                Answer answer = answerMap.get(item.getTargetEntityId());
-                notificationDtos.add(AnswerCommentNotificationDto.of(item, answerAssembler.convertToDto(answer), actor));
-
+                if (answerMap.containsKey(item.getTargetEntityId())) {
+                    Answer answer = answerMap.get(item.getTargetEntityId());
+                    notificationDtos.add(AnswerCommentNotificationDto.of(item, answerAssembler.convertToDto(answer), actor));
+                }
             } else if (item.getTargetEntityType() == AnswerCommentNotification.EntityType.POST_COMMENT) {
-                PostComment postComment = postCommentMap.get(item.getTargetEntityId());
-                notificationDtos.add(AnswerCommentNotificationDto.of(item, postCommentAssembler.convertToDto(postComment), actor));
-
+                if (postCommentMap.containsKey(item.getTargetEntityId())) {
+                    PostComment postComment = postCommentMap.get(item.getTargetEntityId());
+                    notificationDtos.add(AnswerCommentNotificationDto.of(item, postCommentAssembler.convertToDto(postComment), actor));
+                }
             } else if (item.getTargetEntityType() == AnswerCommentNotification.EntityType.POST_COMMENT_REPLY) {
-                PostCommentReply postCommentReply = postCommentReplyMap.get(item.getTargetEntityId());
-                notificationDtos.add(AnswerCommentNotificationDto.of(item, postCommentReplyAssembler.convertToDto(postCommentReply), actor));
-
+                if (postCommentReplyMap.containsKey(item.getTargetEntityId())) {
+                    PostCommentReply postCommentReply = postCommentReplyMap.get(item.getTargetEntityId());
+                    notificationDtos.add(AnswerCommentNotificationDto.of(item, postCommentReplyAssembler.convertToDto(postCommentReply), actor));
+                }
             } else if (item.getTargetEntityType() == AnswerCommentNotification.EntityType.ANSWER_COMMENT) {
-                AnswerComment answerComment = answerCommentMap.get(item.getTargetEntityId());
-                notificationDtos.add(AnswerCommentNotificationDto.of(item, answerCommentAssembler.convertToDto(answerComment), actor));
+                if (answerCommentMap.containsKey(item.getTargetEntityId())) {
+                    AnswerComment answerComment = answerCommentMap.get(item.getTargetEntityId());
+                    notificationDtos.add(AnswerCommentNotificationDto.of(item, answerCommentAssembler.convertToDto(answerComment), actor));
+                }
             }
         });
 
@@ -240,10 +248,13 @@ public class NotificationController {
         List<ParticipatorFollowNotificationDto> notificationDtos =
                 followNotifications.getResult().stream()
                         .map(item -> {
+                            if (!participatorMap.containsKey(item.getFollowerId())) {
+                                return null;
+                            }
                             Participator participator = participatorMap.get(item.getFollowerId());
                             return ParticipatorFollowNotificationDto.of(item,
                                     participtorAssembler.convertToDto(participator));
-                        }).collect(Collectors.toList());
+                        }).filter(Objects::nonNull).collect(Collectors.toList());
 
         CursorPageData<ParticipatorFollowNotificationDto> res = CursorPageData
                 .of(notificationDtos, followNotifications.isHasMore(),
@@ -295,16 +306,20 @@ public class NotificationController {
                 .stream().forEach(item -> {
             ParticipatorDto actor = actorMap.get(item.getActorId());
             if (item.getTargetEntityType() == UpvoteNotification.EntityType.ANSWER) {
-                Answer answer = answerMap.get(item.getTargetEntityId());
-                notificationDtos.add(VoteNotificationDto.of(item, answerAssembler.convertToDto(answer), actor));
-
+                if (answerMap.containsKey(item.getTargetEntityId())) {
+                    Answer answer = answerMap.get(item.getTargetEntityId());
+                    notificationDtos.add(VoteNotificationDto.of(item, answerAssembler.convertToDto(answer), actor));
+                }
             } else if (item.getTargetEntityType() == UpvoteNotification.EntityType.QUESTION) {
-                Question postComment = questionMap.get(item.getTargetEntityId());
-                notificationDtos.add(VoteNotificationDto.of(item, questionAssembler.convertToDto(postComment), actor));
-
+                if (questionMap.containsKey(item.getTargetEntityId())) {
+                    Question postComment = questionMap.get(item.getTargetEntityId());
+                    notificationDtos.add(VoteNotificationDto.of(item, questionAssembler.convertToDto(postComment), actor));
+                }
             } else if (item.getTargetEntityType() == UpvoteNotification.EntityType.POST) {
-                Post post = postMap.get(item.getTargetEntityId());
-                notificationDtos.add(VoteNotificationDto.of(item, postAssembler.convertToDto(post), actor));
+                if (postMap.containsKey(item.getTargetEntityId())) {
+                    Post post = postMap.get(item.getTargetEntityId());
+                    notificationDtos.add(VoteNotificationDto.of(item, postAssembler.convertToDto(post), actor));
+                }
             }
         });
 
