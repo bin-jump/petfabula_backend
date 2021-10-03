@@ -2,6 +2,7 @@ package com.petfabula.domain.aggregate.community.post.entity;
 
 import com.petfabula.domain.common.domain.AutoIdEntity;
 import com.petfabula.domain.common.domain.GeneralEntity;
+import com.petfabula.domain.common.validation.EntityValidationUtils;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -32,4 +33,9 @@ public class PostTopic extends GeneralEntity {
 
     @Column(name = "pet_category", nullable = false)
     private String petCategory;
+
+    public void setTitle(String title) {
+        EntityValidationUtils.validStringLength("title", title, 2, 20);
+        this.title = title;
+    }
 }

@@ -16,36 +16,38 @@ public class PostTopicRepositoryImpl implements PostTopicRepository {
     @Autowired
     private PostTopicJpaRepository postTopicJpaRepository;
 
-    @Autowired
-    private PostTopicCategoryJpaRepository postTopicCategoryJpaRepository;
-
-    @Override
-    public PostTopicCategory save(PostTopicCategory postTopicCategory) {
-        return postTopicCategoryJpaRepository.save(postTopicCategory);
-    }
-
     @Override
     public PostTopic save(PostTopic postTopic) {
         return postTopicJpaRepository.save(postTopic);
     }
 
     @Override
-    public List<PostTopic> findAllTopics() {
+    public List<PostTopic> findAll() {
         return postTopicJpaRepository.findAll();
     }
 
     @Override
-    public PostTopic findTopicById(Long id) {
+    public PostTopic findById(Long id) {
         return postTopicJpaRepository.findById(id).orElse(null);
     }
 
     @Override
-    public PostTopicCategory findCategoryByTitle(String title) {
-        return postTopicCategoryJpaRepository.findByTitle(title);
+    public PostTopic findByTitle(String title) {
+        return postTopicJpaRepository.findByTitle(title);
     }
 
     @Override
-    public PostTopic findTopicByTitle(String title) {
-        return postTopicJpaRepository.findByTitle(title);
+    public void updateCategoryTitle(Long categoryId, String title) {
+        postTopicJpaRepository.updateCategoryTitle(categoryId, title);
+    }
+
+    @Override
+    public void removeByCategoryId(Long categoryId) {
+        postTopicJpaRepository.removeByCategoryId(categoryId);
+    }
+
+    @Override
+    public void remove(PostTopic postTopic) {
+        postTopicJpaRepository.delete(postTopic);
     }
 }

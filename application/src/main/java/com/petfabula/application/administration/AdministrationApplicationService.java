@@ -3,8 +3,11 @@ package com.petfabula.application.administration;
 import com.petfabula.domain.aggregate.administration.entity.Feedback;
 import com.petfabula.domain.aggregate.administration.entity.Report;
 import com.petfabula.domain.aggregate.administration.service.FeedbackService;
+import com.petfabula.domain.aggregate.administration.service.PostTopicService;
 import com.petfabula.domain.aggregate.administration.service.ReportService;
 import com.petfabula.domain.aggregate.community.post.entity.Post;
+import com.petfabula.domain.aggregate.community.post.entity.PostTopic;
+import com.petfabula.domain.aggregate.community.post.entity.PostTopicCategory;
 import com.petfabula.domain.aggregate.community.post.repository.PostRepository;
 import com.petfabula.domain.aggregate.community.post.service.PostService;
 import com.petfabula.domain.aggregate.community.question.entity.Answer;
@@ -48,6 +51,9 @@ public class AdministrationApplicationService {
 
     @Autowired
     private SystemNotificationService systemNotificationService;
+
+    @Autowired
+    private PostTopicService postTopicService;
 
     @Transactional
     public Feedback createFeedback(Long reporterId, String content) {
@@ -113,5 +119,35 @@ public class AdministrationApplicationService {
     @Transactional
     public SystemNotification removeSystemNotification(Long notificationId) {
         return systemNotificationService.remove(notificationId);
+    }
+
+    @Transactional
+    public PostTopic createTopic(Long topicCategoryId, String title) {
+        return postTopicService.createTopic(topicCategoryId, title);
+    }
+
+    @Transactional
+    public PostTopicCategory createCategory(String title) {
+        return postTopicService.createCategory(title);
+    }
+
+    @Transactional
+    public PostTopic updateTopic(Long topicId, String title) {
+        return postTopicService.updateTopic(topicId, title);
+    }
+
+    @Transactional
+    public PostTopicCategory updateTopicCategory(Long topicCategoryId, String title) {
+        return postTopicService.updateTopicCategory(topicCategoryId, title);
+    }
+
+    @Transactional
+    public PostTopic removeTopic(Long topicId) {
+        return postTopicService.removeTopic(topicId);
+    }
+
+    @Transactional
+    public PostTopicCategory removeTopicCategory(Long topicCategoryId) {
+        return postTopicService.removeTopicCategory(topicCategoryId);
     }
 }

@@ -9,7 +9,11 @@ import com.petfabula.domain.aggregate.administration.repository.ReportRepository
 import com.petfabula.domain.aggregate.community.participator.entity.Participator;
 import com.petfabula.domain.aggregate.community.participator.repository.ParticipatorRepository;
 import com.petfabula.domain.aggregate.community.post.entity.Post;
+import com.petfabula.domain.aggregate.community.post.entity.PostTopic;
+import com.petfabula.domain.aggregate.community.post.entity.PostTopicCategory;
 import com.petfabula.domain.aggregate.community.post.repository.PostRepository;
+import com.petfabula.domain.aggregate.community.post.repository.PostTopicCategoryRepository;
+import com.petfabula.domain.aggregate.community.post.repository.PostTopicRepository;
 import com.petfabula.domain.aggregate.community.question.entity.Answer;
 import com.petfabula.domain.aggregate.community.question.entity.Question;
 import com.petfabula.domain.aggregate.community.question.repository.AnswerRepository;
@@ -21,20 +25,14 @@ import com.petfabula.domain.common.paging.JumpableOffsetPage;
 import com.petfabula.domain.exception.NotFoundException;
 import com.petfabula.presentation.facade.assembler.administration.FeedbackAssembler;
 import com.petfabula.presentation.facade.assembler.administration.ReportAssembler;
-import com.petfabula.presentation.facade.assembler.community.AnswerAssembler;
-import com.petfabula.presentation.facade.assembler.community.ParticiptorAssembler;
-import com.petfabula.presentation.facade.assembler.community.PostAssembler;
-import com.petfabula.presentation.facade.assembler.community.QuestionAssembler;
+import com.petfabula.presentation.facade.assembler.community.*;
 import com.petfabula.presentation.facade.assembler.document.ApplicationDocumentAssembler;
 import com.petfabula.presentation.facade.assembler.notification.SystemNotificationAssembler;
 import com.petfabula.presentation.facade.dto.AlreadyDeletedResponse;
 import com.petfabula.presentation.facade.dto.administration.FeedbackDto;
 import com.petfabula.presentation.facade.dto.administration.ReportDto;
 import com.petfabula.presentation.facade.dto.administration.UpdateReportStatusRequest;
-import com.petfabula.presentation.facade.dto.community.AnswerDto;
-import com.petfabula.presentation.facade.dto.community.ParticipatorDto;
-import com.petfabula.presentation.facade.dto.community.PostDto;
-import com.petfabula.presentation.facade.dto.community.QuestionDto;
+import com.petfabula.presentation.facade.dto.community.*;
 import com.petfabula.presentation.facade.dto.document.ApplicationDocumentDto;
 import com.petfabula.presentation.facade.dto.notification.SystemNotificationDto;
 import com.petfabula.presentation.web.api.OffsetPageData;
@@ -69,6 +67,9 @@ public class AdminController {
 
     @Autowired
     private ParticiptorAssembler participtorAssembler;
+
+    @Autowired
+    private PostTopicAssembler postTopicAssembler;
 
     @Autowired
     private PostAssembler postAssembler;
@@ -108,6 +109,12 @@ public class AdminController {
 
     @Autowired
     private SystemNotificationRepository systemNotificationRepository;
+
+    @Autowired
+    private PostTopicRepository postTopicRepository;
+
+    @Autowired
+    private PostTopicCategoryRepository postTopicCategoryRepository;
 
     @GetMapping("reports")
     public Response<OffsetPageData<ReportDto>> getReports(@RequestParam(value = "page") Integer page,
@@ -300,5 +307,82 @@ public class AdminController {
 
         documentDto = documentAssembler.convertToDto(document);
         return Response.ok(documentDto);
+    }
+
+    @GetMapping("topic-categories")
+    public Response<List<PostTopicCategoryDto>> getTopics() {
+        List<PostTopic> topics = postTopicRepository.findAll();
+        List<PostTopicCategory> categories = postTopicCategoryRepository.findAll();
+
+        List<PostTopicDto> topicDtos = postTopicAssembler.convertToTopicDtos(topics);
+        List<PostTopicCategoryDto> categoryDtos = postTopicAssembler
+                .convertToTopicCategoryDtos(categories);
+
+        for(PostTopicDto topicDto : topicDtos) {
+            for(PostTopicCategoryDto categoryDto : categoryDtos) {
+                if (categoryDto.getId().equals(topicDto.getTopicCategoryId())) {
+                    categoryDto.getTopics().add(topicDto);
+                    continue;
+                }
+            }
+        }
+
+        return Response.ok(categoryDtos);
+    }
+
+    @PostMapping("topics")
+    public Response<PostTopicDto> createTopic(@RequestBody @Validated PostTopicDto topicDto) {
+        PostTopic topic = administrationApplicationService
+                .createTopic(topicDto.getTopicCategoryId(), topicDto.getTitle());
+        topicDto = postTopicAssembler.convertToDto(topic);
+        return Response.ok(topicDto);
+    }
+
+    @PostMapping("topic-categories")
+    public Response<PostTopicCategoryDto> createTopicCategory(@RequestBody @Validated PostTopicCategoryDto categoryDto) {
+        PostTopicCategory category = administrationApplicationService
+                .createCategory(categoryDto.getTitle());
+        categoryDto = postTopicAssembler.convertToDto(category);
+        return Response.ok(categoryDto);
+    }
+
+    @PutMapping("topics")
+    public Response<PostTopicDto> updateTopic(@RequestBody @Validated PostTopicDto topicDto) {
+        PostTopic topic = administrationApplicationService
+                .updateTopic(topicDto.getId(), topicDto.getTitle());
+        topicDto = postTopicAssembler.convertToDto(topic);
+        return Response.ok(topicDto);
+    }
+
+    @PutMapping("topic-categories")
+    public Response<PostTopicCategoryDto> updateTopicCategory(@RequestBody @Validated PostTopicCategoryDto categoryDto) {
+        PostTopicCategory category = administrationApplicationService
+                .updateTopicCategory(categoryDto.getId(), categoryDto.getTitle());
+        categoryDto = postTopicAssembler.convertToDto(category);
+        return Response.ok(categoryDto);
+    }
+
+    @DeleteMapping("topics/{topicId}")
+    public Response<Object> removeTopic(@PathVariable("topicId") Long topicId) {
+        PostTopic topic = administrationApplicationService
+                .removeTopic(topicId);
+        if (topic == null) {
+            return Response.ok(AlreadyDeletedResponse.of(topicId));
+        }
+
+        PostTopicDto topicDto = postTopicAssembler.convertToDto(topic);
+        return Response.ok(topicDto);
+    }
+
+    @DeleteMapping("topic-categories/{categoryId}")
+    public Response<Object> removeTopicCategory(@PathVariable("categoryId") Long categoryId) {
+        PostTopicCategory category = administrationApplicationService
+                .removeTopicCategory(categoryId);
+        if (category == null) {
+            return Response.ok(AlreadyDeletedResponse.of(categoryId));
+        }
+
+        PostTopicCategoryDto topicDto = postTopicAssembler.convertToDto(category);
+        return Response.ok(topicDto);
     }
 }

@@ -114,7 +114,7 @@ public class PostController {
         PostTopicRelation postTopicRelation = postTopicRelationRepository.findByPostId(post.getId());
         if (postTopicRelation != null) {
             Long topicId =postTopicRelation.getTopicId();
-            PostTopic topic = postTopicRepository.findTopicById(topicId);
+            PostTopic topic = postTopicRepository.findById(topicId);
             if (topic != null) {
                 res.setPostTopic(postTopicAssembler.convertToDto(topic));
             }
@@ -184,7 +184,7 @@ public class PostController {
         PostTopicRelation postTopicRelation = postTopicRelationRepository.findByPostId(post.getId());
         if (postTopicRelation != null) {
             Long topicId =postTopicRelation.getTopicId();
-            PostTopic topic = postTopicRepository.findTopicById(topicId);
+            PostTopic topic = postTopicRepository.findById(topicId);
             if (topic != null) {
                 postDto.setPostTopic(postTopicAssembler.convertToDto(topic));
             }
@@ -332,7 +332,7 @@ public class PostController {
 
     @GetMapping("topics")
     public Response<List<PostTopicDto>> getAllTopics() {
-        List<PostTopic> topics = postTopicRepository.findAllTopics();
+        List<PostTopic> topics = postTopicRepository.findAll();
         List<PostTopicDto> res = postTopicAssembler
                 .convertToTopicDtos(topics);
         return Response.ok(res);

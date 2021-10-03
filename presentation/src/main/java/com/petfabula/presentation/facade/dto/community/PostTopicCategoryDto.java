@@ -6,21 +6,19 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class PostTopicDto {
+public class PostTopicCategoryDto {
 
     private Long id;
 
     @NotEmpty
     private String title;
 
-    @NotNull
-    private Long topicCategoryId;
-
-    private String topicCategoryTitle;
+    private List<PostTopicDto> topics = new ArrayList<>();
 }

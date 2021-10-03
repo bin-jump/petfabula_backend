@@ -2,6 +2,7 @@ package com.petfabula.infrastructure.persistence.jpa.community;
 
 import com.petfabula.domain.aggregate.community.post.entity.PostTopic;
 import com.petfabula.domain.aggregate.community.post.entity.PostTopicCategory;
+import com.petfabula.domain.aggregate.community.post.repository.PostTopicCategoryRepository;
 import com.petfabula.domain.aggregate.community.post.repository.PostTopicRepository;
 import com.petfabula.domain.aggregate.community.post.service.PostIdGenerator;
 import com.petfabula.infrastructure.tool.CsvHelper;
@@ -28,6 +29,9 @@ public class InitialzePostTopics implements ApplicationRunner {
 
     @Autowired
     private PostTopicRepository postTopicRepository;
+
+    @Autowired
+    private PostTopicCategoryRepository postTopicCategoryRepository;
 
     @Autowired
     private PostIdGenerator idGenerator;
@@ -60,15 +64,15 @@ public class InitialzePostTopics implements ApplicationRunner {
 
         for (Map.Entry<String, Set<String>> entry : categoryMap.entrySet()) {
             String title = entry.getKey();
-            PostTopicCategory topicCategory = postTopicRepository.findCategoryByTitle(title);
+            PostTopicCategory topicCategory = postTopicCategoryRepository.findByTitle(title);
             if (topicCategory == null) {
                 topicCategory = new PostTopicCategory(idGenerator.nextId(), title);
-                postTopicRepository.save(topicCategory);
+                postTopicCategoryRepository.save(topicCategory);
                 log.info("add topic: " + title);
             }
 
             for (String topicTitle : entry.getValue()) {
-                PostTopic topic = postTopicRepository.findTopicByTitle(topicTitle);
+                PostTopic topic = postTopicRepository.findByTitle(topicTitle);
                 if (topic == null) {
                     topic = new PostTopic(idGenerator.nextId(), topicTitle,
                             topicCategory.getId(), topicCategory.getTitle());

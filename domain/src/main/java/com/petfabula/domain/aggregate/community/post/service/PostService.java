@@ -95,7 +95,7 @@ public class PostService {
         Post savedPost = postRepository.save(post);
 
         if (topicId != null) {
-            PostTopic postTopic = postTopicRepository.findTopicById(topicId);
+            PostTopic postTopic = postTopicRepository.findById(topicId);
             if (postTopic == null) {
                 throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
             }
@@ -138,7 +138,7 @@ public class PostService {
                 postTopicRelationRepository.remove(topicRelation);
             }
         } else {
-            PostTopic postTopic = postTopicRepository.findTopicById(topicId);
+            PostTopic postTopic = postTopicRepository.findById(topicId);
             if (postTopic == null) {
                 throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
             }

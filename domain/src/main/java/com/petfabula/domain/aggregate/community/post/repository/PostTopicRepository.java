@@ -7,16 +7,17 @@ import java.util.List;
 
 public interface PostTopicRepository {
 
-    PostTopicCategory save(PostTopicCategory postTopicCategory);
+    PostTopic findById(Long id);
 
     PostTopic save(PostTopic postTopic);
 
-    List<PostTopic> findAllTopics();
+    List<PostTopic> findAll();
 
-    PostTopic findTopicById(Long id);
+    PostTopic findByTitle(String title);
 
-    PostTopicCategory findCategoryByTitle(String title);
+    void updateCategoryTitle(Long categoryId, String title);
 
-    PostTopic findTopicByTitle(String title);
+    void removeByCategoryId(Long categoryId);
 
+    void remove(PostTopic postTopic);
 }
