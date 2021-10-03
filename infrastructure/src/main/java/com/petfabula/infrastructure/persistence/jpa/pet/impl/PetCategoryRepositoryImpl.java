@@ -6,6 +6,8 @@ import com.petfabula.infrastructure.persistence.jpa.pet.repository.PetCategoryJp
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public class PetCategoryRepositoryImpl implements PetCategoryRepository {
 
@@ -25,5 +27,10 @@ public class PetCategoryRepositoryImpl implements PetCategoryRepository {
     @Override
     public PetCategory findByName(String name) {
         return petCategoryJpaRepository.findByName(name);
+    }
+
+    @Override
+    public List<PetCategory> findAll() {
+        return petCategoryJpaRepository.findAll();
     }
 }

@@ -21,5 +21,4 @@ public class PostCreateListener {
         searchService.index(searchItem);
     }
 
-
 }

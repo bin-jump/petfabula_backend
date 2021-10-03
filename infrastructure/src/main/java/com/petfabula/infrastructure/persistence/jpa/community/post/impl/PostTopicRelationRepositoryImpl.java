@@ -45,6 +45,16 @@ public class PostTopicRelationRepositoryImpl implements PostTopicRelationReposit
     }
 
     @Override
+    public void removeByTopicId(Long topicId) {
+        postTopicRelationJpaRepository.removeByTopicId(topicId);
+    }
+
+    @Override
+    public void removeByTopicCategoryId(Long topicCategoryId) {
+        postTopicRelationJpaRepository.removeByTopicCategoryId(topicCategoryId);
+    }
+
+    @Override
     public CursorPage<Post> findPostsByTopic(Long topicId, Long cursor, int size) {
         Specification<PostTopicRelation> spec = new Specification<PostTopicRelation>() {
             @Override

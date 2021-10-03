@@ -21,6 +21,10 @@ import com.petfabula.domain.aggregate.community.question.repository.QuestionRepo
 import com.petfabula.domain.aggregate.document.entity.ApplicationDocument;
 import com.petfabula.domain.aggregate.notification.entity.SystemNotification;
 import com.petfabula.domain.aggregate.notification.respository.SystemNotificationRepository;
+import com.petfabula.domain.aggregate.pet.entity.PetBreed;
+import com.petfabula.domain.aggregate.pet.entity.PetCategory;
+import com.petfabula.domain.aggregate.pet.respository.PetBreedRepository;
+import com.petfabula.domain.aggregate.pet.respository.PetCategoryRepository;
 import com.petfabula.domain.common.paging.JumpableOffsetPage;
 import com.petfabula.domain.exception.NotFoundException;
 import com.petfabula.presentation.facade.assembler.administration.FeedbackAssembler;
@@ -28,6 +32,7 @@ import com.petfabula.presentation.facade.assembler.administration.ReportAssemble
 import com.petfabula.presentation.facade.assembler.community.*;
 import com.petfabula.presentation.facade.assembler.document.ApplicationDocumentAssembler;
 import com.petfabula.presentation.facade.assembler.notification.SystemNotificationAssembler;
+import com.petfabula.presentation.facade.assembler.pet.PetAssembler;
 import com.petfabula.presentation.facade.dto.AlreadyDeletedResponse;
 import com.petfabula.presentation.facade.dto.administration.FeedbackDto;
 import com.petfabula.presentation.facade.dto.administration.ReportDto;
@@ -35,6 +40,8 @@ import com.petfabula.presentation.facade.dto.administration.UpdateReportStatusRe
 import com.petfabula.presentation.facade.dto.community.*;
 import com.petfabula.presentation.facade.dto.document.ApplicationDocumentDto;
 import com.petfabula.presentation.facade.dto.notification.SystemNotificationDto;
+import com.petfabula.presentation.facade.dto.pet.PetBreedDto;
+import com.petfabula.presentation.facade.dto.pet.PetCategoryDto;
 import com.petfabula.presentation.web.api.OffsetPageData;
 import com.petfabula.presentation.web.api.Response;
 import com.petfabula.presentation.web.security.LoginUtils;
@@ -84,6 +91,9 @@ public class AdminController {
     private ApplicationDocumentAssembler documentAssembler;
 
     @Autowired
+    private PetAssembler petAssembler;
+
+    @Autowired
     private ParticipatorRepository participatorRepository;
 
     @Autowired
@@ -115,6 +125,12 @@ public class AdminController {
 
     @Autowired
     private PostTopicCategoryRepository postTopicCategoryRepository;
+
+    @Autowired
+    private PetCategoryRepository petCategoryRepository;
+
+    @Autowired
+    private PetBreedRepository petBreedRepository;
 
     @GetMapping("reports")
     public Response<OffsetPageData<ReportDto>> getReports(@RequestParam(value = "page") Integer page,
@@ -384,5 +400,42 @@ public class AdminController {
 
         PostTopicCategoryDto topicDto = postTopicAssembler.convertToDto(category);
         return Response.ok(topicDto);
+    }
+
+    @GetMapping("pet-categories")
+    public Response<List<PetCategoryDto>> getPetCategories() {
+        List<PetCategory> categories = petCategoryRepository.findAll();
+        List<PetBreed> breeds = petBreedRepository.findAll();
+
+        List<PetCategoryDto> categoryDtos = petAssembler.convertToPetCategoryDtos(categories);
+        List<PetBreedDto> breedDtos = petAssembler
+                .convertToPetBreedDtos(breeds);
+
+        for(PetCategoryDto categoryDto : categoryDtos) {
+            for(PetBreedDto breedDto : breedDtos) {
+                if (categoryDto.getId().equals(breedDto.getCategoryId())) {
+                    categoryDto.getPetBreeds().add(breedDto);
+                    continue;
+                }
+            }
+        }
+
+        return Response.ok(categoryDtos);
+    }
+
+    @PostMapping("pet-breeds")
+    public Response<PetBreedDto> createPetBreed(@RequestBody @Validated PetBreedDto breedDto) {
+        PetBreed petBreed = administrationApplicationService
+                .createPetBreed(breedDto.getCategoryId(), breedDto.getName());
+        breedDto = petAssembler.convertToPetBreedDto(petBreed);
+        return Response.ok(breedDto);
+    }
+
+    @PutMapping("pet-breeds")
+    public Response<PetBreedDto> updatePetBreed(@RequestBody @Validated PetBreedDto breedDto) {
+        PetBreed petBreed = administrationApplicationService
+                .updatePetBreed(breedDto.getId(), breedDto.getName());
+        breedDto = petAssembler.convertToPetBreedDto(petBreed);
+        return Response.ok(breedDto);
     }
 }

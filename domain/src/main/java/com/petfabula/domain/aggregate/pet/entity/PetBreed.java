@@ -1,6 +1,7 @@
 package com.petfabula.domain.aggregate.pet.entity;
 
 import com.petfabula.domain.common.domain.EntityBase;
+import com.petfabula.domain.common.validation.EntityValidationUtils;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -32,4 +33,8 @@ public class PetBreed extends EntityBase {
     @Column(name = "name", nullable = false)
     private String name;
 
+    public void setName(String title) {
+        EntityValidationUtils.validStringLength("name", title, 1, 20);
+        this.name = title;
+    }
 }

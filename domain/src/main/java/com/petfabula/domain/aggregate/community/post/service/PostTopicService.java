@@ -1,11 +1,13 @@
-package com.petfabula.domain.aggregate.administration.service;
+package com.petfabula.domain.aggregate.community.post.service;
 
 import com.petfabula.domain.aggregate.community.post.entity.PostTopic;
 import com.petfabula.domain.aggregate.community.post.entity.PostTopicCategory;
+import com.petfabula.domain.aggregate.community.post.event.TopicCategoryRemovedEvent;
+import com.petfabula.domain.aggregate.community.post.event.TopicRemovedEvent;
 import com.petfabula.domain.aggregate.community.post.repository.PostTopicCategoryRepository;
 import com.petfabula.domain.aggregate.community.post.repository.PostTopicRepository;
-import com.petfabula.domain.aggregate.community.post.service.PostIdGenerator;
 import com.petfabula.domain.common.CommonMessageKeys;
+import com.petfabula.domain.common.domain.DomainEventPublisher;
 import com.petfabula.domain.exception.InvalidOperationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,9 @@ public class PostTopicService {
 
     @Autowired
     private PostIdGenerator idGenerator;
+
+    @Autowired
+    private DomainEventPublisher domainEventPublisher;
 
     public PostTopic createTopic(Long topicCategoryId, String title) {
         PostTopicCategory category = postTopicCategoryRepository.findById(topicCategoryId);
@@ -77,6 +82,8 @@ public class PostTopicService {
         }
 
         topicRepository.remove(topic);
+
+        domainEventPublisher.publish(new TopicRemovedEvent(topic));
         return topic;
     }
 
@@ -88,6 +95,8 @@ public class PostTopicService {
 
         postTopicCategoryRepository.remove(category);
         topicRepository.removeByCategoryId(topicCategoryId);
+
+        domainEventPublisher.publish(new TopicCategoryRemovedEvent(category));
         return category;
     }
 }

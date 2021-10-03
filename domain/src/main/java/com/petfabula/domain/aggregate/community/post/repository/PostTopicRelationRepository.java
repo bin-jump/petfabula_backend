@@ -13,6 +13,10 @@ public interface PostTopicRelationRepository {
 
     void remove(PostTopicRelation postTopicRelation);
 
+    void removeByTopicId(Long topicId);
+
+    void removeByTopicCategoryId(Long topicCategoryId);
+
     CursorPage<Post> findPostsByTopic(Long topicId, Long cursor, int size);
 
     CursorPage<Post> findPostsByTopicCategory(Long topicCategoryId, Long cursor, int size);

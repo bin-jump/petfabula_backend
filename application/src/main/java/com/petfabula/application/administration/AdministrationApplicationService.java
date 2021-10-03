@@ -3,7 +3,7 @@ package com.petfabula.application.administration;
 import com.petfabula.domain.aggregate.administration.entity.Feedback;
 import com.petfabula.domain.aggregate.administration.entity.Report;
 import com.petfabula.domain.aggregate.administration.service.FeedbackService;
-import com.petfabula.domain.aggregate.administration.service.PostTopicService;
+import com.petfabula.domain.aggregate.community.post.service.PostTopicService;
 import com.petfabula.domain.aggregate.administration.service.ReportService;
 import com.petfabula.domain.aggregate.community.post.entity.Post;
 import com.petfabula.domain.aggregate.community.post.entity.PostTopic;
@@ -18,6 +18,8 @@ import com.petfabula.domain.aggregate.community.question.service.AnswerService;
 import com.petfabula.domain.aggregate.community.question.service.QuestionService;
 import com.petfabula.domain.aggregate.notification.entity.SystemNotification;
 import com.petfabula.domain.aggregate.notification.service.SystemNotificationService;
+import com.petfabula.domain.aggregate.pet.entity.PetBreed;
+import com.petfabula.domain.aggregate.pet.service.PetBreedService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,6 +56,9 @@ public class AdministrationApplicationService {
 
     @Autowired
     private PostTopicService postTopicService;
+
+    @Autowired
+    private PetBreedService petBreedService;
 
     @Transactional
     public Feedback createFeedback(Long reporterId, String content) {
@@ -149,5 +154,15 @@ public class AdministrationApplicationService {
     @Transactional
     public PostTopicCategory removeTopicCategory(Long topicCategoryId) {
         return postTopicService.removeTopicCategory(topicCategoryId);
+    }
+
+    @Transactional
+    public PetBreed createPetBreed(Long categoryId, String name) {
+        return petBreedService.create(categoryId, name);
+    }
+
+    @Transactional
+    public PetBreed updatePetBreed(Long breedId, String name) {
+        return petBreedService.update(breedId, name);
     }
 }

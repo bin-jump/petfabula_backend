@@ -6,21 +6,19 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class PetBreedDto {
+public class PetCategoryDto {
 
     private Long id;
 
-    @NotNull
-    private Long categoryId;
-
-    private String category;
-
     @NotEmpty
     private String name;
+
+    List<PetBreedDto> petBreeds = new ArrayList<>();
 }
