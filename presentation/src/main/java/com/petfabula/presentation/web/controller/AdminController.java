@@ -19,6 +19,10 @@ import com.petfabula.domain.aggregate.community.question.entity.Question;
 import com.petfabula.domain.aggregate.community.question.repository.AnswerRepository;
 import com.petfabula.domain.aggregate.community.question.repository.QuestionRepository;
 import com.petfabula.domain.aggregate.document.entity.ApplicationDocument;
+import com.petfabula.domain.aggregate.identity.entity.City;
+import com.petfabula.domain.aggregate.identity.entity.Prefecture;
+import com.petfabula.domain.aggregate.identity.repository.CityRepository;
+import com.petfabula.domain.aggregate.identity.repository.PrefectureRepository;
 import com.petfabula.domain.aggregate.notification.entity.SystemNotification;
 import com.petfabula.domain.aggregate.notification.respository.SystemNotificationRepository;
 import com.petfabula.domain.aggregate.pet.entity.PetBreed;
@@ -31,6 +35,7 @@ import com.petfabula.presentation.facade.assembler.administration.FeedbackAssemb
 import com.petfabula.presentation.facade.assembler.administration.ReportAssembler;
 import com.petfabula.presentation.facade.assembler.community.*;
 import com.petfabula.presentation.facade.assembler.document.ApplicationDocumentAssembler;
+import com.petfabula.presentation.facade.assembler.identity.CityAssembler;
 import com.petfabula.presentation.facade.assembler.notification.SystemNotificationAssembler;
 import com.petfabula.presentation.facade.assembler.pet.PetAssembler;
 import com.petfabula.presentation.facade.dto.AlreadyDeletedResponse;
@@ -39,6 +44,8 @@ import com.petfabula.presentation.facade.dto.administration.ReportDto;
 import com.petfabula.presentation.facade.dto.administration.UpdateReportStatusRequest;
 import com.petfabula.presentation.facade.dto.community.*;
 import com.petfabula.presentation.facade.dto.document.ApplicationDocumentDto;
+import com.petfabula.presentation.facade.dto.identity.CityDto;
+import com.petfabula.presentation.facade.dto.identity.PrefectureDto;
 import com.petfabula.presentation.facade.dto.notification.SystemNotificationDto;
 import com.petfabula.presentation.facade.dto.pet.PetBreedDto;
 import com.petfabula.presentation.facade.dto.pet.PetCategoryDto;
@@ -94,6 +101,9 @@ public class AdminController {
     private PetAssembler petAssembler;
 
     @Autowired
+    private CityAssembler cityAssembler;
+
+    @Autowired
     private ParticipatorRepository participatorRepository;
 
     @Autowired
@@ -131,6 +141,12 @@ public class AdminController {
 
     @Autowired
     private PetBreedRepository petBreedRepository;
+
+    @Autowired
+    private CityRepository cityRepository;
+
+    @Autowired
+    private PrefectureRepository prefectureRepository;
 
     @GetMapping("reports")
     public Response<OffsetPageData<ReportDto>> getReports(@RequestParam(value = "page") Integer page,
@@ -437,5 +453,42 @@ public class AdminController {
                 .updatePetBreed(breedDto.getId(), breedDto.getName());
         breedDto = petAssembler.convertToPetBreedDto(petBreed);
         return Response.ok(breedDto);
+    }
+
+    @GetMapping("prefectures")
+    public Response<List<PrefectureDto>> getPrefectures() {
+        List<Prefecture> prefectures = prefectureRepository.findAll();
+        List<City> cities = cityRepository.findAll();
+
+        List<PrefectureDto> prefectureDtos = cityAssembler.convertToPrefectureDtos(prefectures);
+        List<CityDto> cityDtos = cityAssembler
+                .convertToDtos(cities);
+
+        for(CityDto cityDto : cityDtos) {
+            for(PrefectureDto prefectureDto : prefectureDtos) {
+                if (prefectureDto.getId().equals(cityDto.getPrefectureId())) {
+                    prefectureDto.getCities().add(cityDto);
+                    continue;
+                }
+            }
+        }
+
+        return Response.ok(prefectureDtos);
+    }
+
+    @PostMapping("cities")
+    public Response<CityDto> createCity(@RequestBody @Validated CityDto cityDto) {
+        City city = administrationApplicationService
+                .createCity(cityDto.getPrefectureId(), cityDto.getName());
+        cityDto = cityAssembler.convertToDto(city);
+        return Response.ok(cityDto);
+    }
+
+    @PutMapping("cities")
+    public Response<CityDto> updateCity(@RequestBody @Validated CityDto cityDto) {
+        City city = administrationApplicationService
+                .updateCity(cityDto.getId(), cityDto.getName());
+        cityDto = cityAssembler.convertToDto(city);
+        return Response.ok(cityDto);
     }
 }

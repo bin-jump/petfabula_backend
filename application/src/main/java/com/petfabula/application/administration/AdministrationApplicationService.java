@@ -16,6 +16,8 @@ import com.petfabula.domain.aggregate.community.question.repository.AnswerReposi
 import com.petfabula.domain.aggregate.community.question.repository.QuestionRepository;
 import com.petfabula.domain.aggregate.community.question.service.AnswerService;
 import com.petfabula.domain.aggregate.community.question.service.QuestionService;
+import com.petfabula.domain.aggregate.identity.entity.City;
+import com.petfabula.domain.aggregate.identity.service.CityService;
 import com.petfabula.domain.aggregate.notification.entity.SystemNotification;
 import com.petfabula.domain.aggregate.notification.service.SystemNotificationService;
 import com.petfabula.domain.aggregate.pet.entity.PetBreed;
@@ -59,6 +61,9 @@ public class AdministrationApplicationService {
 
     @Autowired
     private PetBreedService petBreedService;
+
+    @Autowired
+    private CityService cityService;
 
     @Transactional
     public Feedback createFeedback(Long reporterId, String content) {
@@ -164,5 +169,15 @@ public class AdministrationApplicationService {
     @Transactional
     public PetBreed updatePetBreed(Long breedId, String name) {
         return petBreedService.update(breedId, name);
+    }
+
+    @Transactional
+    public City createCity(Long prefectureId, String name) {
+        return cityService.createCity(prefectureId, name);
+    }
+
+    @Transactional
+    public City updateCity(Long cityId, String name) {
+        return cityService.updateCity(cityId, name);
     }
 }

@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface CityRepository {
 
-    City findByName(String name);
+    City findByPrefectureIdAndName(Long prefectureId, String name);
 
     City findById(Long id);
 
@@ -15,4 +15,6 @@ public interface CityRepository {
     List<City> findByPrefectureId(Long prefectureId);
 
     City save(City city);
+
+    void remove(City city);
 }

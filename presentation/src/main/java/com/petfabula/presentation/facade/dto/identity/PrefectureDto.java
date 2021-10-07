@@ -6,21 +6,19 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CityDto {
+public class PrefectureDto {
 
     private Long id;
 
     @NotEmpty
     private String name;
 
-    private String prefectureName;
-
-    @NotNull
-    private Long prefectureId;
+    private List<CityDto> cities = new ArrayList<>();
 }

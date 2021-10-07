@@ -7,6 +7,7 @@ import com.petfabula.domain.aggregate.community.participator.repository.Particip
 import com.petfabula.domain.aggregate.identity.entity.City;
 import com.petfabula.domain.aggregate.identity.entity.UserAccount;
 import com.petfabula.domain.aggregate.identity.repository.CityRepository;
+import com.petfabula.domain.aggregate.identity.repository.PrefectureRepository;
 import com.petfabula.domain.aggregate.identity.repository.UserAccountRepository;
 import com.petfabula.domain.aggregate.notification.entity.NotificationReceiver;
 import com.petfabula.domain.aggregate.notification.respository.NotificationReceiverRepository;

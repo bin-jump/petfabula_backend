@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CityJpaRepository extends JpaRepository<City, Long> {
 
-    City findByName(String name);
+    City findByPrefectureIdAndName(Long prefectureId, String name);
 }

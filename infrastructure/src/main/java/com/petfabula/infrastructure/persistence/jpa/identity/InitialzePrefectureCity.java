@@ -72,7 +72,8 @@ public class InitialzePrefectureCity implements ApplicationRunner {
 
             Long prefectureId = prefecture.getId();
             for (String cityName : entry.getValue()) {
-                City city = cityRepository.findByName(cityName);
+                City city = cityRepository
+                        .findByPrefectureIdAndName(prefectureId, cityName);
                 if (city == null) {
                     city = new City(idGenerator.nextId(), cityName,
                             prefecture.getName(), prefectureId);

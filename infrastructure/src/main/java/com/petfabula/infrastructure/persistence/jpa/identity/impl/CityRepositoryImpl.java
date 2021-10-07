@@ -15,8 +15,8 @@ public class CityRepositoryImpl implements CityRepository {
     private CityJpaRepository cityJpaRepository;
 
     @Override
-    public City findByName(String name) {
-        return cityJpaRepository.findByName(name);
+    public City findByPrefectureIdAndName(Long prefectureId, String name) {
+        return cityJpaRepository.findByPrefectureIdAndName(prefectureId, name);
     }
 
     @Override
@@ -37,5 +37,10 @@ public class CityRepositoryImpl implements CityRepository {
     @Override
     public City save(City city) {
         return cityJpaRepository.save(city);
+    }
+
+    @Override
+    public void remove(City city) {
+        cityJpaRepository.delete(city);
     }
 }
