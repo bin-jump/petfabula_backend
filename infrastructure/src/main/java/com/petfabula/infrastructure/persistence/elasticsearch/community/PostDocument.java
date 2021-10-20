@@ -42,6 +42,7 @@ public class PostDocument {
     }
 
     @Id
+    @Field
     private Long id;
 
     @Field(type = FieldType.Long)

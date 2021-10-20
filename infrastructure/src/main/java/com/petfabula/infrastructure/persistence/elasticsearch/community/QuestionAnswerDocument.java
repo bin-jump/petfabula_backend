@@ -1,12 +1,12 @@
 package com.petfabula.infrastructure.persistence.elasticsearch.community;
 
 import com.petfabula.domain.aggregate.community.question.QuestionAnswerSearchItem;
-import com.petfabula.domain.common.search.SearchImageItem;
 import com.petfabula.infrastructure.persistence.elasticsearch.ImageDocument;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.elasticsearch.common.Nullable;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.*;
 
@@ -42,7 +42,11 @@ public class QuestionAnswerDocument {
         return res;
     }
 
+    // Field annotation here is to fix id field creation,
+    // otherwise id field will not be created until a document is inserted
+    // TODO:  a better solution maybe ?
     @Id
+    @Field
     private Long id;
 
     @Field(type = FieldType.Long)

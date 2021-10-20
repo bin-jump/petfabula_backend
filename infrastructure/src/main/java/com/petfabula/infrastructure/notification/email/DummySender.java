@@ -5,7 +5,7 @@ import com.petfabula.domain.aggregate.identity.service.email.SendEmailRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-@Component
+//@Component
 @Slf4j
 public class DummySender implements EmailSender {
 

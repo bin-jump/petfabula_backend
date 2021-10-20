@@ -52,12 +52,6 @@ public class IdentityController {
         return Response.ok(userAccountDto);
     }
 
-    @GetMapping("user-agreement")
-    public Response<UserAgreementDto> userAgreement() {
-        UserAgreementDto res = new UserAgreementDto("User Agreement", "User agreement content");
-        return Response.ok(res);
-    }
-
     // for local development
     @GetMapping("oauth-redirect")
     public void oauthRedirect(Device device,
@@ -65,8 +59,9 @@ public class IdentityController {
                               HttpServletResponse response) throws IOException {
         String q = request.getQueryString();
         q = q == null ? "" : "?" + q;
-        String redirectPrefix = device.isMobile() ?
-                authenticationProps.getMobileRedirect() : authenticationProps.getWebRedirect();
+//        String redirectPrefix = device.isMobile() ?
+//                authenticationProps.getMobileRedirect() : authenticationProps.getWebRedirect();
+        String redirectPrefix = authenticationProps.getMobileRedirect();
         log.info(String.format("redirect to %s%s", redirectPrefix, q));
         response.sendRedirect(String.format("%s%s", redirectPrefix, q));
     }

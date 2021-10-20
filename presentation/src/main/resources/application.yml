@@ -5,15 +5,11 @@ server:
       timeout: 30d
 
 app:
-  auth:
-    signSecret: ${AUTH_JWT_SECRET}
+  authentication:
     webRedirect: ${AUTH_MOBILE_REDIRECT}
     mobileRedirect: ${AUTH_MOBILE_REDIRECT}
   oauth:
     redirectUrl: ${OAUTH_REDIRECT_URL}
-    github:
-      clientId: ${OAUTH_GITHUB_CLIENTID}
-      clientSerect: ${OAUTH_GITHUB_SERECT}
     google:
       clientId: ${OAUTH_GOOGLE_CLIENTID}
       clientSerect: ${OAUTH_GOOGLE_SERECT}
@@ -21,6 +17,9 @@ app:
 spring:
   application:
     name: petfabula
+
+  profiles:
+    active: dev
 
   servlet:
     multipart:
@@ -36,9 +35,9 @@ spring:
     store-type: redis
 
   datasource:
-    url: jdbc:mysql://localhost:3306/petfabula?useUnicode=true&characterEncoding=utf-8
-    username: root
-    password: rootpass
+    url: ${MYSQL_URL}
+    username: ${MYSQL_USERNAME}
+    password: ${MYSQL_PASSWORD}
     hikari:
       auto-commit: true
       minimum-idle: 2
@@ -56,22 +55,22 @@ spring:
 
   redis:
     database: 0
-    host: localhost
+    host: ${REDIS_HOST}
     port: 6379
     timeout: 60000
 
   data:
     elasticsearch:
       cluster-name: elasticsearch
-      host: localhost
+      host: ${ES_HOST}
       port: 9300
       restport: 9200
 
   mail:
-    host: smtp.gmail.com
-    port: 587
-    username: ${DEV_GMAIL_ADDR}
-    password: ${DEV_GMAIL_PASS}
+    host: ${MAIL_HOST}
+    port: ${MAIL_PORT}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
     properties:
       mail:
         smtp:
@@ -80,17 +79,10 @@ spring:
           starttls:
             enable: true
           ssl:
-            trust: smtp.gmail.com
+            trust: ${MAIL_HOST}
 
-
-#ftp:
-#  host: 127.0.0.1
-#  port: 21
-#  username: ftpuser
-#  password: ftpuser
-#  filepath: /images
 upload:
-  imageUrl: http://localhost:80/upload
+  imageUrl: ${UPLOAD_URL}
 
 image:
-  contentUrl: http://192.168.0.199/images
+  contentUrl: ${IMAGE_URL_PREFIX}

@@ -94,6 +94,9 @@ public class Pet extends ConcurrentEntity {
     @Column(name = "bio", length = 500)
     private String bio;
 
+    @Column(name = "neuter")
+    private Boolean neuter;
+
     @Column(name = "feed_record_count", nullable = false)
     private Integer feedRecordCount;
 

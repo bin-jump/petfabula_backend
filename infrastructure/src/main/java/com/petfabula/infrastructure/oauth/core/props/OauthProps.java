@@ -19,9 +19,6 @@ public class OauthProps {
     private String redirectUrl;
 
     @NotNull
-    private ClientIdAndSerect github;
-
-    @NotNull
     private ClientIdAndSerect google;
 
     private ClientIdAndSerect facebook;
