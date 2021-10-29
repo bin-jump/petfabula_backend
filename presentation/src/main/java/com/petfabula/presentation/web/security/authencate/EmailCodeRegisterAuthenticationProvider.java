@@ -49,6 +49,6 @@ public class EmailCodeRegisterAuthenticationProvider implements AuthenticationPr
 
     @Override
     public boolean supports(Class<?> aClass) {
-        return aClass.equals(EmailCodeAuthenticationToken.class);
+        return aClass.equals(EmailCodeRegisterAuthenticationToken.class);
     }
 }

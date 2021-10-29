@@ -10,7 +10,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 
-@Component
+//@Component
 @Slf4j
 public class EmailSenderImpl implements EmailSender {
 

@@ -1,6 +1,7 @@
 package com.petfabula.presentation.web.security.filter;
 
 import com.petfabula.presentation.web.security.authencate.EmailCodeAuthenticationToken;
+import com.petfabula.presentation.web.security.authencate.EmailCodeRegisterAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
@@ -35,7 +36,7 @@ public class EmailCodeRegisterAndAuthenticationFilter extends AbstractAuthentica
             String email = httpServletRequest.getParameter("email");
             String name = httpServletRequest.getParameter("name");
             String code = httpServletRequest.getParameter("code");
-            EmailCodeAuthenticationToken authRequest = new EmailCodeAuthenticationToken(email, code);
+            EmailCodeRegisterAuthenticationToken authRequest = new EmailCodeRegisterAuthenticationToken(email, code, name);
             return this.getAuthenticationManager().authenticate(authRequest);
         }
     }
