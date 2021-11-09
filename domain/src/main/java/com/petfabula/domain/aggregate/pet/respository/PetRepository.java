@@ -10,7 +10,7 @@ public interface PetRepository {
 
     Pet findById(Long id);
 
-    Pet findByName(String name);
+    Pet findByFeederIdAndName(Long feederId, String name);
 
     List<Pet> findByFeederId(Long id);
 

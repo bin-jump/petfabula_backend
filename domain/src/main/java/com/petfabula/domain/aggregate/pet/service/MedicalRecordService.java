@@ -45,8 +45,14 @@ public class MedicalRecordService {
             throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
         }
 
+        dateTime = RecordHelper.removeSecondInfo(dateTime);
+        MedicalRecord record = medicalRecordRepository.findByPetIdAndDateTime(petId, dateTime);
+        if (record != null) {
+            throw new InvalidOperationException(CommonMessageKeys.RECORD_ALREADY_EXISTS);
+        }
+
         Long id = idGenerator.nextId();
-        MedicalRecord record = new MedicalRecord(id, petId, hospitalName, symptom,
+        record = new MedicalRecord(id, petId, hospitalName, symptom,
                 diagnosis, treatment, dateTime, note);
 
         List<String> imagePathes = imageRepository.save(images);
@@ -79,6 +85,14 @@ public class MedicalRecordService {
 
         if (!record.getPetId().equals(petId)) {
             throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
+        }
+
+        dateTime = RecordHelper.removeSecondInfo(dateTime);
+        if (!dateTime.equals(record.getDateTime())) {
+            MedicalRecord sameTime = medicalRecordRepository.findByPetIdAndDateTime(petId, dateTime);
+            if (sameTime != null) {
+                throw new InvalidOperationException(CommonMessageKeys.RECORD_ALREADY_EXISTS);
+            }
         }
 
         record.setHospitalName(hospitalName);

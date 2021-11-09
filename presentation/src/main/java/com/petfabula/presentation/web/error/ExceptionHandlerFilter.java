@@ -33,7 +33,7 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         } catch (HttpMessageNotReadableException | SignatureVerificationException ex) {
             ex.printStackTrace();
-            Response res = Response.failed(Response.ResponseCode.BAD_REQUEST);
+            Response res = Response.failed(Response.ResponseCode.INVALID_OPERATION);
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().write(objectMapper.writeValueAsString(res));
 

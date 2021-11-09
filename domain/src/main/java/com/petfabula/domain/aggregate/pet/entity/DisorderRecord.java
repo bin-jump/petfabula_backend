@@ -19,7 +19,7 @@ import java.util.List;
 @Getter
 @Entity
 @Table(name = "pet_disorder_record",
-        indexes = {@Index(columnList = "pet_id, date_time")})
+        indexes = {@Index(columnList = "pet_id, date_time, delete_at", unique = true)})
 public class DisorderRecord extends GeneralEntity {
 
     public DisorderRecord(Long id, Long petId, Instant dateTime, String disorderType, String content) {

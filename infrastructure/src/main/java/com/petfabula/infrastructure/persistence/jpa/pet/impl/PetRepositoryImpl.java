@@ -31,8 +31,8 @@ public class PetRepositoryImpl implements PetRepository {
     @Transactional
     @FilterSoftDelete
     @Override
-    public Pet findByName(String name) {
-        return petJpaRepository.findByName(name);
+    public Pet findByFeederIdAndName(Long feederId, String name) {
+        return petJpaRepository.findByFeederIdAndName(feederId, name);
     }
 
     @Transactional

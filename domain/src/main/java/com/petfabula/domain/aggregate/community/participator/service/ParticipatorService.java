@@ -68,7 +68,7 @@ public class ParticipatorService {
 
     public ParticipatorPet removePet(Long petId) {
         ParticipatorPet pet = participatorPetRepository.findById(petId);
-        if (pet == null) {
+        if (pet != null) {
             participatorPetRepository.remove(pet);
         }
         return pet;

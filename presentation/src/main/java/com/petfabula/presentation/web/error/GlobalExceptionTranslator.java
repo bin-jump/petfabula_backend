@@ -83,8 +83,9 @@ public class GlobalExceptionTranslator {
     public Response handleInvalidOperationException(InvalidOperationException ex, HttpServletRequest request) {
         ex.printStackTrace();
         log.error(ex.toString());
-        Response res = Response.failed(Response.ResponseCode.BAD_REQUEST);
+        Response res = Response.failed(Response.ResponseCode.INVALID_OPERATION);
         //res.setMessage(ex.getMessage());
+        res.setMessage(messageSource.getMessage(ex.getMessage(), null, LocaleContextHolder.getLocale()));
 
         return res;
     }
@@ -107,7 +108,7 @@ public class GlobalExceptionTranslator {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Response handleIllegalArgumentException(IllegalArgumentException ex) {
         log.error(ex.toString());
-        Response res = Response.failed(Response.ResponseCode.BAD_REQUEST);
+        Response res = Response.failed(Response.ResponseCode.INVALID_OPERATION);
 
         return res;
     }

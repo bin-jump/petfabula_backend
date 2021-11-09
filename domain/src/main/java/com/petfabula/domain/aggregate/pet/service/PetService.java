@@ -47,7 +47,7 @@ public class PetService {
             throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
         }
 
-        Pet pet = petRepository.findByName(name);
+        Pet pet = petRepository.findByFeederIdAndName(feederId, name);
         if (pet != null) {
             throw new InvalidValueException("name", CommonMessageKeys.NAME_ALREADY_EXISTS);
         }
@@ -87,6 +87,13 @@ public class PetService {
         PetBreed petBreed = petBreedRepository.findById(breedId);
         if (petBreed == null) {
             throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
+        }
+
+        if (!pet.getName().equals(name)) {
+            Pet sameName = petRepository.findByFeederIdAndName(feederId, name);
+            if (sameName != null) {
+                throw new InvalidValueException("name", CommonMessageKeys.NAME_ALREADY_EXISTS);
+            }
         }
 
         String imageUrl = pet.getPhoto();

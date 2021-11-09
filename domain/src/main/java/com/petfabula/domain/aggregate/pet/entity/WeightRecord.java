@@ -17,7 +17,7 @@ import java.time.Instant;
 @Getter
 @Entity
 @Table(name = "pet_weight_record",
-        indexes = {@Index(columnList = "pet_id, date_time")})
+        indexes = {@Index(columnList = "pet_id, date_time, delete_at", unique = true)})
 public class WeightRecord extends GeneralEntity {
 
     public WeightRecord(Long id, Long petId, Instant dateTime, Integer weight) {

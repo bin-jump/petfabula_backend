@@ -16,6 +16,7 @@ import com.petfabula.presentation.facade.dto.pet.*;
 import com.petfabula.presentation.web.api.CursorPageData;
 import com.petfabula.presentation.web.api.Response;
 import com.petfabula.presentation.web.security.LoginUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -23,9 +24,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.websocket.server.PathParam;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -201,7 +202,7 @@ public class PetController {
         return Response.ok(weightRecordDto);
     }
 
-    @PostMapping("/disorderrecords")
+    @PostMapping("disorderrecords")
     public Response<DisorderRecordDto> createDisorderRecord(@RequestPart(name = "record") @Validated DisorderRecordDto disorderRecordDto,
                                                             @RequestPart(value = "images", required = false) List<MultipartFile> images) throws IOException {
         Long userId = LoginUtils.currentUserId();
@@ -225,7 +226,7 @@ public class PetController {
         return Response.ok(disorderRecordDto);
     }
 
-    @PostMapping("/peteventrecords")
+    @PostMapping("peteventrecords")
     public Response<PetEventRecordDto> createPetEventRecord(@RequestPart(name = "record") @Validated PetEventRecordDto recordDto,
                                                             @RequestPart(value = "images", required = false) List<MultipartFile> images) throws IOException {
         Long userId = LoginUtils.currentUserId();
@@ -287,6 +288,24 @@ public class PetController {
                         records.getPageSize(), records.getNextCursor());
 
         res.getResult().stream().forEach(item -> item.setPet(petAssembler.convertToDto(pet)));
+        return Response.ok(res);
+    }
+
+    @GetMapping("pets/{petId}/recent-feed-records")
+    public Response<List<FeedRecordDto>> getRecentFeedRecords(@PathVariable("petId") Long petId) {
+        Pet pet = petRepository.findById(petId);
+        if (pet == null) {
+            throw new NotFoundException(petId, CommonMessageKeys.PET_NOT_FOUND);
+        }
+
+        Date d = new Date();
+        Instant today = DateUtils.truncate(d, Calendar.DATE).toInstant();
+        Instant start = today.minus(7, ChronoUnit.DAYS);
+
+        List<FeedRecord> records = feedRecordRepository.findByPetIdAndAfter(petId, start, 200);
+        List<FeedRecordDto> res = feedRecordAssember.convertToDtos(records);
+
+        res.stream().forEach(item -> item.setPet(petAssembler.convertToDto(pet)));
         return Response.ok(res);
     }
 
@@ -354,7 +373,7 @@ public class PetController {
         return Response.ok(res);
     }
 
-    @PutMapping("/disorderrecords")
+    @PutMapping("disorderrecords")
     public Response<DisorderRecordDto> updateDisorderRecord(@RequestPart(name = "record") @Validated DisorderRecordDto disorderRecordDto,
                                                             @RequestPart(value = "images", required = false) List<MultipartFile> images) throws IOException {
         Long userId = LoginUtils.currentUserId();
@@ -380,7 +399,7 @@ public class PetController {
         return Response.ok(disorderRecordDto);
     }
 
-    @PutMapping("/feedrecords")
+    @PutMapping("feedrecords")
     public Response<FeedRecordDto> updateFeedRecord(@RequestBody @Validated FeedRecordDto recordDto) {
         Long userId = LoginUtils.currentUserId();
         FeedRecord record = petApplicationService
@@ -420,7 +439,7 @@ public class PetController {
         return Response.ok(recordDto);
     }
 
-    @PutMapping("/peteventrecords")
+    @PutMapping("peteventrecords")
     public Response<PetEventRecordDto> updatePetEventRecord(@RequestPart(name = "record") @Validated PetEventRecordDto recordDto,
                                                             @RequestPart(value = "images", required = false) List<MultipartFile> images) throws IOException {
         Long userId = LoginUtils.currentUserId();
@@ -446,7 +465,7 @@ public class PetController {
         return Response.ok(recordDto);
     }
 
-    @PutMapping("/weightrecords")
+    @PutMapping("weightrecords")
     public Response<WeightRecordDto> updateWeightRecord(@Validated @RequestBody WeightRecordDto recordDto) {
         Long userId = LoginUtils.currentUserId();
 
@@ -459,7 +478,7 @@ public class PetController {
         return Response.ok(recordDto);
     }
 
-    @DeleteMapping("/disorderrecords/{recordId}")
+    @DeleteMapping("disorderrecords/{recordId}")
     public Response<Object> removeDisorderRecord(@PathVariable("recordId") Long recordId) {
         Long userId = LoginUtils.currentUserId();
         DisorderRecord record = petApplicationService.removeDisorderRecord(userId, recordId);
@@ -470,7 +489,7 @@ public class PetController {
         return Response.ok(res);
     }
 
-    @DeleteMapping("/feedrecords/{recordId}")
+    @DeleteMapping("feedrecords/{recordId}")
     public Response<Object> removeFeedRecord(@PathVariable("recordId") Long recordId) {
         Long userId = LoginUtils.currentUserId();
         FeedRecord record = petApplicationService.removeFeedRecord(userId, recordId);
@@ -481,7 +500,7 @@ public class PetController {
         return Response.ok(res);
     }
 
-    @DeleteMapping("/medicalrecords/{recordId}")
+    @DeleteMapping("medicalrecords/{recordId}")
     public Response<Object> removeMedicalRecord(@PathVariable("recordId") Long recordId) {
         Long userId = LoginUtils.currentUserId();
         MedicalRecord record = petApplicationService.removeMedicalRecord(userId, recordId);
@@ -492,7 +511,7 @@ public class PetController {
         return Response.ok(res);
     }
 
-    @DeleteMapping("/peteventrecords/{recordId}")
+    @DeleteMapping("peteventrecords/{recordId}")
     public Response<Object> removePetEventRecord(@PathVariable("recordId") Long recordId) {
         Long userId = LoginUtils.currentUserId();
         PetEventRecord record = petApplicationService.removePetEventRecord(userId, recordId);
@@ -503,7 +522,7 @@ public class PetController {
         return Response.ok(res);
     }
 
-    @DeleteMapping("/weightrecords/{recordId}")
+    @DeleteMapping("weightrecords/{recordId}")
     public Response<Object> removeWeightRecord(@PathVariable("recordId") Long recordId) {
         Long userId = LoginUtils.currentUserId();
         WeightRecord record = petApplicationService.removeWeightRecord(userId, recordId);

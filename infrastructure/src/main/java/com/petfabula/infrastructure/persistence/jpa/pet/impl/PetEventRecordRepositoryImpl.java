@@ -46,6 +46,13 @@ public class PetEventRecordRepositoryImpl implements PetEventRecordRepository {
     @Transactional
     @FilterSoftDelete
     @Override
+    public PetEventRecord findByPetIdAndDateTime(Long petId, Instant dateTime) {
+        return petEventRecordJpaRepository.findByPetIdAndDateTime(petId, dateTime);
+    }
+
+    @Transactional
+    @FilterSoftDelete
+    @Override
     public CursorPage<PetEventRecord> findByPetId(Long petId, Long cursor, int size) {
         String q = "select r.id from PetEventRecord r where (:cursor is null or r.dateTime < :cursor) and r.petId = :petId order by r.dateTime desc";
         List<Long> ids = entityManager.createQuery(q, Long.class)

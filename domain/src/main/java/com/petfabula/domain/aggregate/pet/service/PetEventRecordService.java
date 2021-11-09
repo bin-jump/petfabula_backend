@@ -53,8 +53,14 @@ public class PetEventRecordService {
             throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
         }
 
+        dateTime = RecordHelper.removeSecondInfo(dateTime);
+        PetEventRecord record = petEventRecordRepository.findByPetIdAndDateTime(petId, dateTime);
+        if (record != null) {
+            throw new InvalidOperationException(CommonMessageKeys.RECORD_ALREADY_EXISTS);
+        }
+
         Long id = idGenerator.nextId();
-        PetEventRecord record = new PetEventRecord(id, petId, dateTime, eventType, content);
+        record = new PetEventRecord(id, petId, dateTime, eventType, content);
 
         List<String> imagePathes = imageRepository.save(images);
         for (int i = 0; i < imagePathes.size(); i++) {
@@ -89,6 +95,14 @@ public class PetEventRecordService {
         PetEventType petEventType = petEventTypeRepository.findByEventType(eventType);
         if (petEventType == null) {
             throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
+        }
+
+        dateTime = RecordHelper.removeSecondInfo(dateTime);
+        if (!dateTime.equals(record.getDateTime())) {
+            PetEventRecord sameTime = petEventRecordRepository.findByPetIdAndDateTime(petId, dateTime);
+            if (sameTime != null) {
+                throw new InvalidOperationException(CommonMessageKeys.RECORD_ALREADY_EXISTS);
+            }
         }
 
         record.setContent(content);

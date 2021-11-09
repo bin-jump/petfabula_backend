@@ -29,8 +29,14 @@ public class FeedRecordService {
             throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
         }
 
+        dateTime = RecordHelper.removeSecondInfo(dateTime);
+        FeedRecord record = feedRecordRepository.findByPetIdAndDateTime(petId, dateTime);
+        if (record != null) {
+            throw new InvalidOperationException(CommonMessageKeys.RECORD_ALREADY_EXISTS);
+        }
+
         Long id = idGenerator.nextId();
-        FeedRecord record = new FeedRecord(id, petId, dateTime, foodContent, amount, note);
+        record = new FeedRecord(id, petId, dateTime, foodContent, amount, note);
 
         pet.setFeedRecordCount(pet.getFeedRecordCount() + 1);
         petRepository.save(pet);
@@ -52,6 +58,14 @@ public class FeedRecordService {
 
         if (!record.getPetId().equals(petId)) {
             throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
+        }
+
+        dateTime = RecordHelper.removeSecondInfo(dateTime);
+        if (!dateTime.equals(record.getDateTime())) {
+            FeedRecord sameTime = feedRecordRepository.findByPetIdAndDateTime(petId, dateTime);
+            if (sameTime != null) {
+                throw new InvalidOperationException(CommonMessageKeys.RECORD_ALREADY_EXISTS);
+            }
         }
 
         record.setDateTime(dateTime);

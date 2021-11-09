@@ -45,8 +45,14 @@ public class DisorderRecordService {
             throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
         }
 
+        dateTime = RecordHelper.removeSecondInfo(dateTime);
+        DisorderRecord disorderRecord = disorderRecordRepository.findByPetIdAndDateTime(petId, dateTime);
+        if (disorderRecord != null) {
+            throw new InvalidOperationException(CommonMessageKeys.RECORD_ALREADY_EXISTS);
+        }
+
         Long id = idGenerator.nextId();
-        DisorderRecord disorderRecord = new DisorderRecord(id, petId, dateTime, disorderType, content);
+        disorderRecord = new DisorderRecord(id, petId, dateTime, disorderType, content);
 
         List<String> imagePathes = imageRepository.save(images);
         for (int i = 0; i < imagePathes.size(); i++) {
@@ -77,6 +83,14 @@ public class DisorderRecordService {
 
         if (!record.getPetId().equals(petId)) {
             throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
+        }
+
+        dateTime = RecordHelper.removeSecondInfo(dateTime);
+        if (!dateTime.equals(record.getDateTime())) {
+            DisorderRecord sameTime = disorderRecordRepository.findByPetIdAndDateTime(petId, dateTime);
+            if (sameTime != null) {
+                throw new InvalidOperationException(CommonMessageKeys.RECORD_ALREADY_EXISTS);
+            }
         }
 
         record.setDisorderType(disorderType);

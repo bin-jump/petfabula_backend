@@ -12,6 +12,8 @@ public final class CommonMessageKeys {
 
     public static String NO_OPERATION_ENTITY = PREFIX + "noOperationEntity";
 
+    public static String RECORD_ALREADY_EXISTS = PREFIX + "recordAlreadyExists";
+
     public static String POST_NOT_FOUND = PREFIX + "postNotFound";
 
     public static String PET_NOT_FOUND = PREFIX + "petNotFound";

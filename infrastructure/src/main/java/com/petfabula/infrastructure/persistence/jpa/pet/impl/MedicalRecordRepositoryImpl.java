@@ -46,6 +46,13 @@ public class MedicalRecordRepositoryImpl implements MedicalRecordRepository {
     @Transactional
     @FilterSoftDelete
     @Override
+    public MedicalRecord findByPetIdAndDateTime(Long petId, Instant dateTime) {
+        return medicalRecordJpaRepository.findByPetIdAndDateTime(petId, dateTime);
+    }
+
+    @Transactional
+    @FilterSoftDelete
+    @Override
     public CursorPage<MedicalRecord> findByPetId(Long petId, Long cursor, int size) {
         String q = "select r.id from MedicalRecord r where (:cursor is null or r.dateTime < :cursor) and r.petId = :petId order by r.dateTime desc";
         List<Long> ids = entityManager.createQuery(q, Long.class)

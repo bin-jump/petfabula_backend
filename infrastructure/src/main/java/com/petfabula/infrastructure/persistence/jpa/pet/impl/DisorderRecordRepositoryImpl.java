@@ -46,6 +46,13 @@ public class DisorderRecordRepositoryImpl implements DisorderRecordRepository {
     @Transactional
     @FilterSoftDelete
     @Override
+    public DisorderRecord findByPetIdAndDateTime(Long petId, Instant dateTime) {
+        return disorderRecordJpaRepository.findByPetIdAndDateTime(petId, dateTime);
+    }
+
+    @Transactional
+    @FilterSoftDelete
+    @Override
     public CursorPage<DisorderRecord> findByPetId(Long petId, Long cursor, int size) {
 
         String q = "select r.id from DisorderRecord r where (:cursor is null or r.dateTime < :cursor) and r.petId = :petId order by r.dateTime desc";

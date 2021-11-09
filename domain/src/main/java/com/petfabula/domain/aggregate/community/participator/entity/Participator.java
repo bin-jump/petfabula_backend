@@ -13,7 +13,7 @@ import javax.persistence.Table;
 @Getter
 @Entity
 @Table(name = "participator",
-        indexes = {@Index(name = "name_index",  columnList="name", unique = true)})
+        indexes = {@Index(name = "name_index",  columnList="name")})
 public class Participator extends ConcurrentEntity {
 
     public Participator(Long id, String name, String photo) {

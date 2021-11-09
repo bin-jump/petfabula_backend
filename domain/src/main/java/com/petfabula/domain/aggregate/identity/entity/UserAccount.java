@@ -17,7 +17,7 @@ import java.util.Set;
 @Getter
 @Entity
 @Table(name = "account",
-        indexes = {@Index(name = "name_index",  columnList="name", unique = true)})
+        indexes = {@Index(name = "name_index", columnList="name, delete_at", unique = true)})
 public class UserAccount extends ConcurrentEntity {
 
     public UserAccount(Long id, String name, RegisterEntry registerEntry) {

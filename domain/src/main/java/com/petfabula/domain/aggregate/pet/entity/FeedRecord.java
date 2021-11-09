@@ -18,7 +18,7 @@ import java.time.Instant;
 @Getter
 @Entity
 @Table(name = "pet_feed_record",
-        indexes = {@Index(columnList = "pet_id, date_time")})
+        indexes = {@Index(columnList = "pet_id, date_time, delete_at", unique = true)})
 public class FeedRecord extends GeneralEntity {
 
     public FeedRecord(Long id, Long petId, Instant dateTime, String foodContent, Integer amount, String note) {

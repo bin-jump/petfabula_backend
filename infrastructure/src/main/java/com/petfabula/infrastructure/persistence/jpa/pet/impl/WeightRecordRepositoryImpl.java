@@ -17,6 +17,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.time.Instant;
 
 @Repository
 public class WeightRecordRepositoryImpl implements WeightRecordRepository {
@@ -39,6 +40,13 @@ public class WeightRecordRepositoryImpl implements WeightRecordRepository {
     @Transactional
     @FilterSoftDelete
     @Override
+    public WeightRecord findByPetIdAndDateTime(Long petId, Instant dateTime) {
+        return weightRecordJpaRepository.findByPetIdAndDateTime(petId, dateTime);
+    }
+
+    @Transactional
+    @FilterSoftDelete
+    @Override
     public CursorPage<WeightRecord> findByPetId(Long petId, Long cursor, int size) {
         Specification<WeightRecord> spec = new Specification<WeightRecord>() {
             @Override
@@ -46,7 +54,7 @@ public class WeightRecordRepositoryImpl implements WeightRecordRepository {
                 cq.orderBy(cb.desc(root.get("dateTime")), cb.desc(root.get("id")));
                 Predicate aPred = cb.equal(root.get("petId"), petId);
                 if (cursor != null) {
-                    Predicate cPred = cb.lessThan(root.get("dateTime"), cursor);
+                    Predicate cPred = cb.lessThan(root.get("dateTime"), Instant.ofEpochMilli(cursor));
                     return cb.and(aPred, cPred);
                 }
                 return aPred;
@@ -55,7 +63,8 @@ public class WeightRecordRepositoryImpl implements WeightRecordRepository {
 
         Pageable limit = PageRequest.of(0, size);
         Page<WeightRecord> res = weightRecordJpaRepository.findAll(spec, limit);
-        return CursorPage.of(res.getContent(), res.hasNext(), size);
+        Long cr = res.hasNext() ? res.getContent().get(res.getContent().size() - 1).getDateTime().toEpochMilli() : null;
+        return CursorPage.of(res.getContent(), cr, size);
     }
 
     @Override

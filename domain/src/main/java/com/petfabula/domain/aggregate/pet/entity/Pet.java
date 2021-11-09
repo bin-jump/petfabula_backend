@@ -9,13 +9,15 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Index;
 import javax.persistence.Table;
 import java.time.LocalDate;
 
 @NoArgsConstructor
 @Getter
 @Entity
-@Table(name = "pet")
+@Table(name = "pet",
+        indexes = {@Index(name = "name_index", columnList = "feeder_id, name, delete_at", unique = true)})
 public class Pet extends ConcurrentEntity {
 
     public Pet(Long id, Long feederId, String name, String photo, LocalDate birthday,

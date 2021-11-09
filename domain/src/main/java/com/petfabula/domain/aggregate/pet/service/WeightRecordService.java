@@ -6,10 +6,13 @@ import com.petfabula.domain.aggregate.pet.respository.PetRepository;
 import com.petfabula.domain.aggregate.pet.respository.WeightRecordRepository;
 import com.petfabula.domain.common.CommonMessageKeys;
 import com.petfabula.domain.exception.InvalidOperationException;
+import com.petfabula.domain.exception.InvalidValueException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 @Service
 public class WeightRecordService {
@@ -29,8 +32,14 @@ public class WeightRecordService {
             throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
         }
 
+        dateTime = removeTimeInfo(dateTime);
+        WeightRecord record = weightRecordRepository.findByPetIdAndDateTime(petId, dateTime);
+        if (record != null) {
+            throw new InvalidOperationException(CommonMessageKeys.RECORD_ALREADY_EXISTS);
+        }
+
         Long id = idGenerator.nextId();
-        WeightRecord record = new WeightRecord(id, petId, dateTime, weight);
+        record = new WeightRecord(id, petId, dateTime, weight);
 
         pet.setWeightRecordCount(pet.getWeightRecordCount() + 1);
         petRepository.save(pet);
@@ -51,6 +60,14 @@ public class WeightRecordService {
 
         if (!record.getPetId().equals(petId)) {
             throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
+        }
+
+        dateTime = removeTimeInfo(dateTime);
+        if (!dateTime.equals(record.getDateTime())) {
+            WeightRecord sameTime = weightRecordRepository.findByPetIdAndDateTime(petId, dateTime);
+            if (sameTime != null) {
+                throw new InvalidOperationException(CommonMessageKeys.RECORD_ALREADY_EXISTS);
+            }
         }
 
         record.setDateTime(dateTime);
@@ -75,6 +92,18 @@ public class WeightRecordService {
 
         weightRecordRepository.remove(record);
         return record;
+    }
+
+    private Instant removeTimeInfo(Instant instant) {
+        long timestamp = instant.toEpochMilli();
+        Calendar calendar = GregorianCalendar.getInstance();
+        calendar.setTimeInMillis(timestamp);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
+        return calendar.toInstant();
     }
 
 }
