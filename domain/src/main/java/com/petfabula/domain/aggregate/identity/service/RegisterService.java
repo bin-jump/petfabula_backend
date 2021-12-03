@@ -7,6 +7,8 @@ import com.petfabula.domain.aggregate.identity.entity.EmailPasswordAuthenticatio
 import com.petfabula.domain.aggregate.identity.entity.OauthAuthentication;
 import com.petfabula.domain.aggregate.identity.entity.UserAccount;
 import com.petfabula.domain.aggregate.identity.repository.*;
+import com.petfabula.domain.aggregate.identity.service.oauth.AppleAuthContent;
+import com.petfabula.domain.aggregate.identity.service.oauth.AppleService;
 import com.petfabula.domain.aggregate.identity.service.oauth.OauthResponse;
 import com.petfabula.domain.aggregate.identity.service.oauth.OauthService;
 import com.petfabula.domain.common.domain.DomainEventPublisher;
@@ -41,6 +43,9 @@ public class RegisterService {
 
     @Autowired
     private EmailCodeAuthenticationRepository emailCodeAuthenticationRepository;
+
+    @Autowired
+    private AppleService appleService;
 
     @Autowired
     private DomainEventPublisher domainEventPublisher;
@@ -112,6 +117,7 @@ public class RegisterService {
                     accountService.createUser(response.getUserName(), UserAccount.RegisterEntry.OAUTH);
             oauthAuthentication =
                     new OauthAuthentication(userAccount.getId(), serverName, response.getOauthId());
+
             oauthAuthenticationRepository.save(oauthAuthentication);
 
             domainEventPublisher.publish(
@@ -119,6 +125,28 @@ public class RegisterService {
 
             return userAccount;
         }
+        return userAccountRepository.findById(oauthAuthentication.getId());
+    }
+
+
+    // if user already registered just login
+    public UserAccount registerByAppleLogin(String name, String jwtToken) {
+        AppleAuthContent authContent = appleService.validContentFromJwt(jwtToken);
+
+        OauthAuthentication oauthAuthentication = oauthAuthenticationRepository
+                .findServerNameAndOauthId(AppleService.SERVER_NAME, authContent.getUserId());
+
+        if (oauthAuthentication == null) {
+            UserAccount userAccount =
+                    accountService.createUser(name, UserAccount.RegisterEntry.OAUTH);
+            oauthAuthentication =
+                    new OauthAuthentication(userAccount.getId(), AppleService.SERVER_NAME, authContent.getUserId());
+            oauthAuthenticationRepository.save(oauthAuthentication);
+
+            domainEventPublisher.publish(
+                    new IdentityCreated(userAccount.getId(), userAccount.getName(), userAccount.getEmail()));
+        }
+
         return userAccountRepository.findById(oauthAuthentication.getId());
     }
 

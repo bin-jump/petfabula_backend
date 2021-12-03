@@ -87,6 +87,15 @@ public class IdentityApplicationService {
         return userAccount;
     }
 
+    @Transactional
+    public UserAccount registerByAppleLogin(String name, String jwtToken) {
+        UserAccount userAccount =
+                registerService.registerByAppleLogin(name, jwtToken);
+        eventPublisher
+                .publish(new AccountCreatedEvent(userAccount.getId(), userAccount.getName(), userAccount.getPhoto()));
+        return userAccount;
+    }
+
     public void sendEmailCodeLoginCode(String email) {
         authenticateService.generateAndNotifyEmailCodeLoginCode(email);
     }
@@ -99,6 +108,13 @@ public class IdentityApplicationService {
     @Transactional
     public UserAccount authenticateByEmailPassword(String email, String password) {
         return authenticateService.authenticateByEmailPassword(email, password);
+    }
+
+    @Transactional
+    public UserAccount authenticateByAppleLogin(String jwtToken) {
+        UserAccount userAccount =
+                authenticateService.authenticateByAppleLogin(jwtToken);
+        return userAccount;
     }
 
     @Transactional

@@ -51,6 +51,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                         UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(emailPasswordAuthenticationFilter(),
                         UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(appleAuthenticationFilter(),
+                        UsernamePasswordAuthenticationFilter.class)
 
                 .authorizeRequests()
                 .antMatchers(HttpMethod.GET,"/api/identity/**").permitAll()
@@ -118,6 +120,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private EmailPasswordAuthenticationProvider emailPasswordAuthenticationProvider;
 
     @Autowired
+    private AppleTokenAuthenticationProvider appleTokenAuthenticationProvider;
+
+    @Autowired
     private LoginFailureHandler loginFailureHandler;
 
     @Autowired
@@ -159,6 +164,15 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return filter;
     }
 
+    public AppleAuthenticationFilter appleAuthenticationFilter() throws Exception {
+        AppleAuthenticationFilter filter = new AppleAuthenticationFilter();
+        filter.setAuthenticationManager(authenticationManagerBean());
+        filter.setAuthenticationFailureHandler(loginFailureHandler);
+        filter.setAuthenticationSuccessHandler(loginSuccessHandler);
+        filter.setSessionAuthenticationStrategy(authStrategy());
+        return filter;
+    }
+
     private ConcurrentSessionControlAuthenticationStrategy authStrategy() {
         ConcurrentSessionControlAuthenticationStrategy result = new ConcurrentSessionControlAuthenticationStrategy(
                 this.sessionRegistry());
@@ -173,7 +187,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authenticationProvider(emailCodeAuthenticationProvider)
                 .authenticationProvider(oauthAuthenticationProvider)
                 .authenticationProvider(emailCodeRegisterAuthenticationProvider)
-               .authenticationProvider(emailPasswordAuthenticationProvider);
+                .authenticationProvider(emailPasswordAuthenticationProvider)
+                .authenticationProvider(appleTokenAuthenticationProvider);
                 // I'm using ActiveDirectory, but whatever you want to use here should work.
     }
 

@@ -1,12 +1,8 @@
 package com.petfabula.presentation.web.controller;
 
 import com.petfabula.application.document.DocumentApplicationService;
-import com.petfabula.domain.aggregate.administration.entity.Report;
-import com.petfabula.domain.aggregate.community.participator.entity.Participator;
 import com.petfabula.domain.aggregate.document.entity.ApplicationDocument;
 import com.petfabula.presentation.facade.assembler.document.ApplicationDocumentAssembler;
-import com.petfabula.presentation.facade.dto.administration.ReportDto;
-import com.petfabula.presentation.facade.dto.administration.UpdateReportStatusRequest;
 import com.petfabula.presentation.facade.dto.document.ApplicationDocumentDto;
 import com.petfabula.presentation.web.api.Response;
 import lombok.extern.slf4j.Slf4j;

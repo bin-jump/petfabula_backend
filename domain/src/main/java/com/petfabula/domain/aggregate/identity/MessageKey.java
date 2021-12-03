@@ -4,6 +4,8 @@ public final class MessageKey {
 
     private static final String PREFIX = "identity.";
 
+    public static final String NOT_REGISTERED = PREFIX + "notRegister";
+
     public static final String USER_NAME_ALREADY_EXISTS = PREFIX + "userNameAlreadyExists";
 
     public static final String EMAIL_ALREADY_REGISTERED = PREFIX + "emailAlreadyRegistered";

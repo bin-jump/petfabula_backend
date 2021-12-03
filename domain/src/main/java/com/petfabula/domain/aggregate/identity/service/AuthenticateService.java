@@ -3,11 +3,16 @@ package com.petfabula.domain.aggregate.identity.service;
 import com.petfabula.domain.aggregate.identity.MessageKey;
 import com.petfabula.domain.aggregate.identity.entity.EmailCodeAuthentication;
 import com.petfabula.domain.aggregate.identity.entity.EmailPasswordAuthentication;
+import com.petfabula.domain.aggregate.identity.entity.OauthAuthentication;
 import com.petfabula.domain.aggregate.identity.entity.UserAccount;
 import com.petfabula.domain.aggregate.identity.repository.EmailCodeAuthenticationRepository;
 import com.petfabula.domain.aggregate.identity.repository.EmailPasswordAuthenticationRepository;
+import com.petfabula.domain.aggregate.identity.repository.OauthAuthenticationRepository;
 import com.petfabula.domain.aggregate.identity.repository.UserAccountRepository;
+import com.petfabula.domain.aggregate.identity.service.oauth.AppleAuthContent;
+import com.petfabula.domain.aggregate.identity.service.oauth.AppleService;
 import com.petfabula.domain.exception.DomainAuthenticationException;
+import com.petfabula.domain.exception.InvalidOperationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,6 +35,12 @@ public class AuthenticateService {
 
     @Autowired
     private EmailCodeAuthenticationRepository emailCodeAuthenticationRepository;
+
+    @Autowired
+    private OauthAuthenticationRepository oauthAuthenticationRepository;
+
+    @Autowired
+    private AppleService appleService;
 
     public UserAccount authenticateByEmailPassword(String email, String password) {
         EmailPasswordAuthentication emailPasswordAuthentication =
@@ -67,4 +78,15 @@ public class AuthenticateService {
         return userAccountRepository.findById(emailCodeAuthentication.getId());
     }
 
+    public UserAccount authenticateByAppleLogin(String jwtToken) {
+        AppleAuthContent authContent = appleService.validContentFromJwt(jwtToken);
+        OauthAuthentication oauthAuthentication = oauthAuthenticationRepository
+                .findServerNameAndOauthId(AppleService.SERVER_NAME, authContent.getUserId());
+
+        if (oauthAuthentication == null) {
+            throw new InvalidOperationException(MessageKey.NOT_REGISTERED);
+        }
+
+        return userAccountRepository.findById(oauthAuthentication.getId());
+    }
 }
