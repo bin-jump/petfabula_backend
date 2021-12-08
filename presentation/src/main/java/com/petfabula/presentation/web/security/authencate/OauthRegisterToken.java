@@ -6,13 +6,13 @@ import org.springframework.util.Assert;
 
 import java.util.Collection;
 
-public class OauthAuthenticationToken  extends AbstractAuthenticationToken {
+public class OauthRegisterToken extends AbstractAuthenticationToken {
 
     private final Object principal;
     private Object credentials;
     private String serverName;
 
-    public OauthAuthenticationToken(Object principal, String serverName) {
+    public OauthRegisterToken(Object principal, String serverName) {
         super((Collection)null);
         this.principal = principal;
         this.serverName = serverName;

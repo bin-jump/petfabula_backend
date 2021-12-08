@@ -39,7 +39,7 @@ public class AccountService {
     @Autowired
     private ImageRepository imageRepository;
 
-    public UserAccount createUser(String userName, UserAccount.RegisterEntry registerEntry) {
+    public UserAccount createUser(String userName, String email, UserAccount.RegisterEntry registerEntry) {
 //        UserAccount userAccount = userAccountRepository.findByName(userName);
 //        if (userAccount != null) {
 //            throw new InvalidValueException("name", MessageKey.USER_NAME_ALREADY_EXISTS);
@@ -49,17 +49,22 @@ public class AccountService {
 //        userAccount = new UserAccount(accountId, userName, registerEntry);
 //        return userAccountRepository.save(userAccount);
 
-        return createUser(userName, registerEntry, new ArrayList<>());
+        return createUser(userName, email, registerEntry, new ArrayList<>());
     }
 
-    public UserAccount createUser(String userName, UserAccount.RegisterEntry registerEntry, List<String> roleNames) {
+    public UserAccount createUser(String userName, String email, UserAccount.RegisterEntry registerEntry, List<String> roleNames) {
         UserAccount userAccount = userAccountRepository.findByName(userName);
         if (userAccount != null) {
             throw new InvalidValueException("name", MessageKey.USER_NAME_ALREADY_EXISTS);
         }
 
+        userAccount = userAccountRepository.findByEmail(email);
+        if (userAccount != null) {
+            throw new InvalidValueException("email", MessageKey.EMAIL_ALREADY_REGISTERED);
+        }
+
         Long accountId = idGenerator.nextId();
-        userAccount = new UserAccount(accountId, userName, registerEntry);
+        userAccount = new UserAccount(accountId, email, userName, registerEntry);
 
         for(String roleName : roleNames) {
             Role role = roleRepository.findByName(roleName);

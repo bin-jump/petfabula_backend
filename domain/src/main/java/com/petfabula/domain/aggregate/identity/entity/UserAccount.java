@@ -17,12 +17,14 @@ import java.util.Set;
 @Getter
 @Entity
 @Table(name = "account",
-        indexes = {@Index(name = "name_index", columnList="name, delete_at", unique = true)})
+        indexes = {@Index(name = "name_index", columnList="name, delete_at", unique = true),
+                @Index(name = "email_index", columnList="email", unique = true)})
 public class UserAccount extends ConcurrentEntity {
 
-    public UserAccount(Long id, String name, RegisterEntry registerEntry) {
+    public UserAccount(Long id, String name, String email, RegisterEntry registerEntry) {
         setId(id);
         setName(name);
+        this.email = email;
         this.status = UserStatus.REGISTED;
         this.registerEntry = registerEntry;
         gender = null;
@@ -105,7 +107,7 @@ public class UserAccount extends ConcurrentEntity {
     }
 
     public enum UserStatus {
-        REGISTED, VERIFIED, ABNORMAL, TEMP_BANNED, BANNED
+        REGISTED, VERIFIED, ABNORMAL, TEMP_BANNED, PERMANENT_BANNED
     }
 
     public enum RegisterEntry {

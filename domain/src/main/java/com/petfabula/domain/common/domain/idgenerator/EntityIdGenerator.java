@@ -9,7 +9,7 @@ import java.util.Random;
  */
 public abstract class EntityIdGenerator {
 
-    private final int MAX_ID_DISTANCE = 10;
+    private final int MAX_ID_STEP = 10;
 
     private IdSegmentService idSegmentService;
 
@@ -41,9 +41,10 @@ public abstract class EntityIdGenerator {
             return currentId;
         }
 
+//        int step = 1;
         // make id sparse against robot
-        int distance = random.nextInt(MAX_ID_DISTANCE - 1) + 1;
-        currentId = Math.min(currentMax, currentId + distance);
+        int step = random.nextInt(MAX_ID_STEP - 1) + 1;
+        currentId = Math.min(currentMax, currentId + step);
         if (currentId == currentMax) {
             refreshSegment();
         }

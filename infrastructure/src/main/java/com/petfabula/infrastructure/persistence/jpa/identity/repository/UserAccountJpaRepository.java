@@ -13,6 +13,9 @@ public interface UserAccountJpaRepository extends JpaRepository<UserAccount, Lon
     UserAccount findByName(String name);
 
     @EntityGraph(value = "userAccount.all")
+    UserAccount findByEmail(String email);
+
+    @EntityGraph(value = "userAccount.all")
     @Query("select u from UserAccount u where u.id = :id")
     Optional<UserAccount> findById(Long id);
 }

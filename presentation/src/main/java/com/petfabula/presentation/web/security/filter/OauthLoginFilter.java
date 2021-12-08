@@ -1,7 +1,7 @@
 package com.petfabula.presentation.web.security.filter;
 
-import com.petfabula.presentation.web.security.authencate.EmailCodeAuthenticationToken;
-import com.petfabula.presentation.web.security.authencate.OauthAuthenticationToken;
+import com.petfabula.presentation.web.security.authencate.OauthLoginToken;
+import com.petfabula.presentation.web.security.authencate.OauthRegisterToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
@@ -14,16 +14,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class OauthAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
+public class OauthLoginFilter extends AbstractAuthenticationProcessingFilter {
 
     private static final AntPathRequestMatcher DEFAULT_ANT_PATH_REQUEST_MATCHER =
-            new AntPathRequestMatcher("/api/identity/register-signin-oauth", "POST");
+            new AntPathRequestMatcher("/api/identity/signin-oauth", "POST");
 
-    public OauthAuthenticationFilter() {
+    public OauthLoginFilter() {
         super(DEFAULT_ANT_PATH_REQUEST_MATCHER);
     }
 
-    public OauthAuthenticationFilter(AuthenticationManager authenticationManager) {
+    public OauthLoginFilter(AuthenticationManager authenticationManager) {
         super(DEFAULT_ANT_PATH_REQUEST_MATCHER, authenticationManager);
     }
 
@@ -35,9 +35,8 @@ public class OauthAuthenticationFilter extends AbstractAuthenticationProcessingF
 
             String serverName = httpServletRequest.getParameter("serverName");
             String code = httpServletRequest.getParameter("code");
-            OauthAuthenticationToken authRequest = new OauthAuthenticationToken(code, serverName);
+            OauthLoginToken authRequest = new OauthLoginToken(code, serverName);
             return this.getAuthenticationManager().authenticate(authRequest);
         }
     }
 }
-

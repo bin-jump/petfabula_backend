@@ -16,14 +16,14 @@ import java.util.List;
 import java.util.Set;
 
 @Component
-public class OauthAuthenticationProvider implements AuthenticationProvider {
+public class OauthRegisterProvider implements AuthenticationProvider {
 
     @Autowired
     private IdentityApplicationService identityApplicationService;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        OauthAuthenticationToken token = (OauthAuthenticationToken) authentication;
+        OauthRegisterToken token = (OauthRegisterToken) authentication;
         UserAccount account = identityApplicationService
                 .registerOrAuthenticateByOauth(token.getServerName(), (String)token.getPrincipal());
 
@@ -40,6 +40,6 @@ public class OauthAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public boolean supports(Class<?> aClass) {
-        return aClass.equals(OauthAuthenticationToken.class);
+        return aClass.equals(OauthRegisterToken.class);
     }
 }

@@ -111,6 +111,13 @@ public class IdentityApplicationService {
     }
 
     @Transactional
+    public UserAccount authenticateByOauth(String serverName, String code) {
+        UserAccount userAccount =
+                authenticateService.authenticateByOauth(serverName, code);
+        return userAccount;
+    }
+
+    @Transactional
     public UserAccount authenticateByAppleLogin(String jwtToken) {
         UserAccount userAccount =
                 authenticateService.authenticateByAppleLogin(jwtToken);

@@ -74,7 +74,7 @@ public class RegisterService {
         if (emailPasswordAuthentication != null) {
             throw new InvalidValueException("email", MessageKey.EMAIL_ALREADY_REGISTERED);
         }
-        UserAccount userAccount = accountService.createUser(name, UserAccount.RegisterEntry.OTHER, roleNames);
+        UserAccount userAccount = accountService.createUser(name, email, UserAccount.RegisterEntry.OTHER, roleNames);
         emailPasswordAuthentication =
                 new EmailPasswordAuthentication(userAccount.getId(), email, password);
 
@@ -97,7 +97,7 @@ public class RegisterService {
         }
 
         userAccount =
-                accountService.createUser(name, UserAccount.RegisterEntry.EMAIL_CODE);
+                accountService.createUser(name, email, UserAccount.RegisterEntry.EMAIL_CODE);
         emailCodeAuthentication =
                 new EmailCodeAuthentication(userAccount.getId(), email);
         emailCodeAuthenticationRepository.save(emailCodeAuthentication);
@@ -114,7 +114,7 @@ public class RegisterService {
 
         if (oauthAuthentication == null) {
             UserAccount userAccount =
-                    accountService.createUser(response.getUserName(), UserAccount.RegisterEntry.OAUTH);
+                    accountService.createUser(response.getUserName(), response.getEmail(), UserAccount.RegisterEntry.OAUTH);
             oauthAuthentication =
                     new OauthAuthentication(userAccount.getId(), serverName, response.getOauthId());
 
@@ -138,7 +138,7 @@ public class RegisterService {
 
         if (oauthAuthentication == null) {
             UserAccount userAccount =
-                    accountService.createUser(name, UserAccount.RegisterEntry.OAUTH);
+                    accountService.createUser(name, authContent.getEmail(), UserAccount.RegisterEntry.OAUTH);
             oauthAuthentication =
                     new OauthAuthentication(userAccount.getId(), AppleService.SERVER_NAME, authContent.getUserId());
             oauthAuthenticationRepository.save(oauthAuthentication);

@@ -1,5 +1,6 @@
 package com.petfabula.domain.aggregate.identity.service;
 
+import com.petfabula.domain.aggregate.identity.IdentityCreated;
 import com.petfabula.domain.aggregate.identity.MessageKey;
 import com.petfabula.domain.aggregate.identity.entity.EmailCodeAuthentication;
 import com.petfabula.domain.aggregate.identity.entity.EmailPasswordAuthentication;
@@ -11,6 +12,8 @@ import com.petfabula.domain.aggregate.identity.repository.OauthAuthenticationRep
 import com.petfabula.domain.aggregate.identity.repository.UserAccountRepository;
 import com.petfabula.domain.aggregate.identity.service.oauth.AppleAuthContent;
 import com.petfabula.domain.aggregate.identity.service.oauth.AppleService;
+import com.petfabula.domain.aggregate.identity.service.oauth.OauthResponse;
+import com.petfabula.domain.aggregate.identity.service.oauth.OauthService;
 import com.petfabula.domain.exception.DomainAuthenticationException;
 import com.petfabula.domain.exception.InvalidOperationException;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +44,9 @@ public class AuthenticateService {
 
     @Autowired
     private AppleService appleService;
+
+    @Autowired
+    private OauthService oauthService;
 
     public UserAccount authenticateByEmailPassword(String email, String password) {
         EmailPasswordAuthentication emailPasswordAuthentication =
@@ -76,6 +82,18 @@ public class AuthenticateService {
 
         verificationCodeService.removeEmailLoginCode(email);
         return userAccountRepository.findById(emailCodeAuthentication.getId());
+    }
+
+    public UserAccount authenticateByOauth(String serverName, String code) {
+        OauthResponse response = oauthService.doOauth(serverName, code);
+        OauthAuthentication oauthAuthentication = oauthAuthenticationRepository
+                .findServerNameAndOauthId(serverName, response.getOauthId());
+
+        if (oauthAuthentication == null) {
+            throw new InvalidOperationException(MessageKey.NOT_REGISTERED);
+        }
+
+        return userAccountRepository.findById(oauthAuthentication.getId());
     }
 
     public UserAccount authenticateByAppleLogin(String jwtToken) {

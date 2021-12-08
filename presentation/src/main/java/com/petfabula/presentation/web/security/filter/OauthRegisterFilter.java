@@ -1,6 +1,7 @@
 package com.petfabula.presentation.web.security.filter;
 
-import com.petfabula.presentation.web.security.authencate.AppleToken;
+import com.petfabula.presentation.web.security.authencate.OauthRegisterToken;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -12,13 +13,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class AppleAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
+public class OauthRegisterFilter extends AbstractAuthenticationProcessingFilter {
 
     private static final AntPathRequestMatcher DEFAULT_ANT_PATH_REQUEST_MATCHER =
-            new AntPathRequestMatcher("/api/identity/register-signin-apple", "POST");
+            new AntPathRequestMatcher("/api/identity/register-signin-oauth", "POST");
 
-    public AppleAuthenticationFilter() {
+    public OauthRegisterFilter() {
         super(DEFAULT_ANT_PATH_REQUEST_MATCHER);
+    }
+
+    public OauthRegisterFilter(AuthenticationManager authenticationManager) {
+        super(DEFAULT_ANT_PATH_REQUEST_MATCHER, authenticationManager);
     }
 
     @Override
@@ -27,10 +32,11 @@ public class AppleAuthenticationFilter extends AbstractAuthenticationProcessingF
             throw new AuthenticationServiceException("Authentication method not supported: " + httpServletRequest.getMethod());
         } else {
 
-            String identityToken = httpServletRequest.getParameter("identityToken");
-            String name = httpServletRequest.getParameter("name");
-            AppleToken authRequest = new AppleToken(name, identityToken);
+            String serverName = httpServletRequest.getParameter("serverName");
+            String code = httpServletRequest.getParameter("code");
+            OauthRegisterToken authRequest = new OauthRegisterToken(code, serverName);
             return this.getAuthenticationManager().authenticate(authRequest);
         }
     }
 }
+

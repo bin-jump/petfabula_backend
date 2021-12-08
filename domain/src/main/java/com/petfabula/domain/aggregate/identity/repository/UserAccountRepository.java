@@ -8,5 +8,7 @@ public interface UserAccountRepository {
 
     UserAccount findByName(String name);
 
+    UserAccount findByEmail(String email);
+
     UserAccount save(UserAccount userAccount);
 }

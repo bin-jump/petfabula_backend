@@ -43,7 +43,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         httpSecurity
                 .cors()
                 .and()
-                .addFilterBefore(oauthAuthenticationFilter(),
+                .addFilterBefore(oauthRegisterFilter(),
+                        UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(oauthLoginFilter(),
                         UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(emailCodeRegisterAuthenticationFilter(),
                         UsernamePasswordAuthenticationFilter.class)
@@ -111,7 +113,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private EmailCodeAuthenticationProvider emailCodeAuthenticationProvider;
 
     @Autowired
-    private OauthAuthenticationProvider oauthAuthenticationProvider;
+    private OauthRegisterProvider oauthRegisterProvider;
+
+    @Autowired
+    private OauthLoginProvider oauthLoginProvider;
 
     @Autowired
     private EmailCodeRegisterAuthenticationProvider emailCodeRegisterAuthenticationProvider;
@@ -155,8 +160,17 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return filter;
     }
 
-    public OauthAuthenticationFilter oauthAuthenticationFilter() throws Exception {
-        OauthAuthenticationFilter filter = new OauthAuthenticationFilter();
+    public OauthRegisterFilter oauthRegisterFilter() throws Exception {
+        OauthRegisterFilter filter = new OauthRegisterFilter();
+        filter.setAuthenticationManager(authenticationManagerBean());
+        filter.setAuthenticationFailureHandler(loginFailureHandler);
+        filter.setAuthenticationSuccessHandler(loginSuccessHandler);
+        filter.setSessionAuthenticationStrategy(authStrategy());
+        return filter;
+    }
+
+    public OauthLoginFilter oauthLoginFilter() throws Exception {
+        OauthLoginFilter filter = new OauthLoginFilter();
         filter.setAuthenticationManager(authenticationManagerBean());
         filter.setAuthenticationFailureHandler(loginFailureHandler);
         filter.setAuthenticationSuccessHandler(loginSuccessHandler);
@@ -185,7 +199,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
        authenticationManagerBuilder
                 .authenticationProvider(emailCodeAuthenticationProvider)
-                .authenticationProvider(oauthAuthenticationProvider)
+                .authenticationProvider(oauthRegisterProvider)
+               .authenticationProvider(oauthLoginProvider)
                 .authenticationProvider(emailCodeRegisterAuthenticationProvider)
                 .authenticationProvider(emailPasswordAuthenticationProvider)
                 .authenticationProvider(appleTokenAuthenticationProvider);

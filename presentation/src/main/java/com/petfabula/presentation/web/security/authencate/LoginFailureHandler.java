@@ -5,6 +5,7 @@ import com.petfabula.domain.aggregate.identity.MessageKey;
 import com.petfabula.domain.exception.DomainAuthenticationException;
 import com.petfabula.domain.exception.InvalidValueException;
 import com.petfabula.presentation.web.api.Response;
+import com.petfabula.presentation.web.error.GlobalExceptionTranslator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ResourceBundleMessageSource;
@@ -27,12 +28,17 @@ public class LoginFailureHandler implements AuthenticationFailureHandler {
     private ObjectMapper objectMapper;
 
     @Autowired
+    private GlobalExceptionTranslator globalExceptionTranslator;
+
+    @Autowired
     ResourceBundleMessageSource messageSource;
 
     @Override
     public void onAuthenticationFailure(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AuthenticationException e) throws IOException, ServletException {
+        httpServletResponse.setCharacterEncoding("UTF-8");
+        httpServletResponse.setContentType("application/json;charset=UTF-8");
+
         if (e instanceof SessionAuthenticationException) {
-            httpServletResponse.setContentType("application/json;charset=UTF-8");
             httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
 
             Response res = Response.failed(Response.ResponseCode.AUTHORIZATION_LIMIT_REACHED);
@@ -41,21 +47,13 @@ public class LoginFailureHandler implements AuthenticationFailureHandler {
 
             httpServletResponse.getWriter().write(objectMapper.writeValueAsString(res));
         } else if (e.getCause() instanceof DomainAuthenticationException) {
-            Response res = Response.failedOnValidation();
-            DomainAuthenticationException ex = (DomainAuthenticationException)e.getCause();
-            res.getErrors().put(ex.getField(), messageSource.getMessage(ex.getMsg(), null, LocaleContextHolder.getLocale()));
-//            res.setMessage(messageSource.getMessage(res.getMessage(), null, LocaleContextHolder.getLocale()));
-
-            httpServletResponse.setContentType("application/json;charset=UTF-8");
+            Response res = globalExceptionTranslator
+                    .handleDomainAuthenticationException((DomainAuthenticationException)e.getCause(), httpServletRequest);
             httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
             httpServletResponse.getWriter().write(objectMapper.writeValueAsString(res));
         } else if (e.getCause() instanceof InvalidValueException) {
-            Response res = Response.failedOnValidation();
-            InvalidValueException ex = (InvalidValueException)e.getCause();
-            res.getErrors().put(ex.getName(),
-                    messageSource.getMessage(ex.getMsg(), null, LocaleContextHolder.getLocale()));
-
-            httpServletResponse.setContentType("application/json;charset=UTF-8");
+            Response res = globalExceptionTranslator
+                    .handleInvalidValueException((InvalidValueException)e.getCause(), httpServletRequest);
             httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
             httpServletResponse.getWriter().write(objectMapper.writeValueAsString(res));
         } else {
@@ -63,7 +61,6 @@ public class LoginFailureHandler implements AuthenticationFailureHandler {
             res.setMessage(messageSource.getMessage(Response.ResponseCode.AUTHENTICATION_FAILED.getMessage(),
                     null, LocaleContextHolder.getLocale()));
 
-            httpServletResponse.setContentType("application/json;charset=UTF-8");
             httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
             httpServletResponse.getWriter().write(objectMapper.writeValueAsString(res));
         }
