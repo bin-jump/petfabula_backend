@@ -46,7 +46,7 @@ public class UserAccount extends ConcurrentEntity {
     @Column(name = "gender")
     private Gender gender;
 
-    @Column(name = "bio", length = 255)
+    @Column(name = "bio", length = 500)
     private String bio;
 
     @Column(name = "city_id")

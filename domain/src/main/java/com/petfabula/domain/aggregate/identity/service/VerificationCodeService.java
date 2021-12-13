@@ -4,6 +4,7 @@ import com.petfabula.domain.aggregate.identity.MessageKey;
 import com.petfabula.domain.aggregate.identity.repository.VerificationCodeRepository;
 import com.petfabula.domain.aggregate.identity.service.email.EmailSender;
 import com.petfabula.domain.aggregate.identity.service.email.SendEmailRequest;
+import com.petfabula.domain.aggregate.identity.service.email.TemplateManager;
 import com.petfabula.domain.exception.DomainAuthenticationException;
 import com.petfabula.domain.exception.InvalidValueException;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,9 @@ public class VerificationCodeService {
 
     @Autowired
     private EmailSender emailSender;
+
+    @Autowired
+    private TemplateManager templateManager;
 
     @Autowired
     private VerificationCodeRepository verificationCodeRepository;
@@ -89,16 +93,17 @@ public class VerificationCodeService {
         verificationCodeRepository.remove(emailCodeReigsterkey(email));
     }
 
-
     private SendEmailRequest verificationEmailRequest(String email, String code) {
         SendEmailRequest sendEmailRequest = new SendEmailRequest();
 
-        String content = "ペットファビュラをご利用いただきありがとうございます。\n" +
-                "以下の認証コードで、手続きを完了してください。\n" +
-                "\n   " + code + " \n\n" +
-                "なお、この認証コードの有効期間は" + REGISTER_CODE_VALID_LIMIT_MINUTE + "分以内となります。\n" +
-                "\n ＊このメールに関して覚えがない方は本メールを無視してください。\n" +
-                "このメールへご返信は受け付けておりません。\n";
+//        String content = "ペットファビュラをご利用いただきありがとうございます。\n" +
+//                "以下の認証コードで、手続きを完了してください。\n" +
+//                "\n   " + code + " \n\n" +
+//                "なお、この認証コードの有効期間は" + REGISTER_CODE_VALID_LIMIT_MINUTE + "分以内となります。\n" +
+//                "\n ＊このメールに関して覚えがない方は本メールを無視してください。\n" +
+//                "このメールへご返信は受け付けておりません。\n";
+
+        String content = templateManager.getFilledVerificationEmail(code, REGISTER_CODE_VALID_LIMIT_MINUTE);
 
         sendEmailRequest.setAddress(email);
         sendEmailRequest.setTitle("【ペットファビュラ】アカウント認証コード");

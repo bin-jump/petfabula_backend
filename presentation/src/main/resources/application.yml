@@ -65,6 +65,8 @@ spring:
       host: ${ES_HOST}
       port: 9300
       restport: 9200
+      username: ${ES_USERNAME}
+      password: ${ES_PASSWORD}
 
   mail:
     host: ${MAIL_HOST}

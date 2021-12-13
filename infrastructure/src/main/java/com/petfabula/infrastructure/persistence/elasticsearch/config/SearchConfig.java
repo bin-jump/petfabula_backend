@@ -23,6 +23,12 @@ public class SearchConfig {
     @Value("${spring.data.elasticsearch.restport}")
     private int portNumber;
 
+    @Value("${spring.data.elasticsearch.username}")
+    private String userName;
+
+    @Value("${spring.data.elasticsearch.password}")
+    private String password;
+
     @Bean
     public RestHighLevelClient client() {
         String connectStr = hostName + ":" + portNumber;
@@ -31,6 +37,7 @@ public class SearchConfig {
         ClientConfiguration clientConfiguration
                 = ClientConfiguration.builder()
                 .connectedTo(connectStr)
+                .withBasicAuth(userName, password)
                 .build();
 
         return RestClients.create(clientConfiguration).rest();
