@@ -64,7 +64,7 @@ public class AccountService {
         }
 
         Long accountId = idGenerator.nextId();
-        userAccount = new UserAccount(accountId, email, userName, registerEntry);
+        userAccount = new UserAccount(accountId, userName, email, registerEntry);
 
         for(String roleName : roleNames) {
             Role role = roleRepository.findByName(roleName);
