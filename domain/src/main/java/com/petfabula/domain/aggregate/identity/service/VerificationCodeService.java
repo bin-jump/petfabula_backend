@@ -104,9 +104,10 @@ public class VerificationCodeService {
 //                "このメールへご返信は受け付けておりません。\n";
 
         String content = templateManager.getFilledVerificationEmail(code, REGISTER_CODE_VALID_LIMIT_MINUTE);
+        String title = templateManager.getTitleFromHtml(content);
 
         sendEmailRequest.setAddress(email);
-        sendEmailRequest.setTitle("【ペットファビュラ】アカウント認証コード");
+        sendEmailRequest.setTitle(title);
         sendEmailRequest.setContent(content);
         return sendEmailRequest;
     }

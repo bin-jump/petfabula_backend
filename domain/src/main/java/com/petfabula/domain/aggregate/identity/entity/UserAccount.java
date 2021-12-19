@@ -24,7 +24,7 @@ public class UserAccount extends ConcurrentEntity {
     public UserAccount(Long id, String name, String email, RegisterEntry registerEntry) {
         setId(id);
         setName(name);
-        this.email = email;
+        setEmail(email);
         this.status = UserStatus.REGISTED;
         this.registerEntry = registerEntry;
         gender = null;
@@ -100,6 +100,11 @@ public class UserAccount extends ConcurrentEntity {
     public void setName(String name) {
         EntityValidationUtils.validUserName("name", name);
         this.name = name;
+    }
+
+    public void setEmail(String email) {
+        EntityValidationUtils.validEmail("email", email);
+        this.email = email;
     }
 
     public enum Gender {

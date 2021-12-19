@@ -28,4 +28,8 @@ public class EmailCodeRegisterRequest {
 
     private boolean userAgreement;
 
+    public void setEmail(String value) {
+        email = value != null ? value.trim() : null;
+    }
+
 }

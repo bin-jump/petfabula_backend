@@ -19,5 +19,9 @@ public class EmailCodeLoginRequest {
 
     @NotNull
     private String code;
+
+    public void setEmail(String value) {
+        email = value != null ? value.trim() : null;
+    }
 }
 

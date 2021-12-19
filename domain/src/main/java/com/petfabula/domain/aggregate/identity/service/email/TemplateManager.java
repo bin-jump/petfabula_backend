@@ -1,5 +1,6 @@
 package com.petfabula.domain.aggregate.identity.service.email;
 
+import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -23,6 +24,13 @@ public class TemplateManager {
         templateModel.put("minutes", min);
         thymeleafContext.setVariables(templateModel);
         String body = templateEngine.process("verification_code_email.html", thymeleafContext);
+
         return body;
     }
+
+    public String getTitleFromHtml(String content) {
+        String title = Jsoup.parse(content).title();
+        return title;
+    }
+
 }

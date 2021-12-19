@@ -21,4 +21,8 @@ public class ExamineEmailRegisterAndSendCodeRequest {
 
     private boolean userAgreement;
 
+    public void setEmail(String value) {
+        email = value != null ? value.trim() : null;
+    }
+
 }

@@ -92,7 +92,7 @@ public class GlobalExceptionTranslator {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Response handleValidationError(MethodArgumentNotValidException
+    public Response handleMethodArgumentNotValidException(MethodArgumentNotValidException
                                                   manve, HttpServletRequest request) {
         log.error(manve.getMessage());
         BindingResult result = manve.getBindingResult();

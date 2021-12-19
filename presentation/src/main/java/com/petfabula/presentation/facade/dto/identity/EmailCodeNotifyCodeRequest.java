@@ -16,4 +16,7 @@ public class EmailCodeNotifyCodeRequest {
     @Email
     private String email;
 
+    public void setEmail(String value) {
+        email = value != null ? value.trim() : null;
+    }
 }

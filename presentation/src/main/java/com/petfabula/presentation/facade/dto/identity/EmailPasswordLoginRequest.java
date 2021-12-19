@@ -19,4 +19,8 @@ public class EmailPasswordLoginRequest {
 
     @NotNull
     private String password;
+
+    public void setEmail(String value) {
+        email = value != null ? value.trim() : null;
+    }
 }
