@@ -13,6 +13,7 @@ import com.petfabula.domain.common.image.ImageRepository;
 import com.petfabula.domain.exception.InvalidOperationException;
 import com.petfabula.domain.exception.InvalidValueException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -53,12 +54,13 @@ public class AccountService {
     }
 
     public UserAccount createUser(String userName, String email, UserAccount.RegisterEntry registerEntry, List<String> roleNames) {
-        UserAccount userAccount = userAccountRepository.findByName(userName);
-        if (userAccount != null) {
-            throw new InvalidValueException("name", MessageKey.USER_NAME_ALREADY_EXISTS);
-        }
+//        UserAccount userAccount = userAccountRepository.findByName(userName);
+//        if (userAccount != null) {
+//            throw new InvalidValueException("name", MessageKey.USER_NAME_ALREADY_EXISTS);
+//        }
+        userName = validName(userName, registerEntry);
 
-        userAccount = userAccountRepository.findByEmail(email);
+        UserAccount userAccount = userAccountRepository.findByEmail(email);
         if (userAccount != null) {
             throw new InvalidValueException("email", MessageKey.EMAIL_ALREADY_REGISTERED);
         }
@@ -104,4 +106,34 @@ public class AccountService {
 
         return userAccountRepository.save(userAccount);
     }
+
+    private String validName(String name, UserAccount.RegisterEntry registerEntry) {
+        UserAccount userAccount = userAccountRepository.findByName(name);
+        if (userAccount != null) {
+            // if oauth, try random suffix
+            if (registerEntry == UserAccount.RegisterEntry.THIRD_PARTY) {
+                for(int i = 0; i < 3; i++) {
+                    String randName = randomSuffixName(name);
+                    userAccount = userAccountRepository.findByName(randName);
+                    if (userAccount == null) {
+                        return randName;
+                    }
+                }
+                // if all tries failed, just assert operation failure
+                throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
+            } else {
+                // just assert field error if no try
+                throw new InvalidValueException("name", MessageKey.USER_NAME_ALREADY_EXISTS);
+            }
+        }
+
+        return name;
+    }
+
+    // max name length is 20
+    private String randomSuffixName(String name) {
+        name = name.substring(0, 17);
+        return name + RandomStringUtils.randomNumeric(4);
+    }
+
 }

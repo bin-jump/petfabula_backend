@@ -116,6 +116,6 @@ public class UserAccount extends ConcurrentEntity {
     }
 
     public enum RegisterEntry {
-        EMAIL_PASSWORD, EMAIL_CODE, OAUTH, PHONE, OTHER
+        EMAIL_PASSWORD, EMAIL_CODE, THIRD_PARTY, PHONE, OTHER
     }
 }

@@ -1,14 +1,13 @@
 package com.petfabula.domain.aggregate.identity.service;
 
-import com.petfabula.domain.aggregate.identity.IdentityCreated;
 import com.petfabula.domain.aggregate.identity.MessageKey;
 import com.petfabula.domain.aggregate.identity.entity.EmailCodeAuthentication;
 import com.petfabula.domain.aggregate.identity.entity.EmailPasswordAuthentication;
-import com.petfabula.domain.aggregate.identity.entity.OauthAuthentication;
+import com.petfabula.domain.aggregate.identity.entity.ThirdPartyAuthentication;
 import com.petfabula.domain.aggregate.identity.entity.UserAccount;
 import com.petfabula.domain.aggregate.identity.repository.EmailCodeAuthenticationRepository;
 import com.petfabula.domain.aggregate.identity.repository.EmailPasswordAuthenticationRepository;
-import com.petfabula.domain.aggregate.identity.repository.OauthAuthenticationRepository;
+import com.petfabula.domain.aggregate.identity.repository.ThirdPartyAuthenticationRepository;
 import com.petfabula.domain.aggregate.identity.repository.UserAccountRepository;
 import com.petfabula.domain.aggregate.identity.service.oauth.AppleAuthContent;
 import com.petfabula.domain.aggregate.identity.service.oauth.AppleService;
@@ -40,7 +39,7 @@ public class AuthenticateService {
     private EmailCodeAuthenticationRepository emailCodeAuthenticationRepository;
 
     @Autowired
-    private OauthAuthenticationRepository oauthAuthenticationRepository;
+    private ThirdPartyAuthenticationRepository thirdPartyAuthenticationRepository;
 
     @Autowired
     private AppleService appleService;
@@ -86,25 +85,25 @@ public class AuthenticateService {
 
     public UserAccount authenticateByOauth(String serverName, String code) {
         OauthResponse response = oauthService.doOauth(serverName, code);
-        OauthAuthentication oauthAuthentication = oauthAuthenticationRepository
-                .findServerNameAndOauthId(serverName, response.getOauthId());
+        ThirdPartyAuthentication thirdPartyAuthentication = thirdPartyAuthenticationRepository
+                .findServerNameAndThirdPartyId(serverName, response.getOauthId());
 
-        if (oauthAuthentication == null) {
+        if (thirdPartyAuthentication == null) {
             throw new InvalidOperationException(MessageKey.NOT_REGISTERED);
         }
 
-        return userAccountRepository.findById(oauthAuthentication.getId());
+        return userAccountRepository.findById(thirdPartyAuthentication.getId());
     }
 
     public UserAccount authenticateByAppleLogin(String jwtToken) {
         AppleAuthContent authContent = appleService.validContentFromJwt(jwtToken);
-        OauthAuthentication oauthAuthentication = oauthAuthenticationRepository
-                .findServerNameAndOauthId(AppleService.SERVER_NAME, authContent.getUserId());
+        ThirdPartyAuthentication thirdPartyAuthentication = thirdPartyAuthenticationRepository
+                .findServerNameAndThirdPartyId(AppleService.SERVER_NAME, authContent.getUserId());
 
-        if (oauthAuthentication == null) {
+        if (thirdPartyAuthentication == null) {
             throw new InvalidOperationException(MessageKey.NOT_REGISTERED);
         }
 
-        return userAccountRepository.findById(oauthAuthentication.getId());
+        return userAccountRepository.findById(thirdPartyAuthentication.getId());
     }
 }

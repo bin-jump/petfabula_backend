@@ -4,7 +4,7 @@ import com.petfabula.domain.aggregate.identity.IdentityCreated;
 import com.petfabula.domain.aggregate.identity.MessageKey;
 import com.petfabula.domain.aggregate.identity.entity.EmailCodeAuthentication;
 import com.petfabula.domain.aggregate.identity.entity.EmailPasswordAuthentication;
-import com.petfabula.domain.aggregate.identity.entity.OauthAuthentication;
+import com.petfabula.domain.aggregate.identity.entity.ThirdPartyAuthentication;
 import com.petfabula.domain.aggregate.identity.entity.UserAccount;
 import com.petfabula.domain.aggregate.identity.repository.*;
 import com.petfabula.domain.aggregate.identity.service.oauth.AppleAuthContent;
@@ -36,7 +36,7 @@ public class RegisterService {
     private UserAccountRepository userAccountRepository;
 
     @Autowired
-    private OauthAuthenticationRepository oauthAuthenticationRepository;
+    private ThirdPartyAuthenticationRepository thirdPartyAuthenticationRepository;
 
     @Autowired
     private EmailPasswordAuthenticationRepository emailPasswordAuthenticationRepository;
@@ -109,23 +109,23 @@ public class RegisterService {
 
     public UserAccount registerOrAuthenticateByOauth(String serverName, String code) {
         OauthResponse response = oauthService.doOauth(serverName, code);
-        OauthAuthentication oauthAuthentication = oauthAuthenticationRepository
-                .findServerNameAndOauthId(serverName, response.getOauthId());
+        ThirdPartyAuthentication thirdPartyAuthentication = thirdPartyAuthenticationRepository
+                .findServerNameAndThirdPartyId(serverName, response.getOauthId());
 
-        if (oauthAuthentication == null) {
-            UserAccount userAccount =
-                    accountService.createUser(response.getUserName(), response.getEmail(), UserAccount.RegisterEntry.OAUTH);
-            oauthAuthentication =
-                    new OauthAuthentication(userAccount.getId(), serverName, response.getOauthId());
+        if (thirdPartyAuthentication == null) {
+            UserAccount userAccount = accountService
+                    .createUser(response.getUserName(), response.getEmail(), UserAccount.RegisterEntry.THIRD_PARTY);
+            thirdPartyAuthentication =
+                    new ThirdPartyAuthentication(userAccount.getId(), serverName, response.getOauthId());
 
-            oauthAuthenticationRepository.save(oauthAuthentication);
+            thirdPartyAuthenticationRepository.save(thirdPartyAuthentication);
 
             domainEventPublisher.publish(
                     new IdentityCreated(userAccount.getId(), userAccount.getName(), userAccount.getEmail()));
 
             return userAccount;
         }
-        return userAccountRepository.findById(oauthAuthentication.getId());
+        return userAccountRepository.findById(thirdPartyAuthentication.getId());
     }
 
 
@@ -133,21 +133,21 @@ public class RegisterService {
     public UserAccount registerByAppleLogin(String name, String jwtToken) {
         AppleAuthContent authContent = appleService.validContentFromJwt(jwtToken);
 
-        OauthAuthentication oauthAuthentication = oauthAuthenticationRepository
-                .findServerNameAndOauthId(AppleService.SERVER_NAME, authContent.getUserId());
+        ThirdPartyAuthentication thirdPartyAuthentication = thirdPartyAuthenticationRepository
+                .findServerNameAndThirdPartyId(AppleService.SERVER_NAME, authContent.getUserId());
 
-        if (oauthAuthentication == null) {
+        if (thirdPartyAuthentication == null) {
             UserAccount userAccount =
-                    accountService.createUser(name, authContent.getEmail(), UserAccount.RegisterEntry.OAUTH);
-            oauthAuthentication =
-                    new OauthAuthentication(userAccount.getId(), AppleService.SERVER_NAME, authContent.getUserId());
-            oauthAuthenticationRepository.save(oauthAuthentication);
+                    accountService.createUser(name, authContent.getEmail(), UserAccount.RegisterEntry.THIRD_PARTY);
+            thirdPartyAuthentication =
+                    new ThirdPartyAuthentication(userAccount.getId(), AppleService.SERVER_NAME, authContent.getUserId());
+            thirdPartyAuthenticationRepository.save(thirdPartyAuthentication);
 
             domainEventPublisher.publish(
                     new IdentityCreated(userAccount.getId(), userAccount.getName(), userAccount.getEmail()));
         }
 
-        return userAccountRepository.findById(oauthAuthentication.getId());
+        return userAccountRepository.findById(thirdPartyAuthentication.getId());
     }
 
 }
