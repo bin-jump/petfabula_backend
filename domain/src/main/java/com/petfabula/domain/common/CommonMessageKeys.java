@@ -17,4 +17,6 @@ public final class CommonMessageKeys {
     public static String POST_NOT_FOUND = PREFIX + "postNotFound";
 
     public static String PET_NOT_FOUND = PREFIX + "petNotFound";
+
+    public static String ACTION_RESTRICTED = PREFIX + "actionRestricted";
 }
