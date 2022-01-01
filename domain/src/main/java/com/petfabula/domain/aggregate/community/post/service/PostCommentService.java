@@ -1,5 +1,7 @@
 package com.petfabula.domain.aggregate.community.post.service;
 
+import com.petfabula.domain.aggregate.community.annotation.RestrictedAction;
+import com.petfabula.domain.aggregate.community.guardian.service.RestrictionService;
 import com.petfabula.domain.aggregate.community.participator.entity.Participator;
 import com.petfabula.domain.aggregate.community.post.entity.Post;
 import com.petfabula.domain.aggregate.community.post.entity.PostComment;
@@ -31,6 +33,7 @@ public class PostCommentService {
     @Autowired
     private PostIdGenerator idGenerator;
 
+    @RestrictedAction
     public PostComment createPostComment(Long participatorId, Long postId, String content) {
         Participator participator = participatorRepository.findById(participatorId);
         if (participator == null) {

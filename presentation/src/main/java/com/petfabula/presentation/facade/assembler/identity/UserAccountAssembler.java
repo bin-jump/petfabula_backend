@@ -8,6 +8,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Component
 public class UserAccountAssembler {
 
@@ -23,6 +26,13 @@ public class UserAccountAssembler {
             userDto.setPhoto(assemblerHelper.completeImageUrl(userAccount.getPhoto()));
         }
         return userDto;
+    }
+
+    public List<UserAccountDto> convertToDtos(List<UserAccount> userAccounts) {
+        List<UserAccountDto> res = userAccounts.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+        return res;
     }
 
     public UserAccountDetailDto convertToDetailDto(UserAccount userAccount) {

@@ -28,12 +28,26 @@ public class RestrictionService {
             throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
         }
 
-        Long id = idGenerator.nextId();
+        Restriction restriction = restrictionRepository.findByParticipatorId(participatorId);
+        if (restriction != null) {
+            throw new InvalidOperationException(CommonMessageKeys.ALREADY_EXISTS);
+        }
 
-        Restriction restriction = new Restriction(id, participatorId, reason);
+        Long id = idGenerator.nextId();
+        restriction = new Restriction(id, participatorId, reason);
 
         return restrictionRepository.save(restriction);
     }
+
+    public Restriction removeByParticipatorId(Long participatorId) {
+        Restriction restriction = restrictionRepository.findByParticipatorId(participatorId);
+        if (restriction != null) {
+            restrictionRepository.remove(restriction);
+        }
+
+        return restriction;
+    }
+
 
     public void restrict(Long participatorId) {
         Restriction restriction = restrictionRepository.findByParticipatorId(participatorId);

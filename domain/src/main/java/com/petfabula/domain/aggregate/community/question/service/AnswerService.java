@@ -1,5 +1,6 @@
 package com.petfabula.domain.aggregate.community.question.service;
 
+import com.petfabula.domain.aggregate.community.annotation.RestrictedAction;
 import com.petfabula.domain.aggregate.community.participator.entity.Participator;
 import com.petfabula.domain.aggregate.community.participator.repository.ParticipatorRepository;
 import com.petfabula.domain.aggregate.community.question.AnswerRemoved;
@@ -45,6 +46,7 @@ public class AnswerService {
     @Autowired
     private DomainEventPublisher domainEventPublisher;
 
+    @RestrictedAction
     public Answer create(Long participatorId, Long questionId, String content,
                          List<ImageFile> images) {
         Participator participator = participatorRepository.findById(participatorId);
@@ -78,6 +80,7 @@ public class AnswerService {
         return answerRepository.save(answer);
     }
 
+    @RestrictedAction
     public Answer update(Long participatorId, Long answerId, String content,
             List<ImageFile> images, List<Long> imageIds) {
 

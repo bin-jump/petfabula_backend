@@ -2,9 +2,14 @@ package com.petfabula.infrastructure.persistence.jpa.identity.impl;
 
 import com.petfabula.domain.aggregate.identity.entity.UserAccount;
 import com.petfabula.domain.aggregate.identity.repository.UserAccountRepository;
+import com.petfabula.domain.common.paging.JumpableOffsetPage;
 import com.petfabula.infrastructure.persistence.jpa.annotation.FilterSoftDelete;
 import com.petfabula.infrastructure.persistence.jpa.identity.repository.UserAccountJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,5 +37,15 @@ public class UserAccountRepositoryImpl implements UserAccountRepository {
     @Override
     public UserAccount save(UserAccount userAccount) {
         return userAccountJpaRepository.save(userAccount);
+    }
+
+    @Override
+    public JumpableOffsetPage<UserAccount> findAll(int pageIndex, int pageSize) {
+        Pageable sortedById = PageRequest.of(pageIndex, pageSize, Sort.by("id").descending());
+        Page<UserAccount> accountPage = userAccountJpaRepository.findAll(sortedById);
+
+        int cnt = (int) accountPage.getTotalElements();
+
+        return JumpableOffsetPage.of(accountPage.getContent(), pageIndex, pageSize, cnt);
     }
 }

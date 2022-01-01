@@ -42,7 +42,10 @@ public class Restriction extends EntityBase {
     private String reason;
 
     public boolean expired(){
-        return expiration.isBefore(Instant.now()) || !expiration.equals(PERMANENT_EXPIRATION);
+        if (expiration.equals(PERMANENT_EXPIRATION)) {
+            return false;
+        }
+        return expiration.isBefore(Instant.now());
     }
 
 }

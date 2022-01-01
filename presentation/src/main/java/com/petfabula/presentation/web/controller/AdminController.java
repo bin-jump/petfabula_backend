@@ -6,6 +6,8 @@ import com.petfabula.domain.aggregate.administration.entity.Feedback;
 import com.petfabula.domain.aggregate.administration.entity.Report;
 import com.petfabula.domain.aggregate.administration.repository.FeedbackRepository;
 import com.petfabula.domain.aggregate.administration.repository.ReportRepository;
+import com.petfabula.domain.aggregate.community.guardian.entity.Restriction;
+import com.petfabula.domain.aggregate.community.guardian.repository.RestrictionRepository;
 import com.petfabula.domain.aggregate.community.participator.entity.Participator;
 import com.petfabula.domain.aggregate.community.participator.repository.ParticipatorRepository;
 import com.petfabula.domain.aggregate.community.post.entity.Post;
@@ -21,8 +23,10 @@ import com.petfabula.domain.aggregate.community.question.repository.QuestionRepo
 import com.petfabula.domain.aggregate.document.entity.ApplicationDocument;
 import com.petfabula.domain.aggregate.identity.entity.City;
 import com.petfabula.domain.aggregate.identity.entity.Prefecture;
+import com.petfabula.domain.aggregate.identity.entity.UserAccount;
 import com.petfabula.domain.aggregate.identity.repository.CityRepository;
 import com.petfabula.domain.aggregate.identity.repository.PrefectureRepository;
+import com.petfabula.domain.aggregate.identity.repository.UserAccountRepository;
 import com.petfabula.domain.aggregate.notification.entity.SystemNotification;
 import com.petfabula.domain.aggregate.notification.respository.SystemNotificationRepository;
 import com.petfabula.domain.aggregate.pet.entity.PetBreed;
@@ -33,19 +37,21 @@ import com.petfabula.domain.common.paging.JumpableOffsetPage;
 import com.petfabula.domain.exception.NotFoundException;
 import com.petfabula.presentation.facade.assembler.administration.FeedbackAssembler;
 import com.petfabula.presentation.facade.assembler.administration.ReportAssembler;
+import com.petfabula.presentation.facade.assembler.administration.RestrictionAssembler;
+import com.petfabula.presentation.facade.assembler.administration.UserAssembler;
 import com.petfabula.presentation.facade.assembler.community.*;
 import com.petfabula.presentation.facade.assembler.document.ApplicationDocumentAssembler;
 import com.petfabula.presentation.facade.assembler.identity.CityAssembler;
+import com.petfabula.presentation.facade.assembler.identity.UserAccountAssembler;
 import com.petfabula.presentation.facade.assembler.notification.SystemNotificationAssembler;
 import com.petfabula.presentation.facade.assembler.pet.PetAssembler;
 import com.petfabula.presentation.facade.dto.AlreadyDeletedResponse;
-import com.petfabula.presentation.facade.dto.administration.FeedbackDto;
-import com.petfabula.presentation.facade.dto.administration.ReportDto;
-import com.petfabula.presentation.facade.dto.administration.UpdateReportStatusRequest;
+import com.petfabula.presentation.facade.dto.administration.*;
 import com.petfabula.presentation.facade.dto.community.*;
 import com.petfabula.presentation.facade.dto.document.ApplicationDocumentDto;
 import com.petfabula.presentation.facade.dto.identity.CityDto;
 import com.petfabula.presentation.facade.dto.identity.PrefectureDto;
+import com.petfabula.presentation.facade.dto.identity.UserAccountDto;
 import com.petfabula.presentation.facade.dto.notification.SystemNotificationDto;
 import com.petfabula.presentation.facade.dto.pet.PetBreedDto;
 import com.petfabula.presentation.facade.dto.pet.PetCategoryDto;
@@ -104,6 +110,15 @@ public class AdminController {
     private CityAssembler cityAssembler;
 
     @Autowired
+    private UserAccountAssembler userAccountAssembler;
+
+    @Autowired
+    private UserAssembler userAssembler;
+
+    @Autowired
+    private RestrictionAssembler restrictionAssembler;
+
+    @Autowired
     private ParticipatorRepository participatorRepository;
 
     @Autowired
@@ -147,6 +162,12 @@ public class AdminController {
 
     @Autowired
     private PrefectureRepository prefectureRepository;
+
+    @Autowired
+    private UserAccountRepository userAccountRepository;
+
+    @Autowired
+    private RestrictionRepository restrictionRepository;
 
     @GetMapping("reports")
     public Response<OffsetPageData<ReportDto>> getReports(@RequestParam(value = "page") Integer page,
@@ -490,5 +511,49 @@ public class AdminController {
                 .updateCity(cityDto.getId(), cityDto.getName());
         cityDto = cityAssembler.convertToDto(city);
         return Response.ok(cityDto);
+    }
+
+    @GetMapping("users")
+    public Response<OffsetPageData<UserAccountDto>> getUsers(@RequestParam(value = "page") Integer page,
+                                                               @RequestParam(value = "size") Integer size) {
+        JumpableOffsetPage<UserAccount> userPage = userAccountRepository.findAll(page, size);
+        List<UserAccountDto> userDtoList = userAccountAssembler.convertToDtos(userPage.getResult());
+
+        OffsetPageData<UserAccountDto> res = OffsetPageData.of(userDtoList, userPage.getPageIndex(),
+                userPage.getPageSize(), userPage.getTotal());
+
+        return Response.ok(res);
+    }
+
+    @GetMapping("users/{userId}")
+    public Response<Object> getUserDetail(@PathVariable("userId") Long userId) {
+        UserAccount userAccount = userAccountRepository.findById(userId);
+        if (userAccount == null) {
+            return Response.ok(AlreadyDeletedResponse.of(userId));
+        }
+
+        Restriction restriction = restrictionRepository.findByParticipatorId(userId);
+        UserWithStatusDto res = userAssembler.convertToDto(userAccount, restriction);
+
+        return Response.ok(res);
+    }
+
+    @PostMapping("users/restricts")
+    public Response<RestrictionDto> createRestrict(@RequestBody @Validated RestrictionDto restrictionDto) {
+        Restriction restriction = administrationApplicationService
+                .createRestriction(restrictionDto.getParticipatorId(), restrictionDto.getReason());
+        RestrictionDto res = restrictionAssembler.convertToDto(restriction);
+        return Response.ok(res);
+    }
+
+    @DeleteMapping("users/{userId}/restricts")
+    public Response<Object> removeRestrict(@PathVariable("userId") Long userId) {
+        Restriction restriction = administrationApplicationService
+                .removeRestrictionByParticipatorId(userId);
+        if (restriction == null) {
+            return Response.ok(AlreadyDeletedResponse.of(userId));
+        }
+        RestrictionDto res = restrictionAssembler.convertToDto(restriction);
+        return Response.ok(res);
     }
 }

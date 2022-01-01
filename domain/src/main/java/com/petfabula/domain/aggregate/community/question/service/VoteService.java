@@ -1,5 +1,6 @@
 package com.petfabula.domain.aggregate.community.question.service;
 
+import com.petfabula.domain.aggregate.community.annotation.RestrictedAction;
 import com.petfabula.domain.aggregate.community.participator.entity.Participator;
 import com.petfabula.domain.aggregate.community.participator.repository.ParticipatorRepository;
 import com.petfabula.domain.aggregate.community.question.QuestionMessageKeys;
@@ -38,6 +39,7 @@ public class VoteService {
     @Autowired
     private QuestionIdGenerator idGenerator;
 
+    @RestrictedAction
     public UpvoteQuestion upvoteQuestion(Long participatorId, Long questionId) {
         Participator participator = participatorRepository.findById(participatorId);
         if (participator == null) {
@@ -83,6 +85,7 @@ public class VoteService {
         return upvoteQuestion;
     }
 
+    @RestrictedAction
     public UpvoteAnswer upvoteAnswer(Long participatorId, Long answerId) {
         Participator participator = participatorRepository.findById(participatorId);
         if (participator == null) {

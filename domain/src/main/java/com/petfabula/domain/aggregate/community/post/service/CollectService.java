@@ -1,5 +1,6 @@
 package com.petfabula.domain.aggregate.community.post.service;
 
+import com.petfabula.domain.aggregate.community.annotation.RestrictedAction;
 import com.petfabula.domain.aggregate.community.participator.entity.Participator;
 import com.petfabula.domain.aggregate.community.participator.repository.ParticipatorRepository;
 import com.petfabula.domain.aggregate.community.post.entity.Post;
@@ -26,6 +27,7 @@ public class CollectService {
     @Autowired
     private PostIdGenerator idGenerator;
 
+    @RestrictedAction
     public CollectPost collect(Long participatorId, Long postId) {
         Post post = postRepository.findById(postId);
         if (post == null) {

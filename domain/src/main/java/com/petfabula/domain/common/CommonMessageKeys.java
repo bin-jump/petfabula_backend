@@ -6,6 +6,8 @@ public final class CommonMessageKeys {
 
     public static String CANNOT_PROCEED = PREFIX + "cannotProceed";
 
+    public static String ALREADY_EXISTS = PREFIX + "alreadyExists";
+
     public static String NAME_ALREADY_EXISTS = PREFIX + "nameAlreadyExists";
 
     public static String NO_DEPEND_ENTITY = PREFIX + "noDependEntity";

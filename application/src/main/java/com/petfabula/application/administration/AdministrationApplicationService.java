@@ -3,6 +3,9 @@ package com.petfabula.application.administration;
 import com.petfabula.domain.aggregate.administration.entity.Feedback;
 import com.petfabula.domain.aggregate.administration.entity.Report;
 import com.petfabula.domain.aggregate.administration.service.FeedbackService;
+import com.petfabula.domain.aggregate.community.guardian.entity.Restriction;
+import com.petfabula.domain.aggregate.community.guardian.repository.RestrictionRepository;
+import com.petfabula.domain.aggregate.community.guardian.service.RestrictionService;
 import com.petfabula.domain.aggregate.community.post.service.PostTopicService;
 import com.petfabula.domain.aggregate.administration.service.ReportService;
 import com.petfabula.domain.aggregate.community.post.entity.Post;
@@ -64,6 +67,9 @@ public class AdministrationApplicationService {
 
     @Autowired
     private CityService cityService;
+
+    @Autowired
+    private RestrictionService restrictionService;
 
     @Transactional
     public Feedback createFeedback(Long reporterId, String content) {
@@ -179,5 +185,15 @@ public class AdministrationApplicationService {
     @Transactional
     public City updateCity(Long cityId, String name) {
         return cityService.updateCity(cityId, name);
+    }
+
+    @Transactional
+    public Restriction createRestriction(Long userId, String reason) {
+        return restrictionService.createPermanent(userId, reason);
+    }
+
+    @Transactional
+    public Restriction removeRestrictionByParticipatorId(Long userId) {
+        return restrictionService.removeByParticipatorId(userId);
     }
 }

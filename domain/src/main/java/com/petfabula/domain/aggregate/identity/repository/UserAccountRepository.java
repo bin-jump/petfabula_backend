@@ -1,6 +1,7 @@
 package com.petfabula.domain.aggregate.identity.repository;
 
 import com.petfabula.domain.aggregate.identity.entity.UserAccount;
+import com.petfabula.domain.common.paging.JumpableOffsetPage;
 
 public interface UserAccountRepository {
 
@@ -11,4 +12,6 @@ public interface UserAccountRepository {
     UserAccount findByEmail(String email);
 
     UserAccount save(UserAccount userAccount);
+
+    JumpableOffsetPage<UserAccount> findAll(int pageIndex, int pageSize);
 }

@@ -1,5 +1,6 @@
 package com.petfabula.domain.aggregate.community.question.service;
 
+import com.petfabula.domain.aggregate.community.annotation.RestrictedAction;
 import com.petfabula.domain.aggregate.community.participator.entity.Participator;
 import com.petfabula.domain.aggregate.community.participator.repository.ParticipatorRepository;
 import com.petfabula.domain.aggregate.community.question.QuestionMessageKeys;
@@ -33,6 +34,7 @@ public class AnswerCommentService {
 //    @Autowired
 //    private AnswerCommentReplyRepository answerCommentReplyRepository;
 
+    @RestrictedAction
     public AnswerComment createAnswerComment(Long participatorId, Long answerId, Long replyTo, String content) {
         Participator participator = participatorRepository.findById(participatorId);
         if (participator == null) {

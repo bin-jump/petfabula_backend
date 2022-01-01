@@ -1,5 +1,6 @@
 package com.petfabula.domain.aggregate.community.post.service;
 
+import com.petfabula.domain.aggregate.community.annotation.RestrictedAction;
 import com.petfabula.domain.aggregate.community.participator.entity.Participator;
 import com.petfabula.domain.aggregate.community.participator.entity.ParticipatorPet;
 import com.petfabula.domain.aggregate.community.participator.repository.ParticipatorPetRepository;
@@ -54,6 +55,7 @@ public class PostService {
     @Autowired
     private DomainEventPublisher domainEventPublisher;
 
+    @RestrictedAction
     public Post create(Long participatorId, String content, Long relatePetId, Long topicId, List<ImageFile> images) {
         if (images.size() > IMAGE_LIMIT) {
             throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
@@ -108,6 +110,7 @@ public class PostService {
         return savedPost;
     }
 
+    @RestrictedAction
     public Post update(Long participatorId, Long postId, String content, Long relatePetId, Long topicId,
                        List<ImageFile> images, List<Long> imageIds) {
         Post post = postRepository.findById(postId);

@@ -1,5 +1,7 @@
 package com.petfabula.domain.aggregate.community.post.service;
 
+import com.petfabula.domain.aggregate.community.annotation.RestrictedAction;
+import com.petfabula.domain.aggregate.community.guardian.service.RestrictionService;
 import com.petfabula.domain.aggregate.community.post.entity.valueobject.LikePost;
 import com.petfabula.domain.aggregate.community.participator.entity.Participator;
 import com.petfabula.domain.aggregate.community.post.entity.Post;
@@ -26,6 +28,7 @@ public class LikeService {
     @Autowired
     private PostIdGenerator idGenerator;
 
+    @RestrictedAction
     public LikePost likePost(Long participatorId, Long postId) {
         Participator participator = participatorRepository.findById(participatorId);
         if (participator == null) {
