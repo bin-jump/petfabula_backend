@@ -58,8 +58,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
                 .authorizeRequests()
                 .antMatchers(HttpMethod.GET,"/api/identity/**").permitAll()
-                .antMatchers(HttpMethod.GET,"/api/identity/oauth-redirect").permitAll()
-                .antMatchers(HttpMethod.POST,"/api/identity/**").permitAll()
+                .antMatchers("/api/auth/**").permitAll()
                 .antMatchers(HttpMethod.POST,"/api/user/check-confirm-email",
                         "/api/user/confirm-email", "/api/user")
                 .permitAll()

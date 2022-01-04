@@ -17,7 +17,7 @@ import java.io.IOException;
 public class EmailCodeRegisterAndAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
     private static final AntPathRequestMatcher DEFAULT_ANT_PATH_REQUEST_MATCHER =
-            new AntPathRequestMatcher("/api/identity/register-signin-email-code", "POST");
+            new AntPathRequestMatcher("/api/auth/register-signin-email-code", "POST");
 
     public EmailCodeRegisterAndAuthenticationFilter() {
         super(DEFAULT_ANT_PATH_REQUEST_MATCHER);

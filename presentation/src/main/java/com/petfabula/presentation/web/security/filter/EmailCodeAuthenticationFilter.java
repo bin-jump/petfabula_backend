@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 public class EmailCodeAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
     private static final AntPathRequestMatcher DEFAULT_ANT_PATH_REQUEST_MATCHER =
-            new AntPathRequestMatcher("/api/identity/signin-email-code", "POST");
+            new AntPathRequestMatcher("/api/auth/signin-email-code", "POST");
 
     public EmailCodeAuthenticationFilter() {
         super(DEFAULT_ANT_PATH_REQUEST_MATCHER);

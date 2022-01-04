@@ -15,7 +15,7 @@ import java.io.IOException;
 public class AppleAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
     private static final AntPathRequestMatcher DEFAULT_ANT_PATH_REQUEST_MATCHER =
-            new AntPathRequestMatcher("/api/identity/register-signin-apple", "POST");
+            new AntPathRequestMatcher("/api/auth/register-signin-apple", "POST");
 
     public AppleAuthenticationFilter() {
         super(DEFAULT_ANT_PATH_REQUEST_MATCHER);

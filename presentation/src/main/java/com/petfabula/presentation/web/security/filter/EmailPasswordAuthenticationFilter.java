@@ -17,7 +17,7 @@ import java.io.IOException;
 public class EmailPasswordAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
     private static final AntPathRequestMatcher DEFAULT_ANT_PATH_REQUEST_MATCHER =
-            new AntPathRequestMatcher("/api/identity/signin-email-password", "POST");
+            new AntPathRequestMatcher("/api/auth/signin-email-password", "POST");
 
     public EmailPasswordAuthenticationFilter() {
         super(DEFAULT_ANT_PATH_REQUEST_MATCHER);

@@ -83,8 +83,42 @@ spring:
           ssl:
             trust: ${MAIL_HOST}
 
+  cache:
+    cache-names:
+      - rate-limit-buckets
+    caffeine:
+      spec: maximumSize=100000,expireAfterAccess=3600s
+
 upload:
   imageUrl: ${UPLOAD_URL}
 
 image:
   contentUrl: ${IMAGE_URL_PREFIX}
+
+#bucket4j:
+#  enabled: true
+#  filters:
+#    - cache-name: rate-limit-buckets
+#      url: .*
+#      strategy: first
+#      rate-limits:
+#        - bandwidths:
+#          - capacity: 3
+#            time: 1
+#            unit: minutes
+#            fixed-refill-interval: 1
+#            fixed-refill-interval-unit: minutes
+
+bucket4j:
+  enabled: true
+  filters:
+  - cache-name: rate-limit-buckets
+    filter-method: servlet
+    http-response-body: "" # handle the body by other filter
+    url: /api/auth/.*
+    rate-limits:
+      - expression: getRemoteAddr()
+        bandwidths:
+        - capacity: 15
+          time: 1
+          unit: minutes

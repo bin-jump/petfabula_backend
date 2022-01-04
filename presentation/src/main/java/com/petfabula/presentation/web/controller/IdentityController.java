@@ -109,15 +109,15 @@ public class IdentityController {
 //        return Response.ok(userAccountDto);
 //    }
 
-    @PostMapping("register-send-code")
-    public Response emailCodeRegisterVerificationCode(@Validated @RequestBody ExamineEmailRegisterAndSendCodeRequest request) {
-        identityApplicationService.examineEmailCodeRegisterContentAndSendCode(request.getName(), request.getEmail());
-        return Response.ok(request.getName());
-    }
-
-    @PostMapping("signin-email-send-code")
-    public Response loginByEmailSendCode(@Validated @RequestBody EmailCodeNotifyCodeRequest request) {
-        identityApplicationService.sendEmailCodeLoginCode(request.getEmail());
-        return Response.ok(request.getEmail());
-    }
+//    @PostMapping("register-send-code")
+//    public Response emailCodeRegisterVerificationCode(@Validated @RequestBody ExamineEmailRegisterAndSendCodeRequest request) {
+//        identityApplicationService.examineEmailCodeRegisterContentAndSendCode(request.getName(), request.getEmail());
+//        return Response.ok(request.getName());
+//    }
+//
+//    @PostMapping("signin-email-send-code")
+//    public Response loginByEmailSendCode(@Validated @RequestBody EmailCodeNotifyCodeRequest request) {
+//        identityApplicationService.sendEmailCodeLoginCode(request.getEmail());
+//        return Response.ok(request.getEmail());
+//    }
 }

@@ -44,6 +44,14 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
         response.setCharacterEncoding("UTF-8");
         try{
             filterChain.doFilter(request, response);
+
+            // if the rate limitation reached
+            if (response.getStatus() == 429) {
+                Response res = Response.failed(Response.ResponseCode.INVALID_OPERATION);
+                res.setMessage(messageSource.getMessage("tooManyRequest", null, LocaleContextHolder.getLocale()));
+                response.getWriter().append(objectMapper.writeValueAsString(res));
+            }
+
         } catch (HttpMessageNotReadableException | SignatureVerificationException ex) {
             ex.printStackTrace();
             Response res = Response.failed(Response.ResponseCode.INVALID_OPERATION);
