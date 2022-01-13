@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 @Validated
 public class PostController {
 
-    static final int DEAULT_PAGE_SIZE = 5;
+    static final int DEAULT_PAGE_SIZE = 10;
 
     @Autowired
     private PostAssembler postAssembler;
@@ -281,7 +281,7 @@ public class PostController {
         LikePost likePost = postApplicationService.removelikePost(userId, postId);
         LikeResult res = LikeResult.builder()
                 .postId(postId)
-                .liked(false)
+                .liked(likePost != null)
                 .build();
         return Response.ok(res);
     }
@@ -300,10 +300,10 @@ public class PostController {
     @DeleteMapping("posts/{postId}/favorites")
     public Response<CollectPostResult> removeFavoritePost(@PathVariable("postId") Long postId) {
         Long userId = LoginUtils.currentUserId();
-        postApplicationService.removeCollectPost(userId, postId);
+        CollectPost collectPost = postApplicationService.removeCollectPost(userId, postId);
         CollectPostResult res = CollectPostResult.builder()
                 .postId(postId)
-                .collected(false)
+                .collected(collectPost != null)
                 .build();
         return Response.ok(res);
     }

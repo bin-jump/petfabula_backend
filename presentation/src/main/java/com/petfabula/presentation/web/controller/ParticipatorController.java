@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 @Validated
 public class ParticipatorController {
 
-    static final int DEAULT_PAGE_SIZE = 5;
+    static final int DEAULT_PAGE_SIZE = 10;
 
     @Autowired
     private ParticiptorPetAssembler participtorPetAssembler;

@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Validated
 public class SearchController {
 
-    static final int DEAULT_PAGE_SIZE = 5;
+    static final int DEAULT_PAGE_SIZE = 10;
 
     @Autowired
     private PostAssembler postAssembler;

@@ -62,7 +62,7 @@ public class IdentityController {
 //        String redirectPrefix = device.isMobile() ?
 //                authenticationProps.getMobileRedirect() : authenticationProps.getWebRedirect();
         String redirectPrefix = authenticationProps.getMobileRedirect();
-        log.info(String.format("redirect to %s%s", redirectPrefix, q));
+//        log.info(String.format("redirect to %s%s", redirectPrefix, q));
         response.sendRedirect(String.format("%s%s", redirectPrefix, q));
     }
 

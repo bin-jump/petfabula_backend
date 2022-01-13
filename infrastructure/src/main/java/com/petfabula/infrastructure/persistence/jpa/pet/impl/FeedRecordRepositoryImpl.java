@@ -68,6 +68,8 @@ public class FeedRecordRepositoryImpl implements FeedRecordRepository {
         return CursorPage.of(res.getContent(), cr, size);
     }
 
+    @Transactional
+    @FilterSoftDelete
     @Override
     public List<FeedRecord> findByPetIdAndAfter(Long petId, Instant dateTime, int sizeLimit) {
         Pageable limit = PageRequest.of(0, sizeLimit);

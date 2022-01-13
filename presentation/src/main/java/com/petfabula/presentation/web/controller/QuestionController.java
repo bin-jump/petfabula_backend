@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 @Validated
 public class QuestionController {
 
-    static final int DEAULT_PAGE_SIZE = 5;
+    static final int DEAULT_PAGE_SIZE = 10;
 
     @Autowired
     private QuestionAssembler questionAssembler;
@@ -316,10 +316,10 @@ public class QuestionController {
     @DeleteMapping("questions/{questionId}/vote")
     public Response<VoteQuestionResult> removeVoteQuestion(@PathVariable("questionId") Long questionId) {
         Long userId = LoginUtils.currentUserId();
-        questionApplicationService.removeUpvoteQuestion(userId, questionId);
+        UpvoteQuestion upvoteQuestion =  questionApplicationService.removeUpvoteQuestion(userId, questionId);
         VoteQuestionResult res = VoteQuestionResult.builder()
                 .questionId(questionId)
-                .upvoted(false)
+                .upvoted(upvoteQuestion != null)
                 .build();
         return Response.ok(res);
     }
@@ -338,10 +338,10 @@ public class QuestionController {
     @DeleteMapping("answers/{answerId}/vote")
     public Response<VoteAnswerResult> unvoteAnswer(@PathVariable("answerId") Long answerId) {
         Long userId = LoginUtils.currentUserId();
-        questionApplicationService.removeUpvoteAnswer(userId, answerId);
+        UpvoteAnswer upvoteAnswer = questionApplicationService.removeUpvoteAnswer(userId, answerId);
         VoteAnswerResult res = VoteAnswerResult.builder()
                 .answerId(answerId)
-                .upvoted(false)
+                .upvoted(upvoteAnswer != null)
                 .build();
         return Response.ok(res);
     }

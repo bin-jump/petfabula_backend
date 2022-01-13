@@ -13,10 +13,12 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.session.ConcurrentSessionControlAuthenticationStrategy;
+import org.springframework.security.web.session.ConcurrentSessionFilter;
 import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.security.SpringSessionBackedSessionRegistry;
 import org.springframework.web.cors.CorsConfiguration;
@@ -43,6 +45,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         httpSecurity
                 .cors()
                 .and()
+                .addFilter(concurrentSessionFilter())
                 .addFilterBefore(oauthRegisterFilter(),
                         UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(oauthLoginFilter(),
@@ -134,64 +137,58 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     public EmailCodeAuthenticationFilter emailCodeAuthenticationFilter() throws Exception {
         EmailCodeAuthenticationFilter filter = new EmailCodeAuthenticationFilter();
-        filter.setAuthenticationManager(authenticationManagerBean());
-        filter.setAuthenticationFailureHandler(loginFailureHandler);
-        filter.setAuthenticationSuccessHandler(loginSuccessHandler);
-        filter.setSessionAuthenticationStrategy(authStrategy());
+        configAuthFilter(filter);
         return filter;
     }
 
     public EmailCodeRegisterAndAuthenticationFilter emailCodeRegisterAuthenticationFilter() throws Exception {
         EmailCodeRegisterAndAuthenticationFilter filter = new EmailCodeRegisterAndAuthenticationFilter();
-        filter.setAuthenticationManager(authenticationManagerBean());
-        filter.setAuthenticationFailureHandler(loginFailureHandler);
-        filter.setAuthenticationSuccessHandler(loginSuccessHandler);
-        filter.setSessionAuthenticationStrategy(authStrategy());
+        configAuthFilter(filter);
         return filter;
     }
 
     public EmailPasswordAuthenticationFilter emailPasswordAuthenticationFilter() throws Exception {
         EmailPasswordAuthenticationFilter filter = new EmailPasswordAuthenticationFilter();
-        filter.setAuthenticationManager(authenticationManagerBean());
-        filter.setAuthenticationFailureHandler(loginFailureHandler);
-        filter.setAuthenticationSuccessHandler(loginSuccessHandler);
-        filter.setSessionAuthenticationStrategy(authStrategy());
+        configAuthFilter(filter);
         return filter;
     }
 
     public OauthRegisterFilter oauthRegisterFilter() throws Exception {
         OauthRegisterFilter filter = new OauthRegisterFilter();
-        filter.setAuthenticationManager(authenticationManagerBean());
-        filter.setAuthenticationFailureHandler(loginFailureHandler);
-        filter.setAuthenticationSuccessHandler(loginSuccessHandler);
-        filter.setSessionAuthenticationStrategy(authStrategy());
+        configAuthFilter(filter);
         return filter;
     }
 
     public OauthLoginFilter oauthLoginFilter() throws Exception {
         OauthLoginFilter filter = new OauthLoginFilter();
-        filter.setAuthenticationManager(authenticationManagerBean());
-        filter.setAuthenticationFailureHandler(loginFailureHandler);
-        filter.setAuthenticationSuccessHandler(loginSuccessHandler);
-        filter.setSessionAuthenticationStrategy(authStrategy());
+        configAuthFilter(filter);
         return filter;
     }
 
     public AppleAuthenticationFilter appleAuthenticationFilter() throws Exception {
         AppleAuthenticationFilter filter = new AppleAuthenticationFilter();
+        configAuthFilter(filter);
+        return filter;
+    }
+
+    private void configAuthFilter(AbstractAuthenticationProcessingFilter filter) throws Exception {
         filter.setAuthenticationManager(authenticationManagerBean());
         filter.setAuthenticationFailureHandler(loginFailureHandler);
         filter.setAuthenticationSuccessHandler(loginSuccessHandler);
         filter.setSessionAuthenticationStrategy(authStrategy());
-        return filter;
     }
 
     private ConcurrentSessionControlAuthenticationStrategy authStrategy() {
         ConcurrentSessionControlAuthenticationStrategy result = new ConcurrentSessionControlAuthenticationStrategy(
                 this.sessionRegistry());
         result.setMaximumSessions(2);
-        result.setExceptionIfMaximumExceeded(true);
+        result.setExceptionIfMaximumExceeded(false);
         return result;
+    }
+
+    @Bean
+    protected ConcurrentSessionFilter concurrentSessionFilter(){
+        return new ConcurrentSessionFilter(sessionRegistry(), new CustomSessionInformationExpiredStrategy());
     }
 
     @Override
@@ -199,11 +196,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
        authenticationManagerBuilder
                 .authenticationProvider(emailCodeAuthenticationProvider)
                 .authenticationProvider(oauthRegisterProvider)
-               .authenticationProvider(oauthLoginProvider)
+                .authenticationProvider(oauthLoginProvider)
                 .authenticationProvider(emailCodeRegisterAuthenticationProvider)
                 .authenticationProvider(emailPasswordAuthenticationProvider)
                 .authenticationProvider(appleTokenAuthenticationProvider);
-                // I'm using ActiveDirectory, but whatever you want to use here should work.
     }
 
     @Bean

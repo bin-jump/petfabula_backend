@@ -27,7 +27,7 @@ import java.util.List;
 @Validated
 public class RecommendationController {
 
-    static final int DEAULT_PAGE_SIZE = 5;
+    static final int DEAULT_PAGE_SIZE = 10;
 
     @Autowired
     private QuestionAssembler questionAssembler;

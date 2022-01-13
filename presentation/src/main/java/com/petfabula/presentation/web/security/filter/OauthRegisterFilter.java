@@ -16,7 +16,7 @@ import java.io.IOException;
 public class OauthRegisterFilter extends AbstractAuthenticationProcessingFilter {
 
     private static final AntPathRequestMatcher DEFAULT_ANT_PATH_REQUEST_MATCHER =
-            new AntPathRequestMatcher("/api/identity/register-signin-oauth", "POST");
+            new AntPathRequestMatcher("/api/auth/register-signin-oauth", "POST");
 
     public OauthRegisterFilter() {
         super(DEFAULT_ANT_PATH_REQUEST_MATCHER);
