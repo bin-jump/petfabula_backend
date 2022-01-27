@@ -28,18 +28,18 @@ public class EmailCodeAuthenticationProvider implements AuthenticationProvider {
         EmailCodeAuthenticationToken token = (EmailCodeAuthenticationToken)authentication;
 
         try {
-            UserAccount account = identityApplicationService
-                    .authenticateByEmailCode((String) token.getPrincipal(), (String) token.getCredentials());
+//            UserAccount account = identityApplicationService
+//                    .authenticateByEmailCode((String) token.getPrincipal(), (String) token.getCredentials());
+//
+//            List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+//            Set<Role> roles = account.getRoles();
+//            roles.stream().forEach(item ->
+//                    authorities.add(new SimpleGrantedAuthority("ROLE_" + item.getName())));
+//
+//            Authentication passedToken = new SuccessAuthenticationToken(LoginUser.newInstance(account), null,
+//                    authorities);
 
-            List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-            Set<Role> roles = account.getRoles();
-            roles.stream().forEach(item ->
-                    authorities.add(new SimpleGrantedAuthority("ROLE_" + item.getName())));
-
-            Authentication passedToken = new SuccessAuthenticationToken(LoginUser.newInstance(account), null,
-                    authorities);
-
-            return passedToken;
+            return emailCodeLoginIncludeTestUser((String) token.getPrincipal(), (String) token.getCredentials());
 
         } catch (DomainAuthenticationException e) {
             throw new AppAuthenticationException(e);
@@ -50,4 +50,45 @@ public class EmailCodeAuthenticationProvider implements AuthenticationProvider {
     public boolean supports(Class<?> aClass) {
         return aClass.equals(EmailCodeAuthenticationToken.class);
     }
+
+    private Authentication emailCodeLogin(String email, String code) {
+        UserAccount account = identityApplicationService
+                .authenticateByEmailCode(email, code);
+
+        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        Set<Role> roles = account.getRoles();
+        roles.stream().forEach(item ->
+                authorities.add(new SimpleGrantedAuthority("ROLE_" + item.getName())));
+
+        Authentication passedToken = new SuccessAuthenticationToken(LoginUser.newInstance(account), null,
+                authorities);
+
+        return passedToken;
+    }
+
+    private Authentication testUserLogin(String email, String code) {
+        UserAccount account = identityApplicationService
+                .authenticateByStaticEmailCode(email, code);
+
+        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        Set<Role> roles = account.getRoles();
+        roles.stream().forEach(item ->
+                authorities.add(new SimpleGrantedAuthority("ROLE_" + item.getName())));
+
+        Authentication passedToken = new SuccessAuthenticationToken(LoginUser.newInstance(account), null,
+                authorities);
+
+        return passedToken;
+    }
+
+    private Authentication emailCodeLoginIncludeTestUser(String email, String code) {
+
+        try {
+            return emailCodeLogin(email, code);
+        } catch(DomainAuthenticationException e) {
+            return testUserLogin(email, code);
+
+        }
+    }
+
 }

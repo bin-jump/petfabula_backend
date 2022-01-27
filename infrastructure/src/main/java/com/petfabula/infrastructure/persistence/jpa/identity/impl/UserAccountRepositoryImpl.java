@@ -13,6 +13,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Repository
 public class UserAccountRepositoryImpl implements UserAccountRepository {
 
@@ -37,6 +40,14 @@ public class UserAccountRepositoryImpl implements UserAccountRepository {
     @Override
     public UserAccount save(UserAccount userAccount) {
         return userAccountJpaRepository.save(userAccount);
+    }
+
+    @Override
+    public List<UserAccount> findByIds(List<Long> ids) {
+        if (ids.size() == 0) {
+            return new ArrayList<>();
+        }
+        return userAccountJpaRepository.findByIdInOrderByIdDesc(ids);
     }
 
     @Override

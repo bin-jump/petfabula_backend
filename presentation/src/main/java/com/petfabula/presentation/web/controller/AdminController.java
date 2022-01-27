@@ -2,6 +2,7 @@ package com.petfabula.presentation.web.controller;
 
 import com.petfabula.application.administration.AdministrationApplicationService;
 import com.petfabula.application.document.DocumentApplicationService;
+import com.petfabula.application.identity.IdentityApplicationService;
 import com.petfabula.domain.aggregate.administration.entity.Feedback;
 import com.petfabula.domain.aggregate.administration.entity.Report;
 import com.petfabula.domain.aggregate.administration.repository.FeedbackRepository;
@@ -22,11 +23,14 @@ import com.petfabula.domain.aggregate.community.question.repository.AnswerReposi
 import com.petfabula.domain.aggregate.community.question.repository.QuestionRepository;
 import com.petfabula.domain.aggregate.document.entity.ApplicationDocument;
 import com.petfabula.domain.aggregate.identity.entity.City;
+import com.petfabula.domain.aggregate.identity.entity.EmailCodeRecord;
 import com.petfabula.domain.aggregate.identity.entity.Prefecture;
 import com.petfabula.domain.aggregate.identity.entity.UserAccount;
 import com.petfabula.domain.aggregate.identity.repository.CityRepository;
+import com.petfabula.domain.aggregate.identity.repository.EmailCodeRecordRepository;
 import com.petfabula.domain.aggregate.identity.repository.PrefectureRepository;
 import com.petfabula.domain.aggregate.identity.repository.UserAccountRepository;
+import com.petfabula.domain.aggregate.identity.service.RegisterService;
 import com.petfabula.domain.aggregate.notification.entity.SystemNotification;
 import com.petfabula.domain.aggregate.notification.respository.SystemNotificationRepository;
 import com.petfabula.domain.aggregate.pet.entity.PetBreed;
@@ -64,6 +68,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -134,6 +139,9 @@ public class AdminController {
     private AdministrationApplicationService administrationApplicationService;
 
     @Autowired
+    private IdentityApplicationService identityApplicationService;
+
+    @Autowired
     private DocumentApplicationService documentApplicationService;
 
     @Autowired
@@ -168,6 +176,52 @@ public class AdminController {
 
     @Autowired
     private RestrictionRepository restrictionRepository;
+
+    @Autowired
+    private EmailCodeRecordRepository emailCodeRecordRepository;
+
+    @GetMapping("test-users")
+    public Response<List<StaticEmailCodeAccountDto>> getTestAllAccouts() {
+        List<EmailCodeRecord> records = emailCodeRecordRepository.findAll();
+        List<UserAccount> userAccounts = userAccountRepository
+                .findByIds(records.stream().map(EmailCodeRecord::getId).collect(Collectors.toList()));
+        Map<Long, UserAccount> userAccountMap = userAccounts
+                .stream().collect(Collectors.toMap(UserAccount::getId, o -> o));
+
+        List<StaticEmailCodeAccountDto> res = new ArrayList<>();
+        records.forEach(o -> {
+            if (userAccountMap.containsKey(o.getId())) {
+                UserAccount account = userAccountMap.get(o.getId());
+                StaticEmailCodeAccountDto dto = userAssembler.convertToDto(account, o);
+                res.add(dto);
+            }
+        });
+
+        return Response.ok(res);
+    }
+
+    @PostMapping("test-user")
+    public Response<StaticEmailCodeAccountDto> createTestuser(@RequestBody @Validated StaticEmailCodeAccountDto request) {
+        UserAccount account = identityApplicationService
+                .registerByStaticEmailCode(request.getName(), request.getEmail(), request.getCode());
+        EmailCodeRecord record = emailCodeRecordRepository.findByEmail(account.getEmail());
+
+        StaticEmailCodeAccountDto res = userAssembler.convertToDto(account, record);
+        return Response.ok(res);
+    }
+
+    @PutMapping("test-user-auth-info")
+    public Response<Object> updateTestAuthentication(@RequestBody @Validated StaticEmailCodeAccountDto request) {
+        EmailCodeRecord record = identityApplicationService
+                .updateStaticEmailCodeRecord(request.getEmail(), request.getCode(), request.isActive());
+        UserAccount account = userAccountRepository.findById(record.getId());
+        if (account == null) {
+            return Response.ok(AlreadyDeletedResponse.of(record.getId()));
+        }
+
+        StaticEmailCodeAccountDto res = userAssembler.convertToDto(account, record);
+        return Response.ok(res);
+    }
 
     @GetMapping("reports")
     public Response<OffsetPageData<ReportDto>> getReports(@RequestParam(value = "page") Integer page,

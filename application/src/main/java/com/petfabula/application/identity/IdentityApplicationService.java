@@ -2,9 +2,11 @@ package com.petfabula.application.identity;
 
 import com.petfabula.application.event.AccountCreatedEvent;
 import com.petfabula.application.event.AccountUpdateEvent;
+import com.petfabula.application.event.EmailCodeRecordChangeEvent;
 import com.petfabula.application.event.IntegratedEventPublisher;
 import com.petfabula.domain.aggregate.identity.MessageKey;
 import com.petfabula.domain.aggregate.identity.entity.EmailCodeAuthentication;
+import com.petfabula.domain.aggregate.identity.entity.EmailCodeRecord;
 import com.petfabula.domain.aggregate.identity.entity.UserAccount;
 import com.petfabula.domain.aggregate.identity.repository.EmailCodeAuthenticationRepository;
 import com.petfabula.domain.aggregate.identity.repository.UserAccountRepository;
@@ -96,6 +98,23 @@ public class IdentityApplicationService {
         return userAccount;
     }
 
+    @Transactional
+    public UserAccount registerByStaticEmailCode(String name, String email, String code) {
+        UserAccount userAccount =
+                registerService.registerByStaticEmailCode(name, email, code);
+        eventPublisher
+                .publish(new AccountCreatedEvent(userAccount.getId(), userAccount.getName(), userAccount.getPhoto()));
+        return userAccount;
+    }
+
+    @Transactional
+    public EmailCodeRecord updateStaticEmailCodeRecord(String email, String code, boolean active) {
+        EmailCodeRecord record = registerService.updateStaticEmailCodeRecord(email, code, active);
+
+        eventPublisher.publish(new EmailCodeRecordChangeEvent(record.getId(), record.isActive()));
+        return record;
+    }
+
     public void sendEmailCodeLoginCode(String email) {
         authenticateService.generateAndNotifyEmailCodeLoginCode(email);
     }
@@ -103,6 +122,11 @@ public class IdentityApplicationService {
     @Transactional
     public UserAccount authenticateByEmailCode(String email, String code) {
         return authenticateService.authenticateByEmailCode(email, code);
+    }
+
+    @Transactional
+    public UserAccount authenticateByStaticEmailCode(String email, String code) {
+        return authenticateService.authenticateByStaticEmailCode(email, code);
     }
 
     @Transactional
@@ -139,6 +163,7 @@ public class IdentityApplicationService {
                 .gender(genderStr)
                 .cityId(account.getCityId())
                 .build();
+
         eventPublisher
                 .publish(event);
         return account;

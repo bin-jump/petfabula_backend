@@ -1,14 +1,8 @@
 package com.petfabula.domain.aggregate.identity.service;
 
 import com.petfabula.domain.aggregate.identity.MessageKey;
-import com.petfabula.domain.aggregate.identity.entity.EmailCodeAuthentication;
-import com.petfabula.domain.aggregate.identity.entity.EmailPasswordAuthentication;
-import com.petfabula.domain.aggregate.identity.entity.ThirdPartyAuthentication;
-import com.petfabula.domain.aggregate.identity.entity.UserAccount;
-import com.petfabula.domain.aggregate.identity.repository.EmailCodeAuthenticationRepository;
-import com.petfabula.domain.aggregate.identity.repository.EmailPasswordAuthenticationRepository;
-import com.petfabula.domain.aggregate.identity.repository.ThirdPartyAuthenticationRepository;
-import com.petfabula.domain.aggregate.identity.repository.UserAccountRepository;
+import com.petfabula.domain.aggregate.identity.entity.*;
+import com.petfabula.domain.aggregate.identity.repository.*;
 import com.petfabula.domain.aggregate.identity.service.oauth.AppleAuthContent;
 import com.petfabula.domain.aggregate.identity.service.oauth.AppleService;
 import com.petfabula.domain.aggregate.identity.service.oauth.OauthResponse;
@@ -42,6 +36,9 @@ public class AuthenticateService {
     private ThirdPartyAuthenticationRepository thirdPartyAuthenticationRepository;
 
     @Autowired
+    private EmailCodeRecordRepository emailCodeRecordRepository;
+
+    @Autowired
     private AppleService appleService;
 
     @Autowired
@@ -61,6 +58,12 @@ public class AuthenticateService {
     }
 
     public void generateAndNotifyEmailCodeLoginCode(String email) {
+        EmailCodeRecord record = emailCodeRecordRepository.findByEmail(email);
+        // skip if email has a static code record
+        if (record != null) {
+            return;
+        }
+
         EmailCodeAuthentication emailCodeAuthentication =
                 emailCodeAuthenticationRepository.findByEmail(email);
         if (emailCodeAuthentication == null) {
@@ -80,6 +83,23 @@ public class AuthenticateService {
         }
 
         verificationCodeService.removeEmailLoginCode(email);
+        return userAccountRepository.findById(emailCodeAuthentication.getId());
+    }
+
+    public UserAccount authenticateByStaticEmailCode(String email, String code) {
+        EmailCodeAuthentication emailCodeAuthentication =
+                emailCodeAuthenticationRepository.findByEmail(email);
+        if (emailCodeAuthentication == null) {
+            throw new DomainAuthenticationException("email", MessageKey.EMAIL_NOT_REGISTERED);
+        }
+
+        EmailCodeRecord record = emailCodeRecordRepository.findByEmail(email);
+        if (record == null ||
+            !record.isValid() ||
+            !record.getCode().equals(code)) {
+            throw new DomainAuthenticationException("code", MessageKey.INVALID_VERIFICATION_CODE);
+        }
+
         return userAccountRepository.findById(emailCodeAuthentication.getId());
     }
 

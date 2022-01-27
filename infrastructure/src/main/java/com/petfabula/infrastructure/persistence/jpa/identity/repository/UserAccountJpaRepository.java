@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserAccountJpaRepository extends JpaRepository<UserAccount, Long> {
@@ -18,4 +19,6 @@ public interface UserAccountJpaRepository extends JpaRepository<UserAccount, Lon
     @EntityGraph(value = "userAccount.all")
     @Query("select u from UserAccount u where u.id = :id")
     Optional<UserAccount> findById(Long id);
+
+    List<UserAccount> findByIdInOrderByIdDesc(List<Long> ids);
 }

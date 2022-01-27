@@ -20,7 +20,9 @@ import com.petfabula.domain.aggregate.community.question.repository.QuestionRepo
 import com.petfabula.domain.aggregate.community.question.service.AnswerService;
 import com.petfabula.domain.aggregate.community.question.service.QuestionService;
 import com.petfabula.domain.aggregate.identity.entity.City;
+import com.petfabula.domain.aggregate.identity.entity.UserAccount;
 import com.petfabula.domain.aggregate.identity.service.CityService;
+import com.petfabula.domain.aggregate.identity.service.RegisterService;
 import com.petfabula.domain.aggregate.notification.entity.SystemNotification;
 import com.petfabula.domain.aggregate.notification.service.SystemNotificationService;
 import com.petfabula.domain.aggregate.pet.entity.PetBreed;
