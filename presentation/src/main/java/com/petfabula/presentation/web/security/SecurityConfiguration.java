@@ -1,6 +1,8 @@
 package com.petfabula.presentation.web.security;
 
 import com.petfabula.domain.aggregate.identity.service.PasswordEncoderService;
+import com.petfabula.presentation.web.config.CorsProps;
+import com.petfabula.presentation.web.config.RegexCorsConfiguration;
 import com.petfabula.presentation.web.security.authencate.*;
 import com.petfabula.presentation.web.security.filter.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +27,9 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
@@ -135,6 +139,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
     private LoginSuccessHandler loginSuccessHandler;
 
+    @Autowired
+    private CorsProps corsProps;
+
     public EmailCodeAuthenticationFilter emailCodeAuthenticationFilter() throws Exception {
         EmailCodeAuthenticationFilter filter = new EmailCodeAuthenticationFilter();
         configAuthFilter(filter);
@@ -232,11 +239,29 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 //        return new JwtAuthorizationFilter();
 //    }
 
+//    @Bean
+//    CorsConfigurationSource corsConfigurationSource() {
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        final CorsConfiguration configuration = new CorsConfiguration().applyPermitDefaultValues();
+//        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://127.0.0.1:3000"));
+//        configuration.setAllowCredentials(true);
+//        configuration.setAllowedMethods(Arrays.asList("HEAD","GET", "POST", "PUT", "DELETE", "PATCH"));
+//        source.registerCorsConfiguration("/**", configuration);
+//        return source;
+//    }
+
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        final CorsConfiguration configuration = new CorsConfiguration().applyPermitDefaultValues();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://127.0.0.1:3000"));
+        RegexCorsConfiguration configuration = new RegexCorsConfiguration();
+        configuration.setAllowCredentials(true);
+
+//        List<String> allowed = new ArrayList<>();
+//        if (corsProps.getAllowedOrigin() != null) {
+//            allowed.add(corsProps.getAllowedOrigin());
+//        }
+//        configuration.setAllowedOriginRegex(allowed);
+        configuration.setAllowedOriginRegex(corsProps.getAllowedOrigins());
         configuration.setAllowCredentials(true);
         configuration.setAllowedMethods(Arrays.asList("HEAD","GET", "POST", "PUT", "DELETE", "PATCH"));
         source.registerCorsConfiguration("/**", configuration);
