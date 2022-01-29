@@ -15,7 +15,7 @@ app:
       clientSerect: ${OAUTH_GOOGLE_SERECT}
 
   cors:
-    allowedOrigin: ${ALLOWED_ORIGINS}
+    allowedOrigins: ${ALLOWED_ORIGINS}
 
 spring:
   application:
