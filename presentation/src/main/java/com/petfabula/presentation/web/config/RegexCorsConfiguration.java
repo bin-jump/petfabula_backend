@@ -16,6 +16,10 @@ public class RegexCorsConfiguration extends CorsConfiguration {
 
     private Map<String, Pattern> allowOriginPattenMap = new HashMap<>();
 
+    public RegexCorsConfiguration() {
+        this.applyPermitDefaultValues();
+    }
+
     /**
      * Check the origin of the request against the configured allowed origins.
      * @param requestOrigin the origin to check
