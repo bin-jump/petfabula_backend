@@ -41,10 +41,13 @@ public class AppleJwtDecoder {
             String sub = claims.get("sub", String.class);
             String email = claims.get("email", String.class);
             String emailVerified = claims.get("email_verified", String.class);
-            String realUserStatus = claims.get("real_user_status", String.class);
+//            String realUserStatus = claims.get("real_user_status", String.class);
+            Integer realUserStatus = claims.get("real_user_status", Integer.class);
 
-            return new AppleJwtPayload(sub, email, Boolean.parseBoolean(emailVerified),
-                    realUserStatus != null ? Integer.parseInt(realUserStatus) : null);
+            return new AppleJwtPayload(sub, email, Boolean.parseBoolean(emailVerified), realUserStatus);
+
+//            return new AppleJwtPayload(sub, email, Boolean.parseBoolean(emailVerified),
+//                    realUserStatus != null ? Integer.parseInt(realUserStatus) : null);
 
         }catch(ExpiredJwtException e){
             throw new RuntimeException("apple token expired");

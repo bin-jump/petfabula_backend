@@ -40,6 +40,7 @@ public class WebConfig implements WebMvcConfigurer {
         source.setDefaultEncoding("UTF-8");
         source.setBasenames("messages/business");
         source.setUseCodeAsDefaultMessage(true);
+        source.setDefaultLocale(Locale.JAPAN);
 
         return source;
     }
