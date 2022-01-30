@@ -1,6 +1,6 @@
 package com.petfabula.presentation.web.security.filter;
 
-import com.petfabula.presentation.web.security.authencate.AppleToken;
+import com.petfabula.presentation.web.security.authencate.apple.AppleLoginToken;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -12,12 +12,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class AppleAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
+public class AppleLoginFilter extends AbstractAuthenticationProcessingFilter {
 
     private static final AntPathRequestMatcher DEFAULT_ANT_PATH_REQUEST_MATCHER =
-            new AntPathRequestMatcher("/api/auth/register-signin-apple", "POST");
+            new AntPathRequestMatcher("/api/auth/signin-apple", "POST");
 
-    public AppleAuthenticationFilter() {
+    public AppleLoginFilter() {
         super(DEFAULT_ANT_PATH_REQUEST_MATCHER);
     }
 
@@ -29,7 +29,7 @@ public class AppleAuthenticationFilter extends AbstractAuthenticationProcessingF
 
             String identityToken = httpServletRequest.getParameter("identityToken");
             String name = httpServletRequest.getParameter("name");
-            AppleToken authRequest = new AppleToken(name, identityToken);
+            AppleLoginToken authRequest = new AppleLoginToken(name, identityToken);
             return this.getAuthenticationManager().authenticate(authRequest);
         }
     }

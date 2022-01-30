@@ -1,4 +1,4 @@
-package com.petfabula.presentation.web.security.authencate;
+package com.petfabula.presentation.web.security.authencate.emailpass;
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.util.Assert;

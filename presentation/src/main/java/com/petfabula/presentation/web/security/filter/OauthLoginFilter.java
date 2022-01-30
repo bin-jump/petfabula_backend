@@ -1,7 +1,6 @@
 package com.petfabula.presentation.web.security.filter;
 
-import com.petfabula.presentation.web.security.authencate.OauthLoginToken;
-import com.petfabula.presentation.web.security.authencate.OauthRegisterToken;
+import com.petfabula.presentation.web.security.authencate.oauth.OauthLoginToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;

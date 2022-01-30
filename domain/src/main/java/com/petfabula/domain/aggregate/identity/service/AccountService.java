@@ -108,6 +108,11 @@ public class AccountService {
     }
 
     private String validName(String name, UserAccount.RegisterEntry registerEntry) {
+        // for apple rare case name could be null
+        if (name == null && registerEntry == UserAccount.RegisterEntry.THIRD_PARTY) {
+            return randomUserName();
+        }
+
         UserAccount userAccount = userAccountRepository.findByName(name);
         if (userAccount != null) {
             // if oauth, try random suffix
@@ -134,6 +139,10 @@ public class AccountService {
     private String randomSuffixName(String name) {
         name = name.substring(0, 17);
         return name + RandomStringUtils.randomNumeric(4);
+    }
+
+    private String randomUserName() {
+        return "user" + RandomStringUtils.randomNumeric(8);
     }
 
 }

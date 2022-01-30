@@ -1,4 +1,4 @@
-package com.petfabula.presentation.web.security;
+package com.petfabula.presentation.web.security.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.petfabula.presentation.web.api.Response;

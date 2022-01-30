@@ -1,4 +1,4 @@
-package com.petfabula.presentation.web.security.authencate;
+package com.petfabula.presentation.web.security.authencate.emailcode;
 
 import com.petfabula.application.identity.IdentityApplicationService;
 import com.petfabula.domain.aggregate.identity.entity.Role;
@@ -6,6 +6,8 @@ import com.petfabula.domain.aggregate.identity.entity.UserAccount;
 import com.petfabula.domain.exception.DomainAuthenticationException;
 import com.petfabula.domain.exception.InvalidValueException;
 import com.petfabula.presentation.web.authentication.LoginUser;
+import com.petfabula.presentation.web.security.authencate.AppAuthenticationException;
+import com.petfabula.presentation.web.security.authencate.SuccessAuthenticationToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;

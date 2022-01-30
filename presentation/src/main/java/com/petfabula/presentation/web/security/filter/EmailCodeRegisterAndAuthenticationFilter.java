@@ -1,7 +1,6 @@
 package com.petfabula.presentation.web.security.filter;
 
-import com.petfabula.presentation.web.security.authencate.EmailCodeAuthenticationToken;
-import com.petfabula.presentation.web.security.authencate.EmailCodeRegisterAuthenticationToken;
+import com.petfabula.presentation.web.security.authencate.emailcode.EmailCodeRegisterAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;

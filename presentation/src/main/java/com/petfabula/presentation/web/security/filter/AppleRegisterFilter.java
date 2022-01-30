@@ -1,7 +1,6 @@
 package com.petfabula.presentation.web.security.filter;
 
-import com.petfabula.presentation.web.security.authencate.emailpass.EmailPasswordAuthenticationToken;
-import org.springframework.security.authentication.AuthenticationManager;
+import com.petfabula.presentation.web.security.authencate.apple.AppleRegisterToken;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -13,17 +12,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class EmailPasswordAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
+public class AppleRegisterFilter extends AbstractAuthenticationProcessingFilter {
 
     private static final AntPathRequestMatcher DEFAULT_ANT_PATH_REQUEST_MATCHER =
-            new AntPathRequestMatcher("/api/auth/signin-email-password", "POST");
+            new AntPathRequestMatcher("/api/auth/register-apple", "POST");
 
-    public EmailPasswordAuthenticationFilter() {
+    public AppleRegisterFilter() {
         super(DEFAULT_ANT_PATH_REQUEST_MATCHER);
-    }
-
-    public EmailPasswordAuthenticationFilter(AuthenticationManager authenticationManager) {
-        super(DEFAULT_ANT_PATH_REQUEST_MATCHER, authenticationManager);
     }
 
     @Override
@@ -32,10 +27,11 @@ public class EmailPasswordAuthenticationFilter extends AbstractAuthenticationPro
             throw new AuthenticationServiceException("Authentication method not supported: " + httpServletRequest.getMethod());
         } else {
 
-            String email = httpServletRequest.getParameter("email");
-            String password = httpServletRequest.getParameter("password");
-            EmailPasswordAuthenticationToken authRequest = new EmailPasswordAuthenticationToken(email, password);
+            String identityToken = httpServletRequest.getParameter("identityToken");
+            String name = httpServletRequest.getParameter("name");
+            AppleRegisterToken authRequest = new AppleRegisterToken(name, identityToken);
             return this.getAuthenticationManager().authenticate(authRequest);
         }
     }
 }
+

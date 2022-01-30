@@ -1,20 +1,22 @@
-package com.petfabula.presentation.web.security.authencate;
+package com.petfabula.presentation.web.security.authencate.emailcode;
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.util.Assert;
 
 import java.util.Collection;
 
-public class OauthLoginToken extends AbstractAuthenticationToken {
+public class EmailCodeRegisterAuthenticationToken extends AbstractAuthenticationToken {
 
     private final Object principal;
     private Object credentials;
-    private String serverName;
+    private String name;
 
-    public OauthLoginToken(Object principal, String serverName) {
-        super((Collection)null);
+    public EmailCodeRegisterAuthenticationToken(Object principal, Object credentials, String name) {
+        super((Collection) null);
         this.principal = principal;
-        this.serverName = serverName;
+        this.credentials = credentials;
+        this.name = name;
         this.setAuthenticated(false);
     }
 
@@ -33,7 +35,8 @@ public class OauthLoginToken extends AbstractAuthenticationToken {
         return this.principal;
     }
 
-    public String getServerName() {
-        return serverName;
+    @Override
+    public String getName() {
+        return name;
     }
 }

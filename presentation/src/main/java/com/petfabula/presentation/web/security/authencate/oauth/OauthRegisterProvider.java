@@ -1,9 +1,10 @@
-package com.petfabula.presentation.web.security.authencate;
+package com.petfabula.presentation.web.security.authencate.oauth;
 
 import com.petfabula.application.identity.IdentityApplicationService;
 import com.petfabula.domain.aggregate.identity.entity.Role;
 import com.petfabula.domain.aggregate.identity.entity.UserAccount;
 import com.petfabula.presentation.web.authentication.LoginUser;
+import com.petfabula.presentation.web.security.authencate.SuccessAuthenticationToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
@@ -16,16 +17,16 @@ import java.util.List;
 import java.util.Set;
 
 @Component
-public class OauthLoginProvider implements AuthenticationProvider {
+public class OauthRegisterProvider implements AuthenticationProvider {
 
     @Autowired
     private IdentityApplicationService identityApplicationService;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        OauthLoginToken token = (OauthLoginToken) authentication;
+        OauthRegisterToken token = (OauthRegisterToken) authentication;
         UserAccount account = identityApplicationService
-                .authenticateByOauth(token.getServerName(), (String)token.getPrincipal());
+                .registerOrAuthenticateByOauth(token.getServerName(), (String)token.getPrincipal());
 
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
         Set<Role> roles = account.getRoles();
@@ -40,6 +41,6 @@ public class OauthLoginProvider implements AuthenticationProvider {
 
     @Override
     public boolean supports(Class<?> aClass) {
-        return aClass.equals(OauthLoginToken.class);
+        return aClass.equals(OauthRegisterToken.class);
     }
 }

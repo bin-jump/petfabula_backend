@@ -1,21 +1,17 @@
 package com.petfabula.presentation.web.security.filter;
 
-import com.petfabula.presentation.web.security.authencate.EmailCodeAuthenticationToken;
+import com.petfabula.presentation.web.security.authencate.emailcode.EmailCodeAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 public class EmailCodeAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 

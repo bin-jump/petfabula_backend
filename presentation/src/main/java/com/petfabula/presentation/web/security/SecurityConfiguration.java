@@ -4,7 +4,17 @@ import com.petfabula.domain.aggregate.identity.service.PasswordEncoderService;
 import com.petfabula.presentation.web.config.CorsProps;
 import com.petfabula.presentation.web.config.RegexCorsConfiguration;
 import com.petfabula.presentation.web.security.authencate.*;
+import com.petfabula.presentation.web.security.authencate.apple.AppleTokenAuthenticationProvider;
+import com.petfabula.presentation.web.security.authencate.apple.AppleTokenRegisterProvider;
+import com.petfabula.presentation.web.security.authencate.emailcode.EmailCodeAuthenticationProvider;
+import com.petfabula.presentation.web.security.authencate.emailcode.EmailCodeRegisterAuthenticationProvider;
+import com.petfabula.presentation.web.security.authencate.emailpass.EmailPasswordAuthenticationProvider;
+import com.petfabula.presentation.web.security.authencate.oauth.OauthLoginProvider;
+import com.petfabula.presentation.web.security.authencate.oauth.OauthRegisterProvider;
 import com.petfabula.presentation.web.security.filter.*;
+import com.petfabula.presentation.web.security.handler.LogoutProcessSuccessHandler;
+import com.petfabula.presentation.web.security.handler.UnauthenticatedRequestHandler;
+import com.petfabula.presentation.web.security.handler.UnauthorizedRequestHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
@@ -23,13 +33,10 @@ import org.springframework.security.web.authentication.session.ConcurrentSession
 import org.springframework.security.web.session.ConcurrentSessionFilter;
 import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.security.SpringSessionBackedSessionRegistry;
-import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
@@ -61,6 +68,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .addFilterBefore(emailPasswordAuthenticationFilter(),
                         UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(appleAuthenticationFilter(),
+                        UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(appleRegisterFilter(),
                         UsernamePasswordAuthenticationFilter.class)
 
                 .authorizeRequests()
@@ -134,6 +143,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private AppleTokenAuthenticationProvider appleTokenAuthenticationProvider;
 
     @Autowired
+    private AppleTokenRegisterProvider appleTokenRegisterProvider;
+
+    @Autowired
     private LoginFailureHandler loginFailureHandler;
 
     @Autowired
@@ -172,8 +184,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return filter;
     }
 
-    public AppleAuthenticationFilter appleAuthenticationFilter() throws Exception {
-        AppleAuthenticationFilter filter = new AppleAuthenticationFilter();
+    public AppleLoginFilter appleAuthenticationFilter() throws Exception {
+        AppleLoginFilter filter = new AppleLoginFilter();
+        configAuthFilter(filter);
+        return filter;
+    }
+
+    public AppleRegisterFilter appleRegisterFilter() throws Exception {
+        AppleRegisterFilter filter = new AppleRegisterFilter();
         configAuthFilter(filter);
         return filter;
     }
@@ -206,7 +224,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authenticationProvider(oauthLoginProvider)
                 .authenticationProvider(emailCodeRegisterAuthenticationProvider)
                 .authenticationProvider(emailPasswordAuthenticationProvider)
-                .authenticationProvider(appleTokenAuthenticationProvider);
+                .authenticationProvider(appleTokenAuthenticationProvider)
+                .authenticationProvider(appleTokenRegisterProvider);
     }
 
     @Bean

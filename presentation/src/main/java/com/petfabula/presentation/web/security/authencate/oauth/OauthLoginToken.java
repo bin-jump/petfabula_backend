@@ -1,18 +1,17 @@
-package com.petfabula.presentation.web.security.authencate;
+package com.petfabula.presentation.web.security.authencate.oauth;
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.util.Assert;
 
 import java.util.Collection;
 
-public class OauthRegisterToken extends AbstractAuthenticationToken {
+public class OauthLoginToken extends AbstractAuthenticationToken {
 
     private final Object principal;
     private Object credentials;
     private String serverName;
 
-    public OauthRegisterToken(Object principal, String serverName) {
+    public OauthLoginToken(Object principal, String serverName) {
         super((Collection)null);
         this.principal = principal;
         this.serverName = serverName;

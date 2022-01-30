@@ -1,10 +1,12 @@
-package com.petfabula.presentation.web.security.authencate;
+package com.petfabula.presentation.web.security.authencate.apple;
 
 import com.petfabula.application.identity.IdentityApplicationService;
 import com.petfabula.domain.aggregate.identity.entity.Role;
 import com.petfabula.domain.aggregate.identity.entity.UserAccount;
 import com.petfabula.domain.exception.DomainAuthenticationException;
 import com.petfabula.presentation.web.authentication.LoginUser;
+import com.petfabula.presentation.web.security.authencate.AppAuthenticationException;
+import com.petfabula.presentation.web.security.authencate.SuccessAuthenticationToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
@@ -17,18 +19,21 @@ import java.util.List;
 import java.util.Set;
 
 @Component
-public class EmailPasswordAuthenticationProvider implements AuthenticationProvider {
+public class AppleTokenAuthenticationProvider implements AuthenticationProvider {
 
     @Autowired
     private IdentityApplicationService identityApplicationService;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        EmailPasswordAuthenticationToken token = (EmailPasswordAuthenticationToken)authentication;
+        AppleLoginToken token = (AppleLoginToken)authentication;
 
         try {
-            UserAccount account = identityApplicationService
-                    .authenticateByEmailPassword((String) token.getPrincipal(), (String) token.getCredentials());
+//            String name = (String)token.getPrincipal();
+            String jwtToken = (String)token.getCredentials();
+
+            UserAccount account = login(jwtToken);
+
             List<SimpleGrantedAuthority> authorities = new ArrayList<>();
             Set<Role> roles = account.getRoles();
             roles.stream().forEach(item ->
@@ -46,6 +51,10 @@ public class EmailPasswordAuthenticationProvider implements AuthenticationProvid
 
     @Override
     public boolean supports(Class<?> aClass) {
-        return aClass.equals(EmailPasswordAuthenticationToken.class);
+        return aClass.equals(AppleLoginToken.class);
+    }
+
+    private UserAccount login(String jwtToken) {
+        return identityApplicationService.authenticateByAppleLogin(jwtToken);
     }
 }
