@@ -38,11 +38,11 @@ public class VerificationCodeService {
 //    }
 
     public static String emailCodeReigsterkey(String email) {
-        return "petfabula.register.email.key::" + email;
+        return "register.email.key::" + email;
     }
 
     public static String emailCodeLoginkey(String email) {
-        return "petfabula.login.email.key::" + email;
+        return "login.email.key::" + email;
     }
 
 

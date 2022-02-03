@@ -4,13 +4,14 @@ import com.petfabula.domain.aggregate.identity.entity.UserAccount;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Singular;
+import org.springframework.security.core.AuthenticatedPrincipal;
 
 import java.io.Serializable;
 import java.util.List;
 
 @Data
 @Builder
-public class LoginUser implements Serializable {
+public class LoginUser implements AuthenticatedPrincipal, Serializable {
 
     public static LoginUser newInstance(UserAccount userAccount) {
         LoginUser loginUser = LoginUser.builder()
@@ -23,4 +24,9 @@ public class LoginUser implements Serializable {
 
     @Singular
     private List<String> privileges;
+
+    @Override
+    public String getName() {
+        return userId.toString();
+    }
 }

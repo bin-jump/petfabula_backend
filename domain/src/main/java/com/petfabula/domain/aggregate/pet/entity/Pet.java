@@ -120,10 +120,9 @@ public class Pet extends ConcurrentEntity {
     }
 
     public void setBirthday(LocalDate birthday) {
-        if (birthday == null) {
-            return;
+        if (birthday != null) {
+            EntityValidationUtils.validBirthday("birthday", birthday);
         }
-        EntityValidationUtils.validBirthday("birthday", birthday);
         this.birthday = birthday;
     }
 
@@ -136,11 +135,11 @@ public class Pet extends ConcurrentEntity {
     }
 
     public void setArrivalDay(LocalDate arrivalDay) {
-        if (birthday == null) {
-            return;
-        }
-        if (birthday.isAfter(arrivalDay)) {
+        if (birthday != null && arrivalDay != null && birthday.isAfter(arrivalDay)) {
             throw new InvalidValueException("arrivalDay", MessageKey.INVALID_ARRIVAL_DAY);
+        }
+        if (arrivalDay != null) {
+            EntityValidationUtils.validArrivalDay("arrivalDay", arrivalDay);
         }
         this.arrivalDay = arrivalDay;
     }

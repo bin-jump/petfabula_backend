@@ -25,10 +25,8 @@ public class PetDto {
 
     private String photo;
 
-    @NotNull
     private Long birthday;
 
-    @NotNull
     private Pet.Gender gender;
 
     private Long breedId;

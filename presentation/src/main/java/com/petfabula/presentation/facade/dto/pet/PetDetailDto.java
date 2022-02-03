@@ -25,10 +25,8 @@ public class PetDetailDto {
 
     private String photo;
 
-    @NotNull
     private Long birthday;
 
-    @NotNull
     private Long arrivalDay;
 
     @NotNull

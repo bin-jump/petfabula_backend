@@ -74,6 +74,12 @@ public abstract class EntityValidationUtils {
         }
     }
 
+    public static void validArrivalDay(String fieldName, LocalDate value) {
+        if (value.isAfter(LocalDate.now())) {
+            throw new InvalidValueException(fieldName, MessageKey.INVALID_ARRIVAL_DAY);
+        }
+    }
+
     public static void validRecordDate(String fieldName, LocalDate value) {
         if (value.isBefore(LocalDate.now().minusYears(10)) ||
                 value.isAfter(LocalDate.now().plusYears(10))) {
