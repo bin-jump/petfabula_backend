@@ -142,7 +142,7 @@ public class AccountService {
     }
 
     private String randomUserName() {
-        return "user" + RandomStringUtils.randomNumeric(8);
+        return "user" + RandomStringUtils.randomNumeric(6);
     }
 
 }
