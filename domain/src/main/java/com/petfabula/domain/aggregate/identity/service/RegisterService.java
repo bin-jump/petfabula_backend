@@ -141,14 +141,20 @@ public class RegisterService {
                 .findServerNameAndThirdPartyId(AppleService.SERVER_NAME, authContent.getUserId());
 
         if (thirdPartyAuthentication == null) {
-            UserAccount userAccount =
-                    accountService.createUser(name, authContent.getEmail(), UserAccount.RegisterEntry.THIRD_PARTY);
-            thirdPartyAuthentication =
-                    new ThirdPartyAuthentication(userAccount.getId(), AppleService.SERVER_NAME, authContent.getUserId());
-            thirdPartyAuthenticationRepository.save(thirdPartyAuthentication);
+            // convert value ex to op ex as value is not filled by user
+            try {
+                UserAccount userAccount =
+                        accountService.createUser(name, authContent.getEmail(), UserAccount.RegisterEntry.THIRD_PARTY);
+                thirdPartyAuthentication =
+                        new ThirdPartyAuthentication(userAccount.getId(), AppleService.SERVER_NAME, authContent.getUserId());
+                thirdPartyAuthenticationRepository.save(thirdPartyAuthentication);
 
-            domainEventPublisher.publish(
-                    new IdentityCreated(userAccount.getId(), userAccount.getName(), userAccount.getEmail()));
+                domainEventPublisher.publish(
+                        new IdentityCreated(userAccount.getId(), userAccount.getName(), userAccount.getEmail()));
+            } catch (InvalidValueException ex) {
+                throw new InvalidOperationException(MessageKey.EMAIL_ALREADY_REGISTERED);
+            }
+
         }
 
         return userAccountRepository.findById(thirdPartyAuthentication.getId());
