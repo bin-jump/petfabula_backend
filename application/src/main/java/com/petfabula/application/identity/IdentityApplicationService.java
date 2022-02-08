@@ -149,6 +149,11 @@ public class IdentityApplicationService {
     }
 
     @Transactional
+    public void changePassword(Long userId, String password, String newPassword) {
+        authenticateService.changePassword(userId, password, newPassword);
+    }
+
+    @Transactional
     public UserAccount updateAccount(Long accountId, LocalDate birthday, UserAccount.Gender gender,
                                      String bio, Long cityId, ImageFile imageFile) {
         UserAccount account = accountService.update(accountId, birthday, gender,

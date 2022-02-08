@@ -7,8 +7,10 @@ import com.petfabula.domain.aggregate.identity.service.oauth.AppleAuthContent;
 import com.petfabula.domain.aggregate.identity.service.oauth.AppleService;
 import com.petfabula.domain.aggregate.identity.service.oauth.OauthResponse;
 import com.petfabula.domain.aggregate.identity.service.oauth.OauthService;
+import com.petfabula.domain.common.CommonMessageKeys;
 import com.petfabula.domain.exception.DomainAuthenticationException;
 import com.petfabula.domain.exception.InvalidOperationException;
+import com.petfabula.domain.exception.InvalidValueException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -125,5 +127,25 @@ public class AuthenticateService {
         }
 
         return userAccountRepository.findById(thirdPartyAuthentication.getId());
+    }
+
+    public void changePassword(Long userId, String password, String newPassword) {
+        EmailPasswordAuthentication emailPasswordAuthentication =
+                emailAuthenticationRepository.findById(userId);
+        if (emailPasswordAuthentication == null) {
+            throw new InvalidOperationException(CommonMessageKeys.CANNOT_PROCEED);
+        }
+
+        if (!passwordEncoderService.check(emailPasswordAuthentication.getPassword(), password)) {
+            throw new DomainAuthenticationException("password", MessageKey.WRONG_EMAIL_OR_PASSWORD);
+        }
+
+        try {
+            emailPasswordAuthentication.setPassword(newPassword);
+        } catch (InvalidValueException ex) {
+            throw new InvalidValueException("newPassword", com.petfabula.domain.common.validation.MessageKey.INVALID_PASSWORD);
+        }
+
+        emailAuthenticationRepository.save(emailPasswordAuthentication);
     }
 }

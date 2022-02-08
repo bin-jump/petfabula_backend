@@ -13,6 +13,11 @@ public class EmailPasswordAuthenticationRepositoryImpl implements EmailPasswordA
     private EmailAuthenticationJpaRepository emailAuthenticationJpaRepository;
 
     @Override
+    public EmailPasswordAuthentication findById(Long id) {
+        return emailAuthenticationJpaRepository.findById(id).orElse(null);
+    }
+
+    @Override
     public EmailPasswordAuthentication findByEmail(String email) {
         return emailAuthenticationJpaRepository.findByEmail(email);
     }

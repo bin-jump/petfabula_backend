@@ -180,6 +180,14 @@ public class AdminController {
     @Autowired
     private EmailCodeRecordRepository emailCodeRecordRepository;
 
+    // only admin users use password
+    @PostMapping("password")
+    public Response<ChangePasswordResult> changePassword(@RequestBody @Validated ChangePasswordRequest request) {
+        identityApplicationService
+                .changePassword(LoginUtils.currentUserId(), request.getPassword(), request.getNewPassword());
+        return Response.ok(ChangePasswordResult.newInstance());
+    }
+
     @GetMapping("test-users")
     public Response<List<StaticEmailCodeAccountDto>> getTestAllAccouts() {
         List<EmailCodeRecord> records = emailCodeRecordRepository.findAll();

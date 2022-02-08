@@ -4,6 +4,8 @@ import com.petfabula.domain.aggregate.identity.entity.EmailPasswordAuthenticatio
 
 public interface EmailPasswordAuthenticationRepository {
 
+    EmailPasswordAuthentication findById(Long id);
+
     EmailPasswordAuthentication findByEmail(String email);
 
     EmailPasswordAuthentication save(EmailPasswordAuthentication emailPasswordAuthentication);
