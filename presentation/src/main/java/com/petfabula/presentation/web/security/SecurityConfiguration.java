@@ -91,6 +91,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authenticated()
                 .antMatchers(HttpMethod.GET,"/api/account/**")
                 .authenticated()
+                .antMatchers(HttpMethod.GET,"/api/participator/blockeds")
+                .authenticated()
 
                 .antMatchers(HttpMethod.GET,"/api/**")
                 .permitAll()

@@ -30,4 +30,6 @@ public class ParticipatorDto {
     private Integer petCount;
 
     private boolean followed;
+
+    private boolean blocked;
 }

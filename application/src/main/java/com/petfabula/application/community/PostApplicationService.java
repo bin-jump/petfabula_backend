@@ -1,6 +1,8 @@
 package com.petfabula.application.community;
 
 import com.petfabula.application.event.*;
+import com.petfabula.domain.aggregate.community.block.entity.BlockRecord;
+import com.petfabula.domain.aggregate.community.block.service.BlockRecordService;
 import com.petfabula.domain.aggregate.community.participator.entity.FollowParticipator;
 import com.petfabula.domain.aggregate.community.participator.service.FollowService;
 import com.petfabula.domain.aggregate.community.post.entity.valueobject.CollectPost;
@@ -15,6 +17,9 @@ import java.util.List;
 
 @Service
 public class PostApplicationService {
+
+    @Autowired
+    private BlockRecordService blockRecordService;
 
     @Autowired
     private PostService postService;
@@ -111,6 +116,16 @@ public class PostApplicationService {
     @Transactional
     public FollowParticipator unfollow(Long followerId, Long followedId){
         return followService.unfollow(followerId, followedId);
+    }
+
+    @Transactional
+    public BlockRecord block(Long participatorId, Long targetId) {
+        return blockRecordService.block(participatorId, targetId);
+    }
+
+    @Transactional
+    public BlockRecord removeBlock(Long participatorId, Long targetId) {
+        return blockRecordService.removeBlock(participatorId, targetId);
     }
 
 }

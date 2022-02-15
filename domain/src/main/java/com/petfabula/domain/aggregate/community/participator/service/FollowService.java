@@ -1,5 +1,6 @@
 package com.petfabula.domain.aggregate.community.participator.service;
 
+import com.petfabula.domain.aggregate.community.block.service.BlockRecordService;
 import com.petfabula.domain.aggregate.community.participator.entity.FollowParticipator;
 import com.petfabula.domain.aggregate.community.participator.ParticipatorMessageKeys;
 import com.petfabula.domain.aggregate.community.participator.entity.Participator;
@@ -13,6 +14,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class FollowService {
+
+    @Autowired
+    private BlockRecordService blockRecordService;
 
     @Autowired
     private ParticipatorRepository participatorRepository;
@@ -36,6 +40,7 @@ public class FollowService {
         if (followed == null) {
             throw new InvalidOperationException(ParticipatorMessageKeys.CANNOT_FOLLOW_PARTICIPATOR);
         }
+        blockRecordService.guardBlock(followedId, followerId);
 
         FollowParticipator followParticipator = followParticipatorRepository.find(followerId, followedId);
         if (followParticipator == null) {

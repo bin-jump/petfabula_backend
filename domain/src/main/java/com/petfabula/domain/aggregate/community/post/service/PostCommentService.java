@@ -1,6 +1,7 @@
 package com.petfabula.domain.aggregate.community.post.service;
 
 import com.petfabula.domain.aggregate.community.annotation.RestrictedAction;
+import com.petfabula.domain.aggregate.community.block.service.BlockRecordService;
 import com.petfabula.domain.aggregate.community.guardian.service.RestrictionService;
 import com.petfabula.domain.aggregate.community.participator.entity.Participator;
 import com.petfabula.domain.aggregate.community.post.entity.Post;
@@ -17,6 +18,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class PostCommentService {
+
+    @Autowired
+    private BlockRecordService blockRecordService;
 
     @Autowired
     private ParticipatorRepository participatorRepository;
@@ -44,6 +48,7 @@ public class PostCommentService {
         if (post == null) {
             throw new InvalidOperationException(CommonMessageKeys.NO_DEPEND_ENTITY);
         }
+        blockRecordService.guardBlock(post.getParticipator().getId(), participatorId);
 
         post.setCommentCount(post.getCommentCount() + 1);
         PostComment postComment = new PostComment(idGenerator.nextId(), participator, postId, content);
@@ -90,6 +95,8 @@ public class PostCommentService {
         if (post == null) {
             throw new InvalidOperationException(CommonMessageKeys.NO_DEPEND_ENTITY);
         }
+        blockRecordService.guardBlock(post.getParticipator().getId(), participatorId);
+
         if (replyToId != null) {
             PostCommentReply replyTarget = postCommentReplyRepository.findById(replyToId);
             if (replyTarget == null) {

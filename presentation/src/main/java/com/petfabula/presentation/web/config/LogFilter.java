@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 /**
  * for development only
  */
-@Component
+//@Component
 @Slf4j
 public class LogFilter extends OncePerRequestFilter {
 

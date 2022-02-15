@@ -1,5 +1,8 @@
 package com.petfabula.presentation.web.controller;
 
+import com.petfabula.application.community.PostApplicationService;
+import com.petfabula.domain.aggregate.community.block.entity.BlockRecord;
+import com.petfabula.domain.aggregate.community.block.repository.BlockRecordRepository;
 import com.petfabula.domain.aggregate.community.participator.entity.FollowParticipator;
 import com.petfabula.domain.aggregate.community.participator.entity.Participator;
 import com.petfabula.domain.aggregate.community.participator.repository.FollowParticipatorRepository;
@@ -42,6 +45,9 @@ public class ParticipatorController {
     private ParticiptorPetAssembler participtorPetAssembler;
 
     @Autowired
+    private PostApplicationService postApplicationService;
+
+    @Autowired
     private ParticiptorAssembler participtorAssembler;
 
     @Autowired
@@ -72,6 +78,9 @@ public class ParticipatorController {
     private ParticipatorRepository participatorRepository;
 
     @Autowired
+    private BlockRecordRepository blockRecordRepository;
+
+    @Autowired
     private FollowParticipatorRepository followParticipatorRepository;
 
     @Autowired
@@ -94,6 +103,9 @@ public class ParticipatorController {
             FollowParticipator followParticipator =
                     followParticipatorRepository.find(myId, userId);
             participatorDto.setFollowed(followParticipator != null);
+
+            BlockRecord blockRecord = blockRecordRepository.find(myId, userId);
+            participatorDto.setBlocked(blockRecord != null);
         }
         return Response.ok(participatorDto);
     }
@@ -215,6 +227,17 @@ public class ParticipatorController {
         return Response.ok(res);
     }
 
+    @GetMapping("blockeds")
+    public Response<CursorPageData<ParticipatorDto>> getMyBlockedUsers(@RequestParam(value = "cursor", required = false) Long cursor) {
+        Long userId = LoginUtils.currentUserId();
+        CursorPage<Participator> participators = blockRecordRepository
+                .findByParticipatorId(userId, cursor, DEAULT_PAGE_SIZE);
+        CursorPageData<ParticipatorDto> res = CursorPageData
+                .of(participtorAssembler.convertToDtos(participators.getResult()), participators.isHasMore(),
+                        participators.getPageSize(), participators.getNextCursor());
+        return Response.ok(res);
+    }
+
     @GetMapping("participators/{participatorId}/followeds")
     public Response<CursorPageData<ParticipatorDto>> getParticipatorFolloweds(@PathVariable("participatorId") Long participatorId,
                                                                               @RequestParam(value = "cursor", required = false) Long cursor) {
@@ -223,6 +246,29 @@ public class ParticipatorController {
         CursorPageData<ParticipatorDto> res = CursorPageData
                 .of(participtorAssembler.convertToDtos(participators.getResult()), participators.isHasMore(),
                         participators.getPageSize(), participators.getNextCursor());
+        return Response.ok(res);
+    }
+
+
+    @PostMapping("participators/{participatorId}/block")
+    public Response<BlockResult> blockUser(@PathVariable("participatorId") Long participatorId) {
+        Long userId = LoginUtils.currentUserId();
+        BlockRecord blockRecord = postApplicationService.block(userId, participatorId);
+        BlockResult res = BlockResult.builder()
+                .targetId(participatorId)
+                .blocked(true)
+                .build();
+        return Response.ok(res);
+    }
+
+    @DeleteMapping("participators/{participatorId}/block")
+    public Response<BlockResult> unblockUser(@PathVariable("participatorId") Long participatorId) {
+        Long userId = LoginUtils.currentUserId();
+        BlockRecord blockRecord = postApplicationService.removeBlock(userId, participatorId);
+        BlockResult res = BlockResult.builder()
+                .targetId(participatorId)
+                .blocked(false)
+                .build();
         return Response.ok(res);
     }
 }

@@ -1,6 +1,8 @@
 package com.petfabula.presentation.web.controller;
 
 import com.petfabula.application.community.PostApplicationService;
+import com.petfabula.domain.aggregate.community.block.entity.BlockRecord;
+import com.petfabula.domain.aggregate.community.block.repository.BlockRecordRepository;
 import com.petfabula.domain.aggregate.community.participator.entity.FollowParticipator;
 import com.petfabula.domain.aggregate.community.participator.entity.ParticipatorPet;
 import com.petfabula.domain.aggregate.community.participator.repository.FollowParticipatorRepository;

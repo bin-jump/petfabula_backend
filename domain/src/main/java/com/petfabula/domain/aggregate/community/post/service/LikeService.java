@@ -1,6 +1,7 @@
 package com.petfabula.domain.aggregate.community.post.service;
 
 import com.petfabula.domain.aggregate.community.annotation.RestrictedAction;
+import com.petfabula.domain.aggregate.community.block.service.BlockRecordService;
 import com.petfabula.domain.aggregate.community.guardian.service.RestrictionService;
 import com.petfabula.domain.aggregate.community.post.entity.valueobject.LikePost;
 import com.petfabula.domain.aggregate.community.participator.entity.Participator;
@@ -15,6 +16,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class LikeService {
+
+    @Autowired
+    private BlockRecordService blockRecordService;
 
     @Autowired
     private ParticipatorRepository participatorRepository;
@@ -39,6 +43,7 @@ public class LikeService {
         if (post == null) {
             throw new InvalidOperationException(CommonMessageKeys.NO_DEPEND_ENTITY);
         }
+        blockRecordService.guardBlock(post.getParticipator().getId(), participatorId);
 
         LikePost likePost = likePostRepository.find(participatorId, postId);
         if (likePost == null) {
