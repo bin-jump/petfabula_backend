@@ -1,6 +1,7 @@
 package com.petfabula.domain.aggregate.administration.entity;
 
 import com.petfabula.domain.common.domain.ConcurrentEntity;
+import com.petfabula.domain.common.util.ValueUtil;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -62,6 +63,7 @@ public class Report extends ConcurrentEntity {
     }
 
     public void setLastReason(String lastReason) {
+        lastReason = ValueUtil.trimContent(lastReason);
         this.lastReason = lastReason;
     }
 

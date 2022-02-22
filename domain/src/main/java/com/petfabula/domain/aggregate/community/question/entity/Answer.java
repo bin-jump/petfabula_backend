@@ -3,6 +3,7 @@ package com.petfabula.domain.aggregate.community.question.entity;
 import com.petfabula.domain.aggregate.community.participator.entity.Participator;
 import com.petfabula.domain.common.CommonMessageKeys;
 import com.petfabula.domain.common.domain.ConcurrentEntity;
+import com.petfabula.domain.common.util.ValueUtil;
 import com.petfabula.domain.common.validation.EntityValidationUtils;
 import com.petfabula.domain.exception.InvalidOperationException;
 import lombok.Getter;
@@ -62,6 +63,7 @@ public class Answer extends ConcurrentEntity {
 
     public void setContent(String content) {
         EntityValidationUtils.validStringLength("content", content, 0, 10000);
+        content = ValueUtil.trimContent(content);
         this.content = content;
     }
 

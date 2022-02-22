@@ -1,6 +1,7 @@
 package com.petfabula.domain.aggregate.pet.entity;
 
 import com.petfabula.domain.common.domain.ConcurrentEntity;
+import com.petfabula.domain.common.util.ValueUtil;
 import com.petfabula.domain.common.validation.EntityValidationUtils;
 import com.petfabula.domain.common.validation.MessageKey;
 import com.petfabula.domain.exception.InvalidValueException;
@@ -128,9 +129,7 @@ public class Pet extends ConcurrentEntity {
 
     public void setBio(String bio) {
         EntityValidationUtils.validStringLength("bio", bio, 0, 140);
-        if (bio == null) {
-            bio = "";
-        }
+        bio = ValueUtil.trimContent(bio);
         this.bio = bio;
     }
 

@@ -1,6 +1,7 @@
 package com.petfabula.domain.aggregate.identity.entity;
 
 import com.petfabula.domain.common.domain.EntityBase;
+import com.petfabula.domain.common.util.ValueUtil;
 import com.petfabula.domain.common.validation.EntityValidationUtils;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,6 +36,7 @@ public class City extends EntityBase {
 
     public void setName(String name) {
         EntityValidationUtils.validStringLength("name", name, 1, 16);
+        name = ValueUtil.trimContent(name);
         this.name = name;
     }
 }

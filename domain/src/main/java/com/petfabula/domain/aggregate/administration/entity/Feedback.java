@@ -1,6 +1,7 @@
 package com.petfabula.domain.aggregate.administration.entity;
 
 import com.petfabula.domain.common.domain.GeneralEntity;
+import com.petfabula.domain.common.util.ValueUtil;
 import com.petfabula.domain.common.validation.EntityValidationUtils;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,6 +30,7 @@ public class Feedback extends GeneralEntity {
 
     public void setContent(String content) {
         EntityValidationUtils.validStringLength("content", content, 10, 240);
+        content = ValueUtil.trimContent(content);
         this.content = content;
     }
 }

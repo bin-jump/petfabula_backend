@@ -1,6 +1,7 @@
 package com.petfabula.domain.aggregate.document.entity;
 
 import com.petfabula.domain.common.domain.ConcurrentEntity;
+import com.petfabula.domain.common.util.ValueUtil;
 import com.petfabula.domain.common.validation.EntityValidationUtils;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,6 +31,7 @@ public class ApplicationDocument extends ConcurrentEntity {
 
     public void setContent(String content) {
         EntityValidationUtils.validStringLength("content", content, 0, 60000);
+        content = ValueUtil.trimContent(content);
         this.content = content;
     }
 

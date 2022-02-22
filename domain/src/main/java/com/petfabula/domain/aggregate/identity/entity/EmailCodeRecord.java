@@ -3,6 +3,7 @@ package com.petfabula.domain.aggregate.identity.entity;
 
 import com.petfabula.domain.aggregate.identity.service.PasswordEncoderService;
 import com.petfabula.domain.common.domain.EntityBase;
+import com.petfabula.domain.common.util.ValueUtil;
 import com.petfabula.domain.common.validation.EntityValidationUtils;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -47,6 +48,7 @@ public class EmailCodeRecord extends EntityBase {
     }
 
     public void setCode(String code) {
+        code = ValueUtil.trimContent(code);
         EntityValidationUtils.validStringLength("code", code, 6, 6);
         this.code = code;
     }

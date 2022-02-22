@@ -1,6 +1,7 @@
 package com.petfabula.domain.aggregate.identity.entity;
 
 import com.petfabula.domain.common.domain.EntityBase;
+import com.petfabula.domain.common.util.ValueUtil;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -16,9 +17,14 @@ public class Prefecture extends EntityBase {
 
     public Prefecture(Long id, String name) {
         setId(id);
-        this.name = name;
+        setName(name);
     }
 
     @Column(name = "name", nullable = false, unique = true, length = 16)
     private String name;
+
+    public void setName(String name) {
+        name = ValueUtil.trimContent(name);
+        this.name = name;
+    }
 }

@@ -1,6 +1,7 @@
 package com.petfabula.domain.aggregate.identity.entity;
 
 import com.petfabula.domain.common.domain.ConcurrentEntity;
+import com.petfabula.domain.common.util.ValueUtil;
 import com.petfabula.domain.common.validation.EntityValidationUtils;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -66,9 +67,7 @@ public class UserAccount extends ConcurrentEntity {
 
     public void setBio(String bio) {
         EntityValidationUtils.validStringLength("bio", bio, 0, 140);
-        if (bio == null) {
-            bio = "";
-        }
+        bio = ValueUtil.trimContent(bio);
         this.bio = bio;
     }
 

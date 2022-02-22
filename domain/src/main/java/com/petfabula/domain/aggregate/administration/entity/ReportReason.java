@@ -2,6 +2,7 @@ package com.petfabula.domain.aggregate.administration.entity;
 
 import com.petfabula.domain.common.domain.EntityBase;
 import com.petfabula.domain.common.domain.GeneralEntity;
+import com.petfabula.domain.common.util.ValueUtil;
 import com.petfabula.domain.common.validation.EntityValidationUtils;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,6 +37,7 @@ public class ReportReason extends GeneralEntity {
 
     public void setReason(String reason) {
         EntityValidationUtils.validStringLength("reason", reason, 10, 500);
+        reason = ValueUtil.trimContent(reason);
         this.reason = reason;
     }
 }

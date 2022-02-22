@@ -4,6 +4,7 @@ import com.petfabula.domain.aggregate.community.participator.entity.Participator
 import com.petfabula.domain.aggregate.community.participator.entity.ParticipatorPet;
 import com.petfabula.domain.aggregate.community.post.PostMessageKeys;
 import com.petfabula.domain.common.domain.ConcurrentEntity;
+import com.petfabula.domain.common.util.ValueUtil;
 import com.petfabula.domain.common.validation.EntityValidationUtils;
 import com.petfabula.domain.exception.InvalidOperationException;
 import lombok.Getter;
@@ -72,6 +73,7 @@ public class Post extends ConcurrentEntity {
 
     public void setContent(String content) {
         EntityValidationUtils.validStringLength("content", content, 0, 5000);
+        content = ValueUtil.trimContent(content);
         this.content = content;
     }
 

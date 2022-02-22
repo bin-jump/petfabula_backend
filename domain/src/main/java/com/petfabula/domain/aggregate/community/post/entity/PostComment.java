@@ -2,6 +2,7 @@ package com.petfabula.domain.aggregate.community.post.entity;
 
 import com.petfabula.domain.aggregate.community.participator.entity.Participator;
 import com.petfabula.domain.common.domain.GeneralEntity;
+import com.petfabula.domain.common.util.ValueUtil;
 import com.petfabula.domain.common.validation.EntityValidationUtils;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,6 +22,7 @@ public class PostComment extends GeneralEntity {
     public PostComment(Long id, Participator participator, Long postId, String content) {
         EntityValidationUtils.validStringLength("content", content, 1, 240);
         setId(id);
+        content = ValueUtil.trimContent(content);
         this.content = content;
         this.participator = participator;
         this.postId = postId;
